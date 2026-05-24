@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { BackButton } from '@/components/onboarding/back-button';
+import { ProgressBar } from '@/components/onboarding/progress-bar';
 
 const SLIDES = [
   {
@@ -42,11 +43,7 @@ export default function IntroScreen() {
         }}
       />
       <View className="flex-1 p-6">
-        <View className="flex-row gap-2 mb-8">
-          {SLIDES.map((_, i) => (
-            <Text key={i}>{i === step ? '●' : '○'}</Text>
-          ))}
-        </View>
+        <ProgressBar current={step + 1} total={SLIDES.length} />
         <View className="flex-1 gap-4">
           <Text className="text-2xl font-bold">{slide.title}</Text>
           <Text>{slide.body}</Text>

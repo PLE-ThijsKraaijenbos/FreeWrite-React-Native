@@ -3,6 +3,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { Pressable, Text, View } from 'react-native';
 
 import { OptionButton } from '@/components/onboarding/option-button';
+import { ProgressBar } from '@/components/onboarding/progress-bar';
 import { GoalValue, OnboardingFormData } from '@/types/onboarding';
 
 const OPTIONS: { label: string; value: GoalValue }[] = [
@@ -22,6 +23,7 @@ export default function GoalScreen() {
 
   return (
     <View className="flex-1 p-6">
+      <ProgressBar current={3} total={6} />
       <View className="flex-1 gap-6 justify-center">
         <Text className="text-2xl font-bold">What is your goal for this journey?</Text>
         <Controller
