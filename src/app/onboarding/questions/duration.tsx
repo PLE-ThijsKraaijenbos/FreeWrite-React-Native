@@ -3,6 +3,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { Pressable, Text, View } from 'react-native';
 
 import { OptionButton } from '@/components/onboarding/option-button';
+import { ProgressBar } from '@/components/onboarding/progress-bar';
 import { DurationValue, OnboardingFormData } from '@/types/onboarding';
 
 const OPTIONS: { label: string; value: DurationValue }[] = [
@@ -24,6 +25,7 @@ export default function DurationScreen() {
 
   return (
     <View className="flex-1 p-6">
+      <ProgressBar current={2} total={6} />
       <View className="flex-1 gap-6 justify-center">
         <View className="gap-2">
           <Text className="text-2xl font-bold">When did it start to feel like a problem?</Text>
