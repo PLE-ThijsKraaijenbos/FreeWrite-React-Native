@@ -13,3 +13,13 @@ export const loginApi = (email: string, password: string) =>
 
 export const registerApi = (email: string, password: string) =>
   authPost('/api/user/register/', { email, password });
+
+export const getProfileApi = async (): Promise<User> => {
+  const res = await client.get<User>('/api/user/profile/');
+  return res.data;
+};
+
+export const patchAvatarUrlApi = async (avatarUrl: string): Promise<User> => {
+  const res = await client.patch<User>('/api/user/profile/', { avatar_url: avatarUrl });
+  return res.data;
+};

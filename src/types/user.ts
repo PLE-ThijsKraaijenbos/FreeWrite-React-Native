@@ -1,3 +1,12 @@
+export type AvatarItem = {
+  id: string;
+  name: string;
+  param_key: string;
+  param_value: string;
+  is_unlocked: boolean;
+  is_equipped: boolean;
+};
+
 export type UserProfile = {
   id: string;
   name: string;

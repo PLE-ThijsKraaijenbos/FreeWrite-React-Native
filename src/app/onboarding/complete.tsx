@@ -4,16 +4,19 @@ import { useFormContext } from 'react-hook-form';
 import { Alert, Pressable, Text, View } from 'react-native';
 
 import { useCompleteProfile } from '@/api/onboarding';
+import { useAuth } from '@/lib/auth-context';
 import { OnboardingFormData } from '@/types/onboarding';
 
 export default function CompleteScreen() {
   const router = useRouter();
   const { mutateAsync, isPending } = useCompleteProfile();
   const { getValues } = useFormContext<OnboardingFormData>();
+  const { updateUser } = useAuth();
 
   const handleStart = async () => {
     try {
-      await mutateAsync(getValues());
+      const user = await mutateAsync(getValues());
+      updateUser(user);
       router.replace('/tabs');
     } catch (err) {
       const message = isAxiosError(err) ? err.response?.data?.detail : undefined;
