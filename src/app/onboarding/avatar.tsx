@@ -8,19 +8,19 @@ import { OnboardingFormData } from '@/types/onboarding';
 
 const BASE = 'https://api.dicebear.com/9.x/avataaars/svg';
 const SHARED_PARAMS =
-  'hairColor=4a312c&clothing=shirtCrewNeck&clothesColor=262e33' +
-  '&eyes=default&eyebrows=default&mouth=default&skinColor=f8d25c';
+  'hairColor[]=4a312c&clothing[]=shirtCrewNeck&clothesColor[]=262e33' +
+  '&eyes[]=default&eyebrows[]=default&mouth[]=default&skinColor[]=f8d25c';
 
 const OPTIONS = [
   {
     label: 'Male',
     value: 'MALE' as const,
-    uri: `${BASE}?top=shortRound&${SHARED_PARAMS}`,
+    uri: `${BASE}?top[]=shortRound&${SHARED_PARAMS}`,
   },
   {
     label: 'Female',
     value: 'FEMALE' as const,
-    uri: `${BASE}?top=straight01&${SHARED_PARAMS}`,
+    uri: `${BASE}?top[]=straight01&${SHARED_PARAMS}`,
   },
 ];
 

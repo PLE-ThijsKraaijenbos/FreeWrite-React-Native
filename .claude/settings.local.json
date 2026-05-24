@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "WebFetch(domain:www.dicebear.com)",
-      "WebFetch(domain:api.dicebear.com)"
+      "WebFetch(domain:api.dicebear.com)",
+      "Bash(xargs grep -l \"AvatarItem\\\\.\")"
     ],
     "additionalDirectories": [
       "C:\\FreeWrite-Django"

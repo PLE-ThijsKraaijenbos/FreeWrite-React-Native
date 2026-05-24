@@ -27,6 +27,7 @@ export default function HomeScreen() {
       <View className="px-4 mt-6 gap-4">
         <CTA label="Pick up where you left off" onPress={() => router.push('/tabs/journey')} />
         <CTA label="Item shop" onPress={() => router.push('/shop')} />
+        <CTA label="Edit avatar" onPress={() => router.push('/avatar-editor')} />
       </View>
     </View>
   );
