@@ -1,11 +1,12 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import { Image, Pressable, Text, TextInput, View } from 'react-native';
+import { Image } from 'expo-image';
+import { Pressable, Text, TextInput, View } from 'react-native';
 
 import { OnboardingFormData } from '@/types/onboarding';
 
-const BASE = 'https://api.dicebear.com/9.x/avataaars/png';
+const BASE = 'https://api.dicebear.com/9.x/avataaars/svg';
 const SHARED_PARAMS =
   'hairColor=4a312c&clothing=shirtCrewNeck&clothesColor=262e33' +
   '&eyes=default&eyebrows=default&mouth=default&skinColor=f8d25c';

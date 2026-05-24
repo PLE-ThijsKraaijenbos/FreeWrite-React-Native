@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-import { loginApi, registerApi } from '@/api/auth';
+import { getProfileApi, loginApi, registerApi } from '@/api/auth';
 import { clearTokens, getAccessToken, saveTokens } from '@/lib/auth-storage';
 import { User } from '@/types/user';
 
@@ -11,6 +11,7 @@ type AuthContextValue = {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: (user: User) => void;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -24,7 +25,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async function bootstrap() {
       try {
         const token = await getAccessToken();
-        if (token) setIsAuthenticated(true);
+        if (token) {
+          const user = await getProfileApi();
+          setUserState(user);
+          setIsAuthenticated(true);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -52,8 +57,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsAuthenticated(false);
   };
 
+  const updateUser = (user: User) => setUserState(user);
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, isLoading, login, register, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
