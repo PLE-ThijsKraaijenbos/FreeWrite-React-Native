@@ -1,10 +1,13 @@
 import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
 import { View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { CTA } from '@/components/cta';
 import { useAuth } from '@/lib/auth-context';
 
 export default function HomeScreen() {
+  const router = useRouter();
   const { user } = useAuth();
   const { height } = useWindowDimensions();
   const { top } = useSafeAreaInsets();
@@ -20,6 +23,9 @@ export default function HomeScreen() {
           style={{ width: avatarSize, height: avatarSize }}
           contentFit="contain"
         />
+      </View>
+      <View className="px-4 mt-6">
+        <CTA label="Pick up where you left off" onPress={() => router.push('/tabs/journey')} />
       </View>
     </View>
   );
