@@ -24,8 +24,9 @@ export default function HomeScreen() {
           contentFit="contain"
         />
       </View>
-      <View className="px-4 mt-6">
+      <View className="px-4 mt-6 gap-4">
         <CTA label="Pick up where you left off" onPress={() => router.push('/tabs/journey')} />
+        <CTA label="Item shop" onPress={() => router.push('/shop')} />
       </View>
     </View>
   );

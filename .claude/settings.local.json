@@ -1,5 +1,9 @@
 {
   "permissions": {
+    "allow": [
+      "WebFetch(domain:www.dicebear.com)",
+      "WebFetch(domain:api.dicebear.com)"
+    ],
     "additionalDirectories": [
       "C:\\FreeWrite-Django"
     ]
