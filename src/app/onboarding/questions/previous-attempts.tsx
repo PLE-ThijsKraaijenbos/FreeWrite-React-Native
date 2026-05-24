@@ -4,6 +4,7 @@ import { Pressable, Text, View } from 'react-native';
 
 import { OptionButton } from '@/components/onboarding/option-button';
 import { ProgressBar } from '@/components/onboarding/progress-bar';
+import { isProfessionalHelpRecommended } from '@/lib/recommend-professional-help';
 import { OnboardingFormData, PreviousAttemptsValue } from '@/types/onboarding';
 
 const OPTIONS: { label: string; value: PreviousAttemptsValue }[] = [
@@ -16,11 +17,17 @@ const OPTIONS: { label: string; value: PreviousAttemptsValue }[] = [
 
 export default function PreviousAttemptsScreen() {
   const router = useRouter();
-  const { control, trigger } = useFormContext<OnboardingFormData>();
+  const { control, trigger, getValues } = useFormContext<OnboardingFormData>();
 
   const handleNext = async () => {
     const valid = await trigger('previousAttempts');
-    if (valid) router.push('/onboarding/avatar');
+    if (!valid) return;
+    const { frequency, duration, previousAttempts } = getValues();
+    if (isProfessionalHelpRecommended({ frequency, duration, previousAttempts })) {
+      router.push('/onboarding/professional-help');
+    } else {
+      router.push('/onboarding/avatar');
+    }
   };
 
   return (
