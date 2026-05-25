@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRef, useState } from 'react';
 
@@ -68,7 +68,7 @@ export default function AvatarEditorScreen() {
   const theme = useTheme();
   const { top } = useSafeAreaInsets();
   const { user, updateUser } = useAuth();
-  const { data: items = [], isLoading } = useAvatarItems();
+  const { data: items = [], isLoading, refetch, isRefetching } = useAvatarItems();
   const { mutateAsync: equip } = useEquipAvatarItem();
   const { mutateAsync: unequip } = useUnequipAvatarItem();
 
@@ -197,7 +197,7 @@ export default function AvatarEditorScreen() {
       </View>
 
       {isLoading ? (
-        <ActivityIndicator style={{ marginTop: 48 }} />
+        <ActivityIndicator className="mt-12" />
       ) : unlockedItems.length === 0 ? (
         <ThemedText className="text-center mt-12" themeColor="textSecondary">
           No items unlocked yet. Visit the shop!
@@ -232,7 +232,9 @@ export default function AvatarEditorScreen() {
             ))}
           </ScrollView>
 
-          <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
+          <ScrollView
+            contentContainerStyle={{ paddingBottom: 32 }}
+            refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}>
             {sections.map((section) => (
               <View key={section.key}>
                 <ThemedText

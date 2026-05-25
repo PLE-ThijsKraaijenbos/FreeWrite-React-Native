@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Alert, Pressable, ScrollView, View } from 'react-native';
+import { Alert, Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState } from 'react';
 
@@ -35,7 +35,7 @@ export default function ShopScreen() {
   const router = useRouter();
   const theme = useTheme();
   const { top } = useSafeAreaInsets();
-  const { data: items = [], isLoading } = useAvatarItems();
+  const { data: items = [], isLoading, refetch, isRefetching } = useAvatarItems();
   const { mutate: unlock } = useUnlockAvatarItem();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
@@ -93,7 +93,9 @@ export default function ShopScreen() {
       ) : items.length === 0 ? (
         <ThemedText className="text-center mt-12" themeColor="textSecondary">No items available.</ThemedText>
       ) : (
-        <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
+        <ScrollView
+          contentContainerStyle={{ paddingBottom: 32 }}
+          refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}>
           {sections.map((section) => (
             <View key={section.key}>
               <ThemedText type="smallBold" themeColor="textSecondary" className="px-4 mt-6 mb-2">
