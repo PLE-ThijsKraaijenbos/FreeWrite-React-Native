@@ -1,14 +1,25 @@
-import { useRouter } from 'expo-router';
-import { Pressable, View } from 'react-native';
+import { RefreshControl, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
+import { usePosts } from '@/hooks/use-community';
+import { Post } from '@/types/community';
+
+function PostCard({ post }: { post: Post }) {
+  const theme = useTheme();
+  return (
+    <View className="rounded-2xl p-4 gap-1" style={{ backgroundColor: theme.backgroundElement }}>
+      <ThemedText type="smallBold">{post.title}</ThemedText>
+      <ThemedText themeColor="textSecondary">{post.body}</ThemedText>
+    </View>
+  );
+}
 
 export default function CommunityScreen() {
-  const router = useRouter();
   const theme = useTheme();
   const { top } = useSafeAreaInsets();
+  const { data: posts = [], isLoading, isError, refetch, isRefetching } = usePosts();
 
   return (
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
@@ -16,15 +27,27 @@ export default function CommunityScreen() {
         <ThemedText type="subtitle">Community</ThemedText>
       </View>
 
-      <View className="px-4 gap-3">
-        <Pressable
-          onPress={() => router.push('/community/posts')}
-          className="rounded-2xl p-4"
-          style={{ backgroundColor: '#F3F4F6' }}>
-          <ThemedText type="smallBold">Posts</ThemedText>
-          <ThemedText themeColor="textSecondary">Browse community posts</ThemedText>
-        </Pressable>
-      </View>
+      {isLoading ? (
+        <ThemedText className="text-center mt-12" themeColor="textSecondary">
+          Loading...
+        </ThemedText>
+      ) : isError ? (
+        <ThemedText className="text-center mt-12" themeColor="textSecondary">
+          Failed to load posts. Please try again.
+        </ThemedText>
+      ) : posts.length === 0 ? (
+        <ThemedText className="text-center mt-12" themeColor="textSecondary">
+          No posts yet.
+        </ThemedText>
+      ) : (
+        <ScrollView
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32, gap: 16 }}
+          refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}>
+          {posts.map((post) => (
+            <PostCard key={post.id} post={post} />
+          ))}
+        </ScrollView>
+      )}
     </View>
   );
 }
