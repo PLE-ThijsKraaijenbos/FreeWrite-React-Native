@@ -1,18 +1,26 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
+import { Alert, Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
-import { useLikePost, usePosts } from '@/hooks/use-community';
+import { useDeletePost, useLikePost, usePosts } from '@/hooks/use-community';
 import { Post } from '@/types/community';
 
 function PostCard({ post }: { post: Post }) {
   const theme = useTheme();
   const router = useRouter();
   const { mutate: toggleLike, isPending } = useLikePost();
+  const { mutate: deletePost } = useDeletePost();
+
+  const confirmDelete = () => {
+    Alert.alert('Delete post', 'Are you sure you want to delete this post?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: () => deletePost(post.id) },
+    ]);
+  };
 
   return (
     <View className="rounded-2xl overflow-hidden" style={{ backgroundColor: theme.backgroundElement }}>
@@ -27,11 +35,16 @@ function PostCard({ post }: { post: Post }) {
         <View className="flex-row items-start justify-between gap-2">
           <ThemedText type="smallBold" style={{ flex: 1 }}>{post.title}</ThemedText>
           {post.is_own_post && (
-            <Pressable
-              onPress={() => router.push({ pathname: '/edit-post', params: { id: post.id, title: post.title, body: post.body, image_url: post.image_url ?? '' } })}
-              hitSlop={8}>
-              <Ionicons name="pencil-outline" size={16} color={theme.textSecondary} />
-            </Pressable>
+            <View className="flex-row gap-3">
+              <Pressable
+                onPress={() => router.push({ pathname: '/edit-post', params: { id: post.id, title: post.title, body: post.body, image_url: post.image_url ?? '' } })}
+                hitSlop={8}>
+                <Ionicons name="pencil-outline" size={16} color={theme.textSecondary} />
+              </Pressable>
+              <Pressable onPress={confirmDelete} hitSlop={8}>
+                <Ionicons name="trash-outline" size={16} color={theme.textSecondary} />
+              </Pressable>
+            </View>
           )}
         </View>
         <ThemedText themeColor="textSecondary">{post.body}</ThemedText>

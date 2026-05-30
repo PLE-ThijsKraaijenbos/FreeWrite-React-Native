@@ -14,6 +14,10 @@ export async function unlikePost(postId: number): Promise<void> {
   await client.delete(`/api/community/posts/${postId}/like/`);
 }
 
+export async function deletePost(postId: number): Promise<void> {
+  await client.delete(`/api/community/posts/${postId}/`);
+}
+
 export async function updatePost(data: UpdatePostInput): Promise<Post> {
   if (data.image) {
     const formData = new FormData();
