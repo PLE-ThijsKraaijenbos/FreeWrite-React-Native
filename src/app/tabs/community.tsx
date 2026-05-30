@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,21 +14,30 @@ function PostCard({ post }: { post: Post }) {
   const { mutate: toggleLike, isPending } = useLikePost();
 
   return (
-    <View className="rounded-2xl p-4 gap-1" style={{ backgroundColor: theme.backgroundElement }}>
-      <ThemedText type="smallBold">{post.title}</ThemedText>
-      <ThemedText themeColor="textSecondary">{post.body}</ThemedText>
-      <View className="flex-row items-center gap-1 mt-1">
-        <Pressable
-          onPress={() => toggleLike({ postId: post.id, liked: post.is_liked_by_user })}
-          disabled={isPending}
-          hitSlop={8}>
-          <Ionicons
-            name={post.is_liked_by_user ? 'heart' : 'heart-outline'}
-            size={20}
-            color={post.is_liked_by_user ? '#ef4444' : theme.textSecondary}
-          />
-        </Pressable>
-        <ThemedText themeColor="textSecondary">{post.likes_count}</ThemedText>
+    <View className="rounded-2xl overflow-hidden" style={{ backgroundColor: theme.backgroundElement }}>
+      {post.image_url && (
+        <Image
+          source={{ uri: post.image_url }}
+          style={{ width: '100%', aspectRatio: 16 / 9 }}
+          contentFit="cover"
+        />
+      )}
+      <View className="p-4 gap-1">
+        <ThemedText type="smallBold">{post.title}</ThemedText>
+        <ThemedText themeColor="textSecondary">{post.body}</ThemedText>
+        <View className="flex-row items-center gap-1 mt-1">
+          <Pressable
+            onPress={() => toggleLike({ postId: post.id, liked: post.is_liked_by_user })}
+            disabled={isPending}
+            hitSlop={8}>
+            <Ionicons
+              name={post.is_liked_by_user ? 'heart' : 'heart-outline'}
+              size={20}
+              color={post.is_liked_by_user ? '#ef4444' : theme.textSecondary}
+            />
+          </Pressable>
+          <ThemedText themeColor="textSecondary">{post.likes_count}</ThemedText>
+        </View>
       </View>
     </View>
   );

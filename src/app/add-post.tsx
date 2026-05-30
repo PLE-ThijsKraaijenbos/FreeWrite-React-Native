@@ -1,38 +1,48 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Image } from 'expo-image';
+import * as ImagePicker from 'expo-image-picker';
 import { Stack, useRouter } from 'expo-router';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, Pressable, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { z } from 'zod';
 
 import { ThemedText } from '@/components/themed-text';
 import { useCreatePost } from '@/hooks/use-community';
 import { useTheme } from '@/hooks/use-theme';
-
-const schema = z.object({
-  title: z.string().min(1, 'Required'),
-  body: z.string().min(1, 'Required'),
-});
-
-type FormData = z.infer<typeof schema>;
+import { addPostSchema, AddPostFormData } from '@/types/community';
 
 export default function AddPostScreen() {
   const router = useRouter();
   const theme = useTheme();
   const { top, bottom } = useSafeAreaInsets();
   const { mutate: createPost, isPending } = useCreatePost();
+  const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>(null);
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
+  } = useForm<AddPostFormData>({
+    resolver: zodResolver(addPostSchema),
     defaultValues: { title: '', body: '' },
   });
 
-  const onSubmit = (data: FormData) => {
-    createPost(data, { onSuccess: () => router.back() });
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [16, 9],
+      quality: 0.8,
+    });
+    if (!result.canceled) setImage(result.assets[0]);
+  };
+
+  const onSubmit = (data: AddPostFormData) => {
+    createPost(
+      { ...data, image: image ?? undefined },
+      { onSuccess: () => router.back() },
+    );
   };
 
   return (
@@ -41,16 +51,18 @@ export default function AddPostScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <Stack.Screen options={{ presentation: 'modal' }} />
 
-      <View
-        style={{ paddingTop: top + 16, paddingBottom: bottom + 16 }}
-        className="flex-1 px-4 gap-6">
+      <View style={{ paddingTop: top + 16 }} className="px-4">
         <View className="flex-row items-center justify-between">
           <ThemedText type="subtitle">New post</ThemedText>
           <Pressable onPress={() => router.back()} hitSlop={8}>
             <ThemedText themeColor="textSecondary">Cancel</ThemedText>
           </Pressable>
         </View>
+      </View>
 
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ padding: 16, paddingBottom: bottom + 24, gap: 24 }}>
         <View className="gap-2">
           <ThemedText type="smallBold">Title</ThemedText>
           <Controller
@@ -73,14 +85,14 @@ export default function AddPostScreen() {
           )}
         </View>
 
-        <View className="flex-1 gap-2">
+        <View className="gap-2">
           <ThemedText type="smallBold">Body</ThemedText>
           <Controller
             control={control}
             name="body"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                style={{ backgroundColor: theme.backgroundElement, color: theme.text, flex: 1 }}
+                style={{ backgroundColor: theme.backgroundElement, color: theme.text, minHeight: 120 }}
                 className="rounded-xl p-3"
                 onBlur={onBlur}
                 onChangeText={onChange}
@@ -98,6 +110,23 @@ export default function AddPostScreen() {
         </View>
 
         <Pressable
+          onPress={pickImage}
+          style={{ backgroundColor: theme.backgroundElement }}
+          className="rounded-xl overflow-hidden">
+          {image ? (
+            <Image
+              source={{ uri: image.uri }}
+              style={{ width: '100%', aspectRatio: 16 / 9 }}
+              contentFit="cover"
+            />
+          ) : (
+            <View className="items-center justify-center p-4">
+              <ThemedText themeColor="textSecondary">Tap to add a photo</ThemedText>
+            </View>
+          )}
+        </Pressable>
+
+        <Pressable
           onPress={handleSubmit(onSubmit)}
           disabled={isPending}
           style={{ backgroundColor: theme.text, opacity: isPending ? 0.5 : 1 }}
@@ -106,7 +135,7 @@ export default function AddPostScreen() {
             {isPending ? 'Posting...' : 'Post'}
           </ThemedText>
         </Pressable>
-      </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
