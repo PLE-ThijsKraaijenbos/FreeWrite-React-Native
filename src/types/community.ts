@@ -14,8 +14,20 @@ export type Post = {
   image_url: string | null;
   likes_count: number;
   is_liked_by_user: boolean;
+  is_own_post: boolean;
   author_name: string;
   created_at: string;
+};
+
+export type UpdatePostInput = {
+  id: number;
+  title?: string;
+  body?: string;
+  image?: {
+    uri: string;
+    fileName?: string | null;
+    mimeType?: string | null;
+  };
 };
 
 export type CreatePostInput = {

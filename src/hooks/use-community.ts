@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { createPost, getPosts, likePost, unlikePost } from '@/api/community';
+import { createPost, getPosts, likePost, unlikePost, updatePost } from '@/api/community';
 import { Post } from '@/types/community';
 
 export function usePosts() {
@@ -37,5 +37,17 @@ export function useCreatePost() {
   return useMutation({
     mutationFn: createPost,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['community', 'posts'] }),
+  });
+}
+
+export function useUpdatePost() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updatePost,
+    onSuccess: (updatedPost) => {
+      queryClient.setQueryData<Post[]>(['community', 'posts'], (old) =>
+        old?.map((p) => (p.id === updatedPost.id ? updatedPost : p))
+      );
+    },
   });
 }

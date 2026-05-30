@@ -1,4 +1,4 @@
-import { CreatePostInput, Post } from '@/types/community';
+import { CreatePostInput, Post, UpdatePostInput } from '@/types/community';
 import client from './client';
 
 export async function getPosts(): Promise<Post[]> {
@@ -12,6 +12,19 @@ export async function likePost(postId: number): Promise<void> {
 
 export async function unlikePost(postId: number): Promise<void> {
   await client.delete(`/api/community/posts/${postId}/like/`);
+}
+
+export async function updatePost(data: UpdatePostInput): Promise<Post> {
+  if (data.image) {
+    const formData = new FormData();
+    if (data.title) formData.append('title', data.title);
+    if (data.body) formData.append('body', data.body);
+    formData.append('image', { uri: data.image.uri, name: data.image.fileName ?? 'photo.jpg', type: data.image.mimeType ?? 'image/jpeg' } as any);
+    const res = await client.patch<Post>(`/api/community/posts/${data.id}/`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+    return res.data;
+  }
+  const res = await client.patch<Post>(`/api/community/posts/${data.id}/`, { title: data.title, body: data.body });
+  return res.data;
 }
 
 export async function createPost(data: CreatePostInput): Promise<void> {

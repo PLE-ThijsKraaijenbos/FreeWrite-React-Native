@@ -11,6 +11,7 @@ import { Post } from '@/types/community';
 
 function PostCard({ post }: { post: Post }) {
   const theme = useTheme();
+  const router = useRouter();
   const { mutate: toggleLike, isPending } = useLikePost();
 
   return (
@@ -23,7 +24,16 @@ function PostCard({ post }: { post: Post }) {
         />
       )}
       <View className="p-4 gap-1">
-        <ThemedText type="smallBold">{post.title}</ThemedText>
+        <View className="flex-row items-start justify-between gap-2">
+          <ThemedText type="smallBold" style={{ flex: 1 }}>{post.title}</ThemedText>
+          {post.is_own_post && (
+            <Pressable
+              onPress={() => router.push({ pathname: '/edit-post', params: { id: post.id, title: post.title, body: post.body, image_url: post.image_url ?? '' } })}
+              hitSlop={8}>
+              <Ionicons name="pencil-outline" size={16} color={theme.textSecondary} />
+            </Pressable>
+          )}
+        </View>
         <ThemedText themeColor="textSecondary">{post.body}</ThemedText>
         <View className="flex-row items-center gap-1 mt-1">
           <Pressable
