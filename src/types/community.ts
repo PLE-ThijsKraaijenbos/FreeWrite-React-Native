@@ -7,3 +7,8 @@ export type Post = {
   author_name: string;
   created_at: string;
 };
+
+export type CreatePostInput = {
+  title: string;
+  body: string;
+};

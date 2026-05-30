@@ -1,6 +1,7 @@
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
@@ -34,6 +35,7 @@ function PostCard({ post }: { post: Post }) {
 
 export default function CommunityScreen() {
   const theme = useTheme();
+  const router = useRouter();
   const { top } = useSafeAreaInsets();
   const { data: posts = [], isLoading, isError, refetch, isRefetching } = usePosts();
 
@@ -57,13 +59,21 @@ export default function CommunityScreen() {
         </ThemedText>
       ) : (
         <ScrollView
-          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32, gap: 16 }}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 96, gap: 16 }}
           refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}>
           {posts.map((post) => (
             <PostCard key={post.id} post={post} />
           ))}
         </ScrollView>
       )}
+
+      <Pressable
+        onPress={() => router.push('/add-post')}
+        style={{ backgroundColor: theme.text, bottom: 16 }}
+        className="absolute left-4 right-4 rounded-2xl p-4 items-center flex-row justify-center gap-2">
+        <Ionicons name="add" size={20} color={theme.background} />
+        <ThemedText type="smallBold" style={{ color: theme.background }}>New post</ThemedText>
+      </Pressable>
     </View>
   );
 }

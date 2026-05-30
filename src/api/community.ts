@@ -1,4 +1,4 @@
-import { Post } from '@/types/community';
+import { CreatePostInput, Post } from '@/types/community';
 import client from './client';
 
 export async function getPosts(): Promise<Post[]> {
@@ -12,4 +12,8 @@ export async function likePost(postId: number): Promise<void> {
 
 export async function unlikePost(postId: number): Promise<void> {
   await client.delete(`/api/community/posts/${postId}/like/`);
+}
+
+export async function createPost(data: CreatePostInput): Promise<void> {
+  await client.post('/api/community/posts/', data);
 }
