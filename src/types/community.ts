@@ -19,18 +19,7 @@ export type Post = {
   created_at: string;
 };
 
-export type UpdatePostInput = {
-  id: number;
-  title?: string;
-  body?: string;
-  image?: {
-    uri: string;
-    fileName?: string | null;
-    mimeType?: string | null;
-  };
-};
-
-export type CreatePostInput = {
+type PostInputFields = {
   title: string;
   body: string;
   image?: {
@@ -39,3 +28,6 @@ export type CreatePostInput = {
     mimeType?: string | null;
   };
 };
+
+export type CreatePostInput = PostInputFields;
+export type UpdatePostInput = { id: number } & Partial<PostInputFields>;
