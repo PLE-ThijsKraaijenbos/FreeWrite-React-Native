@@ -4,6 +4,7 @@ import { View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CTA } from '@/components/cta';
+import { ThemedText } from '@/components/themed-text';
 import { useAuth } from '@/lib/auth-context';
 
 export default function HomeScreen() {
@@ -25,6 +26,7 @@ export default function HomeScreen() {
         />
       </View>
       <View className="px-4 mt-6 gap-4">
+        <ThemedText type="smallBold">{user?.profile?.coins ?? 0} coins</ThemedText>
         <CTA label="Pick up where you left off" onPress={() => router.push('/tabs/journey')} />
         <CTA label="Item shop" onPress={() => router.push('/shop')} />
         <CTA label="Edit avatar" onPress={() => router.push('/avatar-editor')} />
