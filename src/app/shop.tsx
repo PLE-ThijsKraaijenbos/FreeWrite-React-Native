@@ -12,6 +12,7 @@ function chunk<T>(arr: T[], size: number): T[][] {
 import { useAvatarItems, useUnlockAvatarItem } from '@/api/avatar-items';
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
+import { useAuth } from '@/lib/auth-context';
 import { AvatarItem } from '@/types/user';
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -35,6 +36,7 @@ export default function ShopScreen() {
   const router = useRouter();
   const theme = useTheme();
   const { top } = useSafeAreaInsets();
+  const { user } = useAuth();
   const { data: items = [], isLoading, refetch, isRefetching } = useAvatarItems();
   const { mutate: unlock } = useUnlockAvatarItem();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -53,9 +55,17 @@ export default function ShopScreen() {
 
   function handlePress(item: AvatarItem) {
     if (item.is_unlocked) return;
-    Alert.alert(`Unlock ${item.name}?`, 'This item is free.', [
+    const message = item.price > 0
+      ? `This item costs ${item.price} coins. You have ${user?.profile?.coins ?? 0} coins.`
+      : 'This item is free.';
+    Alert.alert(`Unlock ${item.name}?`, message, [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Unlock', onPress: () => unlock(item.id) },
+      {
+        text: 'Unlock',
+        onPress: () => unlock(item.id, {
+          onError: () => Alert.alert('Purchase failed', "You don't have enough coins."),
+        }),
+      },
     ]);
   }
 
@@ -143,6 +153,9 @@ function ItemSquare({ item, onPress }: { item: AvatarItem; onPress: () => void }
         borderColor: theme.backgroundSelected,
       })}>
       <ThemedText type="small" className="text-center">{item.name}</ThemedText>
+      {item.price > 0 && (
+        <ThemedText type="small" themeColor="textSecondary">{item.price} coins</ThemedText>
+      )}
     </Pressable>
   );
 }

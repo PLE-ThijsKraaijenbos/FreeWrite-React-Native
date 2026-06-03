@@ -3,6 +3,7 @@ export type AvatarItem = {
   name: string;
   param_key: string;
   param_value: string;
+  price: number;
   is_unlocked: boolean;
   is_equipped: boolean;
 };
