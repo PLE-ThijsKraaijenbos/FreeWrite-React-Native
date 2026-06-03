@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { useAuth } from '@/lib/auth-context';
 import { AvatarItem } from '@/types/user';
 import client from './client';
+import { getProfileApi } from './auth';
 
 async function getAvatarItems(): Promise<AvatarItem[]> {
   const res = await client.get<AvatarItem[]>('/api/user/avatar/items/');
@@ -26,9 +28,14 @@ export function useAvatarItems() {
 
 export function useUnlockAvatarItem() {
   const queryClient = useQueryClient();
+  const { updateUser } = useAuth();
   return useMutation({
     mutationFn: unlockAvatarItem,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['avatar-items'] }),
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ['avatar-items'] });
+      const updatedUser = await getProfileApi();
+      updateUser(updatedUser);
+    },
   });
 }
 
