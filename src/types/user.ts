@@ -17,6 +17,7 @@ export type UserProfile = {
   usage_times: string;
   frequency: string;
   previous_attempts: string;
+  coins: number;
 };
 
 export type User = {
