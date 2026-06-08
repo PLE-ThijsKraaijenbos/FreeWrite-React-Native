@@ -13,6 +13,13 @@ export async function startStep(progressId: string): Promise<JourneyStepProgress
   return res.data;
 }
 
+export async function bookmarkStep(progressId: string): Promise<JourneyStepProgress> {
+  const res = await client.patch<JourneyStepProgress>(
+    `/api/journey/progress/${progressId}/bookmark/`,
+  );
+  return res.data;
+}
+
 export async function completeStep(
   progressId: string,
   responseData: unknown,

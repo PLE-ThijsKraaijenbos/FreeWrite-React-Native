@@ -4,7 +4,7 @@ import { ActivityIndicator, Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
-import { useJourney, useStartStep } from '@/hooks/use-journey';
+import { useBookmarkStep, useJourney, useStartStep } from '@/hooks/use-journey';
 import { useTheme } from '@/hooks/use-theme';
 
 export default function JourneyStepScreen() {
@@ -14,6 +14,7 @@ export default function JourneyStepScreen() {
   const { top, bottom } = useSafeAreaInsets();
   const { data, isLoading } = useJourney();
   const { mutate: startStep, isPending: isStarting, isError: isStartError } = useStartStep();
+  const { mutate: toggleBookmark, isPending: isBookmarking } = useBookmarkStep();
 
   const progress = data?.step_progresses.find((p) => p.id === progressId);
 
@@ -43,9 +44,12 @@ export default function JourneyStepScreen() {
 
   return (
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
-      <View style={{ paddingTop: top + 16 }} className="px-4 pb-3">
+      <View style={{ paddingTop: top + 16 }} className="px-4 pb-3 flex-row items-center justify-between">
         <Pressable onPress={() => router.back()}>
           <ThemedText themeColor="textSecondary">← Back</ThemedText>
+        </Pressable>
+        <Pressable onPress={() => toggleBookmark(progressId)} disabled={isBookmarking}>
+          <ThemedText className="text-2xl">{progress.bookmarked ? '★' : '☆'}</ThemedText>
         </Pressable>
       </View>
 
