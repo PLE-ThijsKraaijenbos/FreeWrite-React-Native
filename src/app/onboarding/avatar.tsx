@@ -4,6 +4,8 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { Image } from 'expo-image';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
+import { CTAButton } from '@/components/cta';
+
 import { OnboardingFormData } from '@/types/onboarding';
 
 const BASE = 'https://api.dicebear.com/9.x/avataaars/svg';
@@ -73,9 +75,7 @@ export default function AvatarScreen() {
           ))}
         </View>
       </View>
-      <Pressable onPress={handleNext} className="p-4 border items-center">
-        <Text>Next</Text>
-      </Pressable>
+      <CTAButton label="Next" onPress={handleNext} />
     </View>
   );
 }

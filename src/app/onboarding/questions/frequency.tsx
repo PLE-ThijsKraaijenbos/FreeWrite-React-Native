@@ -1,6 +1,8 @@
 import { useRouter } from 'expo-router';
 import { Controller, useFormContext } from 'react-hook-form';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
+
+import { CTAButton } from '@/components/cta';
 
 import { OptionButton } from '@/components/onboarding/option-button';
 import { FormProgress } from '@/components/onboarding/FormProgress';
@@ -44,9 +46,7 @@ export default function FrequencyScreen() {
           )}
         />
       </View>
-      <Pressable onPress={handleNext} className="p-4 border items-center">
-        <Text>Next</Text>
-      </Pressable>
+      <CTAButton label="Next" onPress={handleNext} />
     </View>
   );
 }

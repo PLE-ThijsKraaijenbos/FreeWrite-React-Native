@@ -3,6 +3,8 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Pressable, Text, TextInput, View } from 'react-native';
 
+import { CTAButton } from '@/components/cta';
+
 import { useAuth } from '@/lib/auth-context';
 
 export default function LoginScreen() {
@@ -60,12 +62,7 @@ export default function LoginScreen() {
       <Pressable onPress={() => router.back()} className="items-center p-4">
         <Text className="text-blue-500">Create account instead</Text>
       </Pressable>
-      <Pressable
-        onPress={handleLogin}
-        disabled={isPending}
-        className="p-4 border items-center disabled:opacity-50">
-        <Text>{isPending ? 'Logging in…' : 'Log in'}</Text>
-      </Pressable>
+      <CTAButton label={isPending ? 'Logging in…' : 'Log in'} disabled={isPending} onPress={handleLogin} />
     </View>
   );
 }

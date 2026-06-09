@@ -1,7 +1,9 @@
 import { isAxiosError } from 'axios';
 import { useRouter } from 'expo-router';
 import { useFormContext } from 'react-hook-form';
-import { Alert, Pressable, Text, View } from 'react-native';
+import { Alert, Text, View } from 'react-native';
+
+import { CTAButton } from '@/components/cta';
 
 import { useCompleteProfile } from '@/api/onboarding';
 import { useAuth } from '@/lib/auth-context';
@@ -33,12 +35,7 @@ export default function CompleteScreen() {
           rewriting it at your own pace, on your own terms.
         </Text>
       </View>
-      <Pressable
-        onPress={handleStart}
-        disabled={isPending}
-        className="p-4 border items-center disabled:opacity-50">
-        <Text>{isPending ? 'Setting up…' : 'Start my journey'}</Text>
-      </Pressable>
+      <CTAButton label={isPending ? 'Setting up…' : 'Start my journey'} disabled={isPending} onPress={handleStart} />
     </View>
   );
 }

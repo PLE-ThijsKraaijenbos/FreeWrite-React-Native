@@ -6,6 +6,7 @@ import { Alert, Pressable, Text, TextInput, View } from 'react-native';
 
 import { useAuth } from '@/lib/auth-context';
 import { OnboardingFormData } from '@/types/onboarding';
+import { CTAButton } from '@/components/cta';
 
 export default function AccountScreen() {
   const router = useRouter();
@@ -81,12 +82,7 @@ export default function AccountScreen() {
       <Pressable onPress={() => router.push('/onboarding/login')} className="items-center p-4">
         <Text className="text-blue-500">Log in instead</Text>
       </Pressable>
-      <Pressable
-        onPress={handleNext}
-        disabled={isPending}
-        className="p-4 border items-center disabled:opacity-50">
-        <Text>{isPending ? 'Creating account…' : 'Continue'}</Text>
-      </Pressable>
+      <CTAButton label={isPending ? 'Creating account…' : 'Continue'} disabled={isPending} onPress={handleNext} />
     </View>
   );
 }

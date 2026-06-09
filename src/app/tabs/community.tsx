@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { Alert, Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { CTAButton } from '@/components/cta';
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
 import { useDeletePost, useLikePost, usePosts } from '@/hooks/use-community';
@@ -100,13 +101,9 @@ export default function CommunityScreen() {
         </ScrollView>
       )}
 
-      <Pressable
-        onPress={() => router.push('/add-post')}
-        style={{ backgroundColor: theme.text, bottom: 16 }}
-        className="absolute left-4 right-4 rounded-2xl p-4 items-center flex-row justify-center gap-2">
-        <Ionicons name="add" size={20} color={theme.background} />
-        <ThemedText type="smallBold" style={{ color: theme.background }}>New post</ThemedText>
-      </Pressable>
+      <View className="absolute left-4 right-4" style={{ bottom: 16 }}>
+        <CTAButton label="New post" onPress={() => router.push('/add-post')} />
+      </View>
     </View>
   );
 }

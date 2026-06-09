@@ -52,8 +52,8 @@ export function Navigation({ activeTab, onTabPress, variant = 'icon-only' }: Nav
             {isActive ? (
               <LinearGradient
                 colors={['#7DDFC2', '#3DC8A0']}
-                start={{ x: 1, y: 0 }}
-                end={{ x: 0, y: 0 }}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
                 className="w-14 h-14 rounded-xl items-center justify-center"
                 style={{
                   elevation: 3,

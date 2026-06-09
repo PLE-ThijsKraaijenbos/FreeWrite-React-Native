@@ -1,5 +1,7 @@
 import { useRouter } from 'expo-router';
-import { Linking, Pressable, Text, View } from 'react-native';
+import { Linking, Text, View } from 'react-native';
+
+import { CTAButton } from '@/components/cta';
 
 export default function ProfessionalHelpScreen() {
   const router = useRouter();
@@ -16,16 +18,8 @@ export default function ProfessionalHelpScreen() {
         </Text>
       </View>
       <View className="gap-3">
-        <Pressable
-          onPress={() => Linking.openURL('https://findahelpline.com/')}
-          className="p-4 border items-center">
-          <Text>Find help</Text>
-        </Pressable>
-        <Pressable
-          onPress={() => router.push('/onboarding/avatar')}
-          className="p-4 border items-center">
-          <Text>Continue</Text>
-        </Pressable>
+        <CTAButton label="Find help" onPress={() => Linking.openURL('https://findahelpline.com/')} />
+        <CTAButton label="Continue" onPress={() => router.push('/onboarding/avatar')} />
       </View>
     </View>
   );

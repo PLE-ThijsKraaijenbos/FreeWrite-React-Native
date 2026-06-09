@@ -1,6 +1,8 @@
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
+
+import { CTAButton } from '@/components/cta';
 
 import { BackButton } from '@/components/onboarding/back-button';
 import { FormProgress } from '@/components/onboarding/FormProgress';
@@ -48,9 +50,7 @@ export default function IntroScreen() {
           <Text className="text-2xl font-bold">{slide.title}</Text>
           <Text>{slide.body}</Text>
         </View>
-        <Pressable onPress={handleNext} className="p-4 border items-center">
-          <Text>{isLast ? "Let's go" : 'Next'}</Text>
-        </Pressable>
+        <CTAButton label={isLast ? "Let's go" : 'Next'} onPress={handleNext} />
       </View>
     </>
   );
