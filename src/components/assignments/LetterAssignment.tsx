@@ -6,15 +6,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TextInput } from '@/components/TextInput';
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
-import { JournalContent } from '@/types/journey';
+import { LetterContent } from '@/types/journey';
 
 type Props = {
-  content: JournalContent;
+  content: LetterContent;
   responseData?: unknown;
   onComplete: (responseData: unknown) => void;
 };
 
-export function JournalAssignment({ content, responseData, onComplete }: Props) {
+export function LetterAssignment({ content, responseData, onComplete }: Props) {
   const router = useRouter();
   const theme = useTheme();
   const { top, bottom } = useSafeAreaInsets();
@@ -42,8 +42,8 @@ export function JournalAssignment({ content, responseData, onComplete }: Props) 
           </View>
         ) : (
           <TextInput
-            variant="journal"
-            placeholder="Reflect on your thoughts, feelings and experiences..."
+            variant="letter"
+            placeholder="Write your letter here..."
             value={text}
             onChangeText={setText}
           />

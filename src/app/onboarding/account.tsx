@@ -2,11 +2,12 @@ import { isAxiosError } from 'axios';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import { Alert, Pressable, Text, TextInput, View } from 'react-native';
+import { Alert, Pressable, Text, View } from 'react-native';
 
+import { CTAButton } from '@/components/cta';
+import { TextInput } from '@/components/TextInput';
 import { useAuth } from '@/lib/auth-context';
 import { OnboardingFormData } from '@/types/onboarding';
-import { CTAButton } from '@/components/cta';
 
 export default function AccountScreen() {
   const router = useRouter();
@@ -40,13 +41,12 @@ export default function AccountScreen() {
       <View className="flex-1 gap-6 justify-center">
         <Text className="text-2xl font-bold">Create your account</Text>
         <View className="gap-2">
-          <Text>Email</Text>
           <Controller
             control={control}
             name="email"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                className="border p-3"
+                label="Email"
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
@@ -60,13 +60,12 @@ export default function AccountScreen() {
           {errors.email && <Text className="text-red-500">{errors.email.message}</Text>}
         </View>
         <View className="gap-2">
-          <Text>Password</Text>
           <Controller
             control={control}
             name="password"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                className="border p-3"
+                label="Password"
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}

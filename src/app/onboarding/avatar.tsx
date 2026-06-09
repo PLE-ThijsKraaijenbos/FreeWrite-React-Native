@@ -2,10 +2,10 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { Image } from 'expo-image';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import { CTAButton } from '@/components/cta';
-
+import { TextInput } from '@/components/TextInput';
 import { OnboardingFormData } from '@/types/onboarding';
 
 const BASE = 'https://api.dicebear.com/9.x/avataaars/svg';
@@ -46,18 +46,20 @@ export default function AvatarScreen() {
       <View className="flex-1 gap-6 justify-center">
         <View className="gap-2">
           <Text className="text-2xl font-bold">Choose your character</Text>
-          <Text>Pick one of the default avatars and give yourself a name. Throughout your journey you will unlock different items which you can equip on your avatar.</Text>
+          <Text>
+            Pick one of the default avatars and give yourself a name. Throughout your journey you
+            will unlock different items which you can equip on your avatar.
+          </Text>
         </View>
         <Controller
           control={control}
           name="name"
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
+              placeholder="Your name"
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
-              placeholder="Your name"
-              className="p-4 border border-gray-400"
             />
           )}
         />

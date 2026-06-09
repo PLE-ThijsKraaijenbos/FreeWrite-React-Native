@@ -4,9 +4,10 @@ import * as ImagePicker from 'expo-image-picker';
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { TextInput } from '@/components/TextInput';
 import { ThemedText } from '@/components/themed-text';
 import { useCreatePost } from '@/hooks/use-community';
 import { useTheme } from '@/hooks/use-theme';
@@ -70,13 +71,10 @@ export default function AddPostScreen() {
             name="title"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                style={{ backgroundColor: theme.backgroundElement, color: theme.text }}
-                className="rounded-xl p-3"
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
                 placeholder="What's on your mind?"
-                placeholderTextColor={theme.textSecondary}
               />
             )}
           />
@@ -92,15 +90,13 @@ export default function AddPostScreen() {
             name="body"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                style={{ backgroundColor: theme.backgroundElement, color: theme.text, minHeight: 120 }}
-                className="rounded-xl p-3"
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
                 placeholder="Share your thoughts..."
-                placeholderTextColor={theme.textSecondary}
                 multiline
                 textAlignVertical="top"
+                style={{ minHeight: 120 }}
               />
             )}
           />
