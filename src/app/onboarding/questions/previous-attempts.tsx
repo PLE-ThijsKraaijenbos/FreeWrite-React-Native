@@ -3,7 +3,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { Pressable, Text, View } from 'react-native';
 
 import { OptionButton } from '@/components/onboarding/option-button';
-import { ProgressBar } from '@/components/onboarding/progress-bar';
+import { FormProgress } from '@/components/onboarding/FormProgress';
 import { isProfessionalHelpRecommended } from '@/lib/recommend-professional-help';
 import { OnboardingFormData, PreviousAttemptsValue } from '@/types/onboarding';
 
@@ -32,7 +32,7 @@ export default function PreviousAttemptsScreen() {
 
   return (
     <View className="flex-1 p-6">
-      <ProgressBar current={6} total={6} />
+      <FormProgress filled={6} length={6} />
       <View className="flex-1 gap-6 justify-center">
         <Text className="text-2xl font-bold">Have you tried to cut back or quit before?</Text>
         <Controller

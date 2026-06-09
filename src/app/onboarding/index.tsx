@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { BackButton } from '@/components/onboarding/back-button';
-import { ProgressBar } from '@/components/onboarding/progress-bar';
+import { FormProgress } from '@/components/onboarding/FormProgress';
 
 const SLIDES = [
   {
@@ -43,7 +43,7 @@ export default function IntroScreen() {
         }}
       />
       <View className="flex-1 p-6">
-        <ProgressBar current={step + 1} total={SLIDES.length} />
+        <FormProgress filled={step + 1} length={SLIDES.length} />
         <View className="flex-1 gap-4">
           <Text className="text-2xl font-bold">{slide.title}</Text>
           <Text>{slide.body}</Text>

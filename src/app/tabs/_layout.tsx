@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 
-import { Navigation, type TabKey } from '@/components/navigation';
+import { Navigation, type TabKey } from '@/components/Navigation';
 
 export default function TabsLayout() {
   return (
