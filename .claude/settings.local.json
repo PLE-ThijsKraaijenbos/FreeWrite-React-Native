@@ -3,7 +3,13 @@
     "allow": [
       "WebFetch(domain:www.dicebear.com)",
       "WebFetch(domain:api.dicebear.com)",
-      "Bash(xargs grep -l \"AvatarItem\\\\.\")"
+      "Bash(xargs grep -l \"AvatarItem\\\\.\")",
+      "Bash(Get-ChildItem -Path \"C:\\\\FreeWrite-React-Native\" -Recurse)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(npx tsc *)",
+      "Bash(npx expo *)",
+      "Bash(npm i *)",
+      "Bash(node -e ' *)"
     ],
     "additionalDirectories": [
       "C:\\FreeWrite-Django"
