@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { CTAButton } from '@/components/cta';
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
 import { ChoiceStoryContent } from '@/types/journey';
@@ -114,11 +115,7 @@ export function ChoiceStoryAssignment({ content, responseData, onComplete }: Pro
 
       {!isReadOnly && isTerminal && (
         <View className="px-4" style={{ paddingBottom: bottom + 24 }}>
-          <Pressable
-            onPress={handleFinish}
-            className="items-center justify-center py-4 rounded-xl bg-primary">
-            <ThemedText className="text-white font-bold">Finish</ThemedText>
-          </Pressable>
+          <CTAButton label="Finish" onPress={handleFinish} />
         </View>
       )}
     </View>

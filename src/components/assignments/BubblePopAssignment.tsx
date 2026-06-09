@@ -4,6 +4,7 @@ import { Pressable, ScrollView, View } from 'react-native';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { CTAButton } from '@/components/cta';
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
 import { BubblePopContent } from '@/types/journey';
@@ -88,11 +89,7 @@ export function BubblePopAssignment({ content, responseData, onComplete }: Props
 
       {!isReadOnly && allPopped && (
         <View className="px-4" style={{ paddingBottom: bottom + 24 }}>
-          <Pressable
-            onPress={() => onComplete({ popped_all: true })}
-            className="items-center justify-center py-4 rounded-xl bg-green-500">
-            <ThemedText className="text-white font-bold">Done</ThemedText>
-          </Pressable>
+          <CTAButton label="Done" onPress={() => onComplete({ popped_all: true })} />
         </View>
       )}
     </View>

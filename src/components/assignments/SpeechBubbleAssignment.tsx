@@ -12,6 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { CTAButton } from '@/components/cta';
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
 import { SpeechBubbleContent } from '@/types/journey';
@@ -233,11 +234,7 @@ export function SpeechBubbleAssignment({ content, responseData, onComplete }: Pr
 
           <View className="px-4 flex-row gap-3" style={{ paddingBottom: bottom + 24 }}>
             {isDone ? (
-              <Pressable
-                onPress={handleSubmit}
-                className="flex-1 items-center justify-center py-4 rounded-xl bg-primary">
-                <ThemedText className="text-white font-bold">Submit</ThemedText>
-              </Pressable>
+              <CTAButton label="Submit" onPress={handleSubmit} />
             ) : (
               <>
                 <Pressable

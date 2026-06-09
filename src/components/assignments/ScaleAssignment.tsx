@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { CTAButton } from '@/components/cta';
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
 import { ScaleContent } from '@/types/journey';
@@ -69,11 +70,7 @@ export function ScaleAssignment({ content, responseData, onComplete }: Props) {
 
       {!isReadOnly && (
         <View className="px-4" style={{ paddingBottom: bottom + 24 }}>
-          <Pressable
-            onPress={() => onComplete({ value })}
-            className="items-center justify-center py-4 rounded-xl bg-primary">
-            <ThemedText className="text-white font-bold">Submit</ThemedText>
-          </Pressable>
+          <CTAButton label="Submit" onPress={() => onComplete({ value })} />
         </View>
       )}
     </View>

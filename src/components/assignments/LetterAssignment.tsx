@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { CTAButton } from '@/components/cta';
 import { TextInput } from '@/components/TextInput';
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
@@ -52,15 +53,7 @@ export function LetterAssignment({ content, responseData, onComplete }: Props) {
 
       {!saved?.text && (
         <View className="px-4" style={{ paddingBottom: bottom + 24 }}>
-          <Pressable
-            onPress={() => onComplete({ text })}
-            disabled={isEmpty}
-            className="items-center justify-center py-4 rounded-xl"
-            style={{ backgroundColor: isEmpty ? theme.backgroundElement : '#3c87f7' }}>
-            <ThemedText style={{ color: isEmpty ? theme.textSecondary : '#ffffff', fontWeight: '700' }}>
-              Submit
-            </ThemedText>
-          </Pressable>
+          <CTAButton label="Submit" onPress={() => onComplete({ text })} disabled={isEmpty} />
         </View>
       )}
     </View>

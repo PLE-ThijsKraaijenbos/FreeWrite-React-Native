@@ -7,6 +7,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { CTAButton } from '@/components/cta';
 import { TextInput } from '@/components/TextInput';
 import { ThemedText } from '@/components/themed-text';
 import { useCreatePost } from '@/hooks/use-community';
@@ -122,15 +123,11 @@ export default function AddPostScreen() {
           )}
         </Pressable>
 
-        <Pressable
+        <CTAButton
+          label={isPending ? 'Posting...' : 'Post'}
           onPress={handleSubmit(onSubmit)}
           disabled={isPending}
-          style={{ backgroundColor: theme.text, opacity: isPending ? 0.5 : 1 }}
-          className="rounded-2xl p-4 items-center">
-          <ThemedText type="smallBold" style={{ color: theme.background }}>
-            {isPending ? 'Posting...' : 'Post'}
-          </ThemedText>
-        </Pressable>
+        />
       </ScrollView>
     </KeyboardAvoidingView>
   );
