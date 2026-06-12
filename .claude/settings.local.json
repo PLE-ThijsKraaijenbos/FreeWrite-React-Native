@@ -9,7 +9,10 @@
       "Bash(npx tsc *)",
       "Bash(npx expo *)",
       "Bash(npm i *)",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(export PGPASSWORD=freewrite)",
+      "Bash(psql -h localhost -p 5432 -U freewrite -d freewrite -c \"SELECT id, \\\\\"order\\\\\", title FROM phase ORDER BY \\\\\"order\\\\\";\")",
+      "Bash(psql -h localhost -p 5432 -U freewrite -d freewrite -c \"SELECT id, phase_id, \\\\\"order\\\\\", assignment_type, title FROM journey_step ORDER BY \\\\\"order\\\\\" LIMIT 20;\")"
     ],
     "additionalDirectories": [
       "C:\\FreeWrite-Django"
