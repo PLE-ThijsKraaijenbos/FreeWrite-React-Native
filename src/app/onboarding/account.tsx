@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { Alert, Pressable, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CTAButton } from '@/components/cta';
 import { TextInput } from '@/components/TextInput';
@@ -19,6 +20,7 @@ export default function AccountScreen() {
     getValues,
     formState: { errors },
   } = useFormContext<OnboardingFormData>();
+  const { bottom } = useSafeAreaInsets();
 
   const handleNext = async () => {
     const valid = await trigger(['email', 'password']);
@@ -37,7 +39,7 @@ export default function AccountScreen() {
   };
 
   return (
-    <View className="flex-1 p-6">
+    <View className="flex-1 p-6" style={{ paddingBottom: bottom + 24 }}>
       <View className="flex-1 gap-6 justify-center">
         <Text className="text-2xl font-bold">Create your account</Text>
         <View className="gap-2">

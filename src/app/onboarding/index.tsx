@@ -1,6 +1,7 @@
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CTAButton } from '@/components/cta';
 
@@ -25,6 +26,7 @@ const SLIDES = [
 export default function IntroScreen() {
   const router = useRouter();
   const [step, setStep] = useState(0);
+  const { bottom } = useSafeAreaInsets();
   const slide = SLIDES[step];
   const isLast = step === SLIDES.length - 1;
 
@@ -44,7 +46,7 @@ export default function IntroScreen() {
             step > 0 ? <BackButton onPress={() => setStep(step - 1)} /> : null,
         }}
       />
-      <View className="flex-1 p-6">
+      <View className="flex-1 p-6" style={{ paddingBottom: bottom + 24 }}>
         <FormProgress filled={step + 1} length={SLIDES.length} />
         <View className="flex-1 gap-4">
           <Text className="text-2xl font-bold">{slide.title}</Text>

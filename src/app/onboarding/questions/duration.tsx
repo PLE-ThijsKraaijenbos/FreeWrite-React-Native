@@ -1,24 +1,26 @@
 import { useRouter } from 'expo-router';
 import { Controller, useFormContext } from 'react-hook-form';
 import { Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CTAButton } from '@/components/cta';
 
-import { OptionButton } from '@/components/onboarding/option-button';
+import { SelectOption } from '@/components/SelectOption';
 import { FormProgress } from '@/components/onboarding/FormProgress';
 import { DurationValue, OnboardingFormData } from '@/types/onboarding';
 
 const OPTIONS: { label: string; value: DurationValue }[] = [
-  { label: 'Less than 6 months', value: '<6M' },
-  { label: '6–12 months', value: '6-12M' },
-  { label: '1–2 years', value: '1-2Y' },
-  { label: '2+ years', value: '>2Y' },
+  { label: 'Less than 6 months ago', value: '<6M' },
+  { label: '6-12 months ago', value: '6-12M' },
+  { label: '1-2 years ago', value: '1-2Y' },
+  { label: 'More than 2 years ago', value: '>2Y' },
   { label: "I'm not sure", value: 'NOT_SURE' },
 ];
 
 export default function DurationScreen() {
   const router = useRouter();
   const { control, trigger } = useFormContext<OnboardingFormData>();
+  const { bottom } = useSafeAreaInsets();
 
   const handleNext = async () => {
     const valid = await trigger('duration');
@@ -26,7 +28,7 @@ export default function DurationScreen() {
   };
 
   return (
-    <View className="flex-1 p-6">
+    <View className="flex-1 p-6" style={{ paddingBottom: bottom + 24 }}>
       <FormProgress filled={2} length={6} />
       <View className="flex-1 gap-6 justify-center">
         <View className="gap-2">
@@ -39,7 +41,7 @@ export default function DurationScreen() {
           render={({ field: { onChange, value } }) => (
             <View className="gap-2">
               {OPTIONS.map((opt) => (
-                <OptionButton
+                <SelectOption
                   key={opt.value}
                   label={opt.label}
                   selected={value === opt.value}
@@ -50,7 +52,7 @@ export default function DurationScreen() {
           )}
         />
       </View>
-      <CTAButton label="Next" onPress={handleNext} />
+      <CTAButton label="Continue" onPress={handleNext} />
     </View>
   );
 }

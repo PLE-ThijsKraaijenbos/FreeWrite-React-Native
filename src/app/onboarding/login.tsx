@@ -2,6 +2,7 @@ import { isAxiosError } from 'axios';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Pressable, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CTAButton } from '@/components/cta';
 import { TextInput } from '@/components/TextInput';
@@ -10,6 +11,7 @@ import { useAuth } from '@/lib/auth-context';
 export default function LoginScreen() {
   const router = useRouter();
   const { login } = useAuth();
+  const { bottom } = useSafeAreaInsets();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isPending, setIsPending] = useState(false);
@@ -32,7 +34,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <View className="flex-1 p-6">
+    <View className="flex-1 p-6" style={{ paddingBottom: bottom + 24 }}>
       <View className="flex-1 gap-6 justify-center">
         <Text className="text-2xl font-bold">Welcome back</Text>
         <TextInput

@@ -1,10 +1,11 @@
 import { useRouter } from 'expo-router';
 import { Controller, useFormContext } from 'react-hook-form';
 import { Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CTAButton } from '@/components/cta';
 
-import { OptionButton } from '@/components/onboarding/option-button';
+import { SelectOption } from '@/components/SelectOption';
 import { FormProgress } from '@/components/onboarding/FormProgress';
 import { GoalValue, OnboardingFormData } from '@/types/onboarding';
 
@@ -17,6 +18,7 @@ const OPTIONS: { label: string; value: GoalValue }[] = [
 export default function GoalScreen() {
   const router = useRouter();
   const { control, trigger } = useFormContext<OnboardingFormData>();
+  const { bottom } = useSafeAreaInsets();
 
   const handleNext = async () => {
     const valid = await trigger('goal');
@@ -24,7 +26,7 @@ export default function GoalScreen() {
   };
 
   return (
-    <View className="flex-1 p-6">
+    <View className="flex-1 p-6" style={{ paddingBottom: bottom + 24 }}>
       <FormProgress filled={3} length={6} />
       <View className="flex-1 gap-6 justify-center">
         <Text className="text-2xl font-bold">What is your goal for this journey?</Text>
@@ -34,7 +36,7 @@ export default function GoalScreen() {
           render={({ field: { onChange, value } }) => (
             <View className="gap-2">
               {OPTIONS.map((opt) => (
-                <OptionButton
+                <SelectOption
                   key={opt.value}
                   label={opt.label}
                   selected={value === opt.value}
@@ -45,7 +47,7 @@ export default function GoalScreen() {
           )}
         />
       </View>
-      <CTAButton label="Next" onPress={handleNext} />
+      <CTAButton label="Continue" onPress={handleNext} />
     </View>
   );
 }

@@ -2,6 +2,7 @@ import { isAxiosError } from 'axios';
 import { useRouter } from 'expo-router';
 import { useFormContext } from 'react-hook-form';
 import { Alert, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CTAButton } from '@/components/cta';
 
@@ -13,6 +14,7 @@ export default function CompleteScreen() {
   const router = useRouter();
   const { mutateAsync, isPending } = useCompleteProfile();
   const { getValues } = useFormContext<OnboardingFormData>();
+  const { bottom } = useSafeAreaInsets();
   const { updateUser } = useAuth();
 
   const handleStart = async () => {
@@ -27,7 +29,7 @@ export default function CompleteScreen() {
   };
 
   return (
-    <View className="flex-1 p-6">
+    <View className="flex-1 p-6" style={{ paddingBottom: bottom + 24 }}>
       <View className="flex-1 gap-4 justify-center">
         <Text className="text-2xl font-bold">{"You're all set!"}</Text>
         <Text>

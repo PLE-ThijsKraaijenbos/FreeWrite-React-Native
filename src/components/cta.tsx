@@ -12,8 +12,11 @@ const textShadow = StyleSheet.create({
     textShadowColor: 'rgba(0,0,0,0.50)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 2,
-    paddingBottom: 4,
   },
+  // Give the drop shadow room at the bottom of the frame so it isn't clipped,
+  // then pull the layout back up by the same amount (net-zero, keeps the label
+  // visually centred in the button).
+  room: { paddingBottom: 4, marginBottom: -4 },
 });
 
 type CTAButtonProps = {
@@ -41,7 +44,7 @@ export function CTAButton({ label, variant = 'primary', size = 'default', disabl
         className={`flex-row justify-center items-center rounded-lg shadow-[0px_3px_3px_0px_rgba(0,0,0,0.25)] ${small ? 'px-4 py-2' : 'py-3'}`}
       >
         <Text
-          style={colored ? textShadow.white : undefined}
+          style={colored ? [textShadow.white, textShadow.room] : undefined}
           className={`text-center ${small ? 'text-h3 font-heading-bold' : 'flex-1 text-h2 font-heading-medium'} ${colored ? 'text-neutral-100' : 'text-neutral-600'}`}
         >
           {label}
@@ -76,7 +79,7 @@ export function CTALarge({ label, gradient, icon, onPress }: CTALargeProps) {
         {...TOP_BOTTOM}
         className="flex-row items-center gap-2.5 pl-3 pr-4 py-2 rounded-lg shadow-[0px_3px_3px_0px_rgba(0,0,0,0.25)]"
       >
-        <Text style={textShadow.white} className="flex-1 text-center text-neutral-100 text-h3 font-heading-bold">
+        <Text style={[textShadow.white, textShadow.room]} className="flex-1 text-center text-neutral-100 text-h3 font-heading-bold">
           {label}
         </Text>
         {icon && (
@@ -109,7 +112,7 @@ export function DoubleCTA({ variant = 'default', leftLabel, rightLabel, onPressL
           className="py-3 rounded-lg shadow-[0px_3px_3px_0px_rgba(0,0,0,0.25)] justify-center items-center"
         >
           <Text
-            style={secondary ? textShadow.white : undefined}
+            style={secondary ? [textShadow.white, textShadow.room] : undefined}
             className={`flex-1 text-center text-h3 font-heading-bold ${secondary ? 'text-neutral-100' : 'text-neutral-600'}`}
           >
             {leftLabel}
@@ -122,7 +125,7 @@ export function DoubleCTA({ variant = 'default', leftLabel, rightLabel, onPressL
           {...TOP_BOTTOM}
           className="py-3 rounded-lg shadow-[0px_3px_3px_0px_rgba(0,0,0,0.25)] justify-center items-center"
         >
-          <Text style={textShadow.white} className="flex-1 text-center text-neutral-100 text-h3 font-heading-bold">
+          <Text style={[textShadow.white, textShadow.room]} className="flex-1 text-center text-neutral-100 text-h3 font-heading-bold">
             {rightLabel}
           </Text>
         </LinearGradient>

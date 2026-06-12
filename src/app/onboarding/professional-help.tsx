@@ -1,13 +1,15 @@
 import { useRouter } from 'expo-router';
 import { Linking, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CTAButton } from '@/components/cta';
 
 export default function ProfessionalHelpScreen() {
   const router = useRouter();
+  const { bottom } = useSafeAreaInsets();
 
   return (
-    <View className="flex-1 p-6">
+    <View className="flex-1 p-6" style={{ paddingBottom: bottom + 24 }}>
       <View className="flex-1 gap-4 justify-center">
         <Text className="text-2xl font-bold">Let's make sure you're supported.</Text>
         <Text>
@@ -18,7 +20,7 @@ export default function ProfessionalHelpScreen() {
         </Text>
       </View>
       <View className="gap-3">
-        <CTAButton label="Find help" onPress={() => Linking.openURL('https://findahelpline.com/')} />
+        <CTAButton label="Find help" variant="secondary" onPress={() => Linking.openURL('https://findahelpline.com/')} />
         <CTAButton label="Continue" onPress={() => router.push('/onboarding/avatar')} />
       </View>
     </View>
