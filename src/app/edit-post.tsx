@@ -1,14 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { CommunityForm } from '@/components/CommunityForm';
 import { CTAButton } from '@/components/cta';
-import { TextInput } from '@/components/TextInput';
 import { ThemedText } from '@/components/themed-text';
 import { useUpdatePost } from '@/hooks/use-community';
 import { useTheme } from '@/hooks/use-theme';
@@ -75,63 +74,12 @@ export default function EditPostScreen() {
       <ScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ padding: 16, paddingBottom: bottom + 24, gap: 24 }}>
-        <View className="gap-2">
-          <ThemedText type="smallBold">Title</ThemedText>
-          <Controller
-            control={control}
-            name="title"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                placeholder="What's on your mind?"
-              />
-            )}
-          />
-          {errors.title && (
-            <ThemedText style={{ color: '#ef4444' }}>{errors.title.message}</ThemedText>
-          )}
-        </View>
-
-        <View className="gap-2">
-          <ThemedText type="smallBold">Body</ThemedText>
-          <Controller
-            control={control}
-            name="body"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                placeholder="Share your thoughts..."
-                multiline
-                textAlignVertical="top"
-                style={{ minHeight: 120 }}
-              />
-            )}
-          />
-          {errors.body && (
-            <ThemedText style={{ color: '#ef4444' }}>{errors.body.message}</ThemedText>
-          )}
-        </View>
-
-        <Pressable
-          onPress={pickImage}
-          style={{ backgroundColor: theme.backgroundElement }}
-          className="rounded-xl overflow-hidden">
-          {currentImageUri ? (
-            <Image
-              source={{ uri: currentImageUri }}
-              style={{ width: '100%', aspectRatio: 16 / 9 }}
-              contentFit="cover"
-            />
-          ) : (
-            <View className="items-center justify-center p-4">
-              <ThemedText themeColor="textSecondary">Tap to add a photo</ThemedText>
-            </View>
-          )}
-        </Pressable>
+        <CommunityForm
+          control={control}
+          errors={errors}
+          imageUri={currentImageUri}
+          onPickImage={pickImage}
+        />
 
         <CTAButton
           label={isPending ? 'Saving...' : 'Save'}
