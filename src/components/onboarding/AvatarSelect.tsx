@@ -3,6 +3,8 @@ import { cssInterop } from 'nativewind';
 import { Image } from 'expo-image';
 import { Pressable, View } from 'react-native';
 
+import { shadows } from '@/constants/shadows';
+
 cssInterop(LinearGradient, { className: 'style' });
 
 interface AvatarOption<T extends string = string> {
@@ -32,6 +34,7 @@ export function AvatarSelect<T extends string = string>({
             }
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 1 }}
+            style={shadows.drop}
             className="items-center gap-3 p-4 rounded-lg"
           >
             <Image source={{ uri: opt.uri }} style={{ width: 120, height: 120 }} />

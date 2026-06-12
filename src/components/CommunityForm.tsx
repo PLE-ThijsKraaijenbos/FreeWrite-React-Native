@@ -5,6 +5,7 @@ import { Control, Controller, FieldErrors } from 'react-hook-form';
 import { Pressable, Text, View } from 'react-native';
 
 import { TextInput } from '@/components/TextInput';
+import { shadows } from '@/constants/shadows';
 import { AddPostFormData } from '@/types/community';
 
 cssInterop(LinearGradient, { className: 'style' });
@@ -22,7 +23,8 @@ export function CommunityForm({ control, errors, imageUri, onPickImage }: Props)
       colors={['#EBEBE6', '#FAFAF8']}
       start={{ x: 1, y: 0 }}
       end={{ x: 0, y: 0 }}
-      className="rounded-lg shadow-[0px_3px_3px_0px_rgba(0,0,0,0.25)] overflow-hidden">
+      style={shadows.drop}
+      className="rounded-lg overflow-hidden">
       <Pressable onPress={onPickImage} className="bg-neutral-200 items-center justify-center overflow-hidden">
         {imageUri ? (
           <Image source={{ uri: imageUri }} style={{ width: '100%', aspectRatio: 16 / 9 }} contentFit="cover" />

@@ -1,5 +1,7 @@
 import { Pressable, Text, View } from 'react-native';
 
+import { shadows } from '@/constants/shadows';
+
 interface AuthSelectionProps {
   selected: 'register' | 'login';
   onSelectRegister: () => void;
@@ -9,7 +11,7 @@ interface AuthSelectionProps {
 export function AuthSelection({ selected, onSelectRegister, onSelectLogin }: AuthSelectionProps) {
   return (
     <View className="mb-6">
-      <View className="w-full rounded-lg bg-neutral-200 flex-row overflow-hidden shadow-sm">
+      <View style={shadows.drop} className="w-full rounded-lg bg-neutral-200 flex-row overflow-hidden">
         <Pressable
           onPress={onSelectRegister}
           className={`flex-1 items-center justify-center py-4 ${selected === 'register' ? 'bg-secondary-400' : ''}`}

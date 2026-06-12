@@ -11,6 +11,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import { shadows } from '@/constants/shadows';
+
 const SWIPE_THRESHOLD = 80;
 
 type Props = {
@@ -59,7 +61,7 @@ export function SwipeOption({ text, onSwipeLeft, onSwipeRight }: Props) {
       <Animated.View
         style={cardStyle}
         className="absolute inset-0 z-10 flex-row items-center justify-center">
-        <View className="flex-1 items-center justify-center self-stretch rounded-lg bg-neutral-100 p-8 shadow-[0px_3px_3px_0px_rgba(0,0,0,0.25)]">
+        <View style={shadows.drop} className="flex-1 items-center justify-center self-stretch rounded-lg bg-neutral-100 p-8">
           <Text className="max-w-[210px] text-center font-heading-medium text-h2 text-neutral-600">
             {text}
           </Text>

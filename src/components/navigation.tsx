@@ -4,6 +4,8 @@ import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { shadows } from '@/constants/shadows';
+
 import ChatBubbleIcon from '@/assets/icons/chat-bubble.svg';
 import ChatBubbleOutlineIcon from '@/assets/icons/chat-bubble-outline.svg';
 import HomeIcon from '@/assets/icons/home.svg';
@@ -54,14 +56,8 @@ export function Navigation({ activeTab, onTabPress, variant = 'icon-only' }: Nav
                 colors={['#7DDFC2', '#3DC8A0']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 0, y: 1 }}
+                style={shadows.drop}
                 className="w-14 h-14 rounded-xl items-center justify-center"
-                style={{
-                  elevation: 3,
-                  shadowColor: '#000',
-                  shadowOffset: { width: 0, height: 3 },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 3,
-                }}
               >
                 <Icon width={28} height={28} color="#FAFAF8" />
               </LinearGradient>

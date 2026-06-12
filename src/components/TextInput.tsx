@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { NativeSyntheticEvent, TextInput as RNTextInput, TextInputContentSizeChangeEventData, TextInputProps, Text, View } from 'react-native';
 
 import PostageStampIcon from '@/assets/icons/postage-stamp.svg';
+import { shadows } from '@/constants/shadows';
 
 type Props = TextInputProps & {
   variant?: 'default' | 'letter' | 'journal';
@@ -26,7 +27,7 @@ export function TextInput({ variant = 'default', label, placeholder, value, onCh
 
   if (variant === 'letter') {
     return (
-      <View className="rounded-lg shadow-[0px_3px_3px_0px_rgba(0,0,0,0.25)] bg-secondary-100 border-4 border-secondary-300 p-4">
+      <View style={shadows.drop} className="rounded-lg bg-secondary-100 border-4 border-secondary-300 p-4">
         <View className="flex-row justify-between items-start pb-2">
           <Text className="text-body font-body text-neutral-600">Dear me,</Text>
           <PostageStampIcon width={24} height={24} />
@@ -76,8 +77,8 @@ export function TextInput({ variant = 'default', label, placeholder, value, onCh
   if (variant === 'journal') {
     return (
       <View
-        className="rounded-lg shadow-[0px_3px_3px_0px_rgba(0,0,0,0.25)] bg-neutral-100 border-2 border-neutral-400"
-        style={{ paddingVertical: 8 }}>
+        className="rounded-lg bg-neutral-100 border-2 border-neutral-400"
+        style={[shadows.drop, { paddingVertical: 8 }]}>
         <View style={{ position: 'relative', minHeight: minLines * JOURNAL_LINE_HEIGHT }}>
           {/* Horizontal ruled lines + hole-punch dots */}
           {Array.from({ length: numLines }).map((_, i) => (
@@ -161,7 +162,8 @@ export function TextInput({ variant = 'default', label, placeholder, value, onCh
     <View>
       {label && <Text className="text-body font-body-bold text-neutral-500 pb-1">{label}</Text>}
       <View
-        className={`rounded-lg shadow-[0px_3px_3px_0px_rgba(0,0,0,0.25)] bg-neutral-200 flex-row ${multiline ? 'items-start' : 'items-center'} px-4 py-3`}>
+        style={shadows.drop}
+        className={`rounded-lg bg-neutral-200 flex-row ${multiline ? 'items-start' : 'items-center'} px-4 py-3`}>
         <RNTextInput
           multiline={multiline}
           {...rest}

@@ -3,6 +3,8 @@ import { cssInterop } from 'nativewind';
 import { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { shadows } from '@/constants/shadows';
+
 cssInterop(LinearGradient, { className: 'style' });
 
 const TOP_BOTTOM = { start: { x: 0, y: 0 }, end: { x: 0, y: 1 } };
@@ -41,7 +43,8 @@ export function CTAButton({ label, variant = 'primary', size = 'default', disabl
       <LinearGradient
         colors={colors}
         {...TOP_BOTTOM}
-        className={`flex-row justify-center items-center rounded-lg shadow-[0px_3px_3px_0px_rgba(0,0,0,0.25)] ${small ? 'px-4 py-2' : 'py-3'}`}
+        style={shadows.drop}
+        className={`flex-row justify-center items-center rounded-lg ${small ? 'px-4 py-2' : 'py-3'}`}
       >
         <Text
           style={colored ? [textShadow.white, textShadow.room] : undefined}
@@ -77,7 +80,8 @@ export function CTALarge({ label, gradient, icon, onPress }: CTALargeProps) {
       <LinearGradient
         colors={ctaLargeGradients[gradient]}
         {...TOP_BOTTOM}
-        className="flex-row items-center gap-2.5 pl-3 pr-4 py-2 rounded-lg shadow-[0px_3px_3px_0px_rgba(0,0,0,0.25)]"
+        style={shadows.drop}
+        className="flex-row items-center gap-2.5 pl-3 pr-4 py-2 rounded-lg"
       >
         <Text style={[textShadow.white, textShadow.room]} className="flex-1 text-center text-neutral-100 text-h3 font-heading-bold">
           {label}
@@ -109,7 +113,8 @@ export function DoubleCTA({ variant = 'default', leftLabel, rightLabel, onPressL
         <LinearGradient
           colors={secondary ? ['#FCAA88', '#F47D4E'] : ['#FAFAF8', '#EBEBE6']}
           {...TOP_BOTTOM}
-          className="py-3 rounded-lg shadow-[0px_3px_3px_0px_rgba(0,0,0,0.25)] justify-center items-center"
+          style={shadows.drop}
+          className="py-3 rounded-lg justify-center items-center"
         >
           <Text
             style={secondary ? [textShadow.white, textShadow.room] : undefined}
@@ -123,7 +128,8 @@ export function DoubleCTA({ variant = 'default', leftLabel, rightLabel, onPressL
         <LinearGradient
           colors={['#7DDFC2', '#3DC8A0']}
           {...TOP_BOTTOM}
-          className="py-3 rounded-lg shadow-[0px_3px_3px_0px_rgba(0,0,0,0.25)] justify-center items-center"
+          style={shadows.drop}
+          className="py-3 rounded-lg justify-center items-center"
         >
           <Text style={[textShadow.white, textShadow.room]} className="flex-1 text-center text-neutral-100 text-h3 font-heading-bold">
             {rightLabel}

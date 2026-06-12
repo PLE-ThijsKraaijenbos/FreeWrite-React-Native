@@ -2,6 +2,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { cssInterop } from 'nativewind';
 import { Pressable, StyleSheet, Text } from 'react-native';
 
+import { shadows } from '@/constants/shadows';
+
 cssInterop(LinearGradient, { className: 'style' });
 
 const TOP_BOTTOM = { start: { x: 0, y: 0 }, end: { x: 0, y: 1 } };
@@ -35,7 +37,8 @@ export function SelectOption({ label, subtitle, size = 'default', selected = fal
       <LinearGradient
         colors={selected ? ['#FCAA88', '#F47D4E'] : ['#EBEBE6', '#FAFAF8']}
         {...(selected ? TOP_BOTTOM : RIGHT_LEFT)}
-        className="min-h-[70px] px-4 py-3 rounded-lg shadow-[0px_3px_3px_0px_rgba(0,0,0,0.25)] justify-center items-center gap-1"
+        style={shadows.drop}
+        className="min-h-[70px] px-4 py-3 rounded-lg justify-center items-center gap-1"
       >
         <Text
           style={[shadow.room, selected && shadow.text]}
