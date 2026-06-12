@@ -1,12 +1,12 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import { Image } from 'expo-image';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CTAButton } from '@/components/cta';
 import { TextInput } from '@/components/TextInput';
+import { AvatarSelect } from '@/components/onboarding/AvatarSelect';
 import { OnboardingFormData } from '@/types/onboarding';
 
 const BASE = 'https://api.dicebear.com/9.x/avataaars/svg';
@@ -65,19 +65,7 @@ export default function AvatarScreen() {
             />
           )}
         />
-        <View className="flex-row gap-4">
-          {OPTIONS.map((opt) => (
-            <Pressable
-              key={opt.value}
-              onPress={() => handleSelect(opt)}
-              className={`flex-1 items-center p-4 gap-3 border-2 ${
-                selected === opt.value ? 'border-black' : 'border-gray-200'
-              }`}>
-              <Image source={{ uri: opt.uri }} style={{ width: 120, height: 120 }} />
-              <Text className="font-medium">{opt.label}</Text>
-            </Pressable>
-          ))}
-        </View>
+        <AvatarSelect options={OPTIONS} selected={selected} onSelect={handleSelect} />
       </View>
       <CTAButton label="Next" onPress={handleNext} />
     </View>
