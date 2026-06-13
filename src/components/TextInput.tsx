@@ -163,7 +163,7 @@ export function TextInput({ variant = 'default', label, placeholder, value, onCh
       {label && <Text className="text-body font-body-bold text-neutral-500 pb-1">{label}</Text>}
       <View
         style={shadows.drop}
-        className={`rounded-lg bg-neutral-200 flex-row ${multiline ? 'items-start' : 'items-center'} px-4 py-3`}>
+        className={`rounded-lg bg-neutral-200 flex-row ${multiline ? 'items-start' : 'items-center'} px-4 py-2`}>
         <RNTextInput
           multiline={multiline}
           {...rest}
