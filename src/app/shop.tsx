@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Alert, FlatList, RefreshControl, View } from 'react-native';
+import { FlatList, RefreshControl, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -9,13 +9,14 @@ function chunk<T>(arr: T[], size: number): T[][] {
   return rows;
 }
 
-import { useAvatarItems, useUnlockAvatarItem } from '@/api/avatar-items';
+import { useAvatarItems } from '@/api/avatar-items';
 import { AvatarDisplay } from '@/components/AvatarDisplay';
 import { AvatarItemCard } from '@/components/AvatarItemCard';
 import { BackButton } from '@/components/BackButton';
 import { CategorySelect } from '@/components/CategorySelect';
+import { CoinBalance } from '@/components/CoinBalance';
 import { ThemedText } from '@/components/themed-text';
-import { previewItemUrl, toSvgUrl } from '@/lib/avatar';
+import { parseAvatarParams, prerequisiteHint, previewItemUrl, toSvgUrl } from '@/lib/avatar';
 import { useTheme } from '@/hooks/use-theme';
 import { useAuth } from '@/lib/auth-context';
 import { AvatarItem } from '@/types/user';
@@ -48,7 +49,6 @@ export default function ShopScreen() {
   const { top } = useSafeAreaInsets();
   const { user } = useAuth();
   const { data: items = [], isLoading, refetch, isRefetching } = useAvatarItems();
-  const { mutate: unlock } = useUnlockAvatarItem();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   // The last-tapped item, previewed on the avatar in the pane above the grid.
   const [previewItem, setPreviewItem] = useState<AvatarItem | null>(null);
@@ -87,22 +87,9 @@ export default function ShopScreen() {
     (item: AvatarItem) => {
       setPreviewItem(item);
       if (item.is_unlocked) return;
-      const message =
-        item.price > 0
-          ? `This item costs ${item.price} coins. You have ${user?.profile?.coins ?? 0} coins.`
-          : 'This item is free.';
-      Alert.alert(`Unlock ${item.name}?`, message, [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Unlock',
-          onPress: () =>
-            unlock(item.id, {
-              onError: () => Alert.alert('Purchase failed', "You don't have enough coins."),
-            }),
-        },
-      ]);
+      router.push(`/unlock-item?itemId=${item.id}`);
     },
-    [unlock, user?.profile?.coins]
+    [router]
   );
 
   const renderRow = useCallback(
@@ -116,9 +103,19 @@ export default function ShopScreen() {
       }
       return (
         <View className="flex-row w-full">
-          {row.items.map((item) => (
-            <AvatarItemCard key={item.id} item={item} baseUrl={baseUrl} onPress={handlePress} />
-          ))}
+          {row.items.map((item) => {
+            const hint = baseUrl ? prerequisiteHint(item.param_key, parseAvatarParams(baseUrl)) : null;
+            return (
+              <AvatarItemCard
+                key={item.id}
+                item={item}
+                baseUrl={baseUrl}
+                hint={hint}
+                disabled={item.is_unlocked || !!hint}
+                onPress={handlePress}
+              />
+            );
+          })}
           {row.items.length === 1 && <View className="w-1/2" />}
         </View>
       );
@@ -132,9 +129,11 @@ export default function ShopScreen() {
         uri={previewItem ? previewItemUrl(baseUrl, previewItem) : toSvgUrl(baseUrl)}
       />
 
-      <View className="absolute left-4 z-10" style={{ top: top + 16 }}>
+      <View className="absolute left-4 z-10" style={{ top: top + 4 }}>
         <BackButton onPress={() => router.back()} />
       </View>
+
+      <CoinBalance coins={user?.profile?.coins ?? 0} />
 
       <CategorySelect
         categories={allSections.map((s) => ({ id: s.key, label: s.title }))}

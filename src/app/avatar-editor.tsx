@@ -1,42 +1,27 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, RefreshControl, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRef, useState } from 'react';
 
 import { useAvatarItems, useEquipAvatarItem, useUnequipAvatarItem } from '@/api/avatar-items';
 import { patchAvatarUrlApi } from '@/api/auth';
 import { AvatarDisplay } from '@/components/AvatarDisplay';
+import { AvatarItemCard } from '@/components/AvatarItemCard';
 import { BackButton } from '@/components/BackButton';
 import { CategorySelect } from '@/components/CategorySelect';
+import { CoinBalance } from '@/components/CoinBalance';
 import { CTAButton } from '@/components/cta';
 import { ThemedText } from '@/components/themed-text';
-import { shadows } from '@/constants/shadows';
 import {
   applyItem,
   buildAvatarUrl,
   parseAvatarParams,
   prerequisiteHint,
-  previewItemUrl,
   PROBABILITY_COMPANION,
 } from '@/lib/avatar';
 import { useAuth } from '@/lib/auth-context';
 import { useTheme } from '@/hooks/use-theme';
 import { AvatarItem } from '@/types/user';
-
-// Small PNG thumbnail (raster bitmap) for each item card.
-const THUMB_SIZE = 128;
-
-// White, shadowed label for the equipped (secondary-gradient) card — same
-// treatment as the colored CTA buttons, for readability over the orange.
-const itemStyles = StyleSheet.create({
-  selectedLabel: {
-    color: '#FAFAF8',
-    textShadowColor: 'rgba(0,0,0,0.50)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 2,
-  },
-});
 
 const CATEGORY_LABELS: Record<string, string> = {
   accessories: 'Accessories',
@@ -160,9 +145,11 @@ export default function AvatarEditorScreen() {
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
       <AvatarDisplay uri={buildAvatarUrl(params)} />
 
-      <View className="absolute left-4 z-10" style={{ top: top + 16 }}>
+      <View className="absolute left-4 z-10" style={{ top: top + 4 }}>
         <BackButton onPress={() => router.back()} />
       </View>
+
+      <CoinBalance coins={user?.profile?.coins ?? 0} onPress={() => router.push('/shop')} />
 
       <View className="flex-1">
         {isLoading ? (
@@ -193,16 +180,21 @@ export default function AvatarEditorScreen() {
                   </ThemedText>
                   {chunk(section.items, 2).map((row, i) => (
                     <View key={i} className="flex-row w-full">
-                      {row.map((item) => (
-                        <EditorItem
-                          key={item.id}
-                          item={item}
-                          active={isActive(item)}
-                          hint={prerequisiteHint(item.param_key, params)}
-                          baseUrl={user?.profile?.avatar_url}
-                          onPress={() => toggle(item)}
-                        />
-                      ))}
+                      {row.map((item) => {
+                        const active = isActive(item);
+                        const hint = prerequisiteHint(item.param_key, params);
+                        return (
+                          <AvatarItemCard
+                            key={item.id}
+                            item={item}
+                            variant={active ? 'equipped' : 'unequipped'}
+                            hint={active ? null : hint}
+                            disabled={!active && !!hint}
+                            baseUrl={user?.profile?.avatar_url}
+                            onPress={toggle}
+                          />
+                        );
+                      })}
                       {row.length === 1 && <View className="w-1/2" />}
                     </View>
                   ))}
@@ -222,75 +214,5 @@ export default function AvatarEditorScreen() {
         <CTAButton label={saving ? 'Saving…' : 'Save'} onPress={handleSave} disabled={saving} />
       </View>
     </View>
-  );
-}
-
-
-function EditorItem({
-  item,
-  active,
-  hint,
-  baseUrl,
-  onPress,
-}: {
-  item: AvatarItem;
-  active: boolean;
-  // When set, the item's prerequisite isn't equipped yet — lock it and explain.
-  hint: string | null;
-  // The saved avatar the item is previewed on (stable, so toggling doesn't
-  // reload every thumbnail).
-  baseUrl?: string;
-  onPress: () => void;
-}) {
-  const theme = useTheme();
-  // Don't lock an already-active item, so it can always be deselected.
-  const locked = !!hint && !active;
-
-  return (
-    <Pressable
-      onPress={onPress}
-      disabled={locked}
-      className="w-1/2 p-2"
-      style={{ opacity: locked ? 0.4 : 1 }}>
-      {/* Outer view carries the drop shadow; inner view clips to rounded corners
-          (shadow + overflow-hidden on the same view is clipped on iOS). Locked
-          cards drop the shadow — elevation under opacity:0.4 renders a heavy halo. */}
-      <View
-        className="rounded-lg"
-        style={[
-          shadows.drop,
-          locked && { elevation: 0, shadowOpacity: 0 },
-          { backgroundColor: theme.backgroundElement },
-        ]}>
-        <View className="overflow-hidden rounded-lg">
-          {/* Equipped items get the secondary light->dark gradient instead of a border. */}
-          {active && (
-            <LinearGradient
-              colors={['#FCAA88', '#F47D4E']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0, y: 1 }}
-              style={StyleSheet.absoluteFill}
-            />
-          )}
-          <View className="items-center gap-0.5 px-2 pt-2 pb-1">
-            <ThemedText
-              type="small"
-              className="text-center"
-              style={active ? itemStyles.selectedLabel : undefined}>
-              {item.name}
-            </ThemedText>
-            {locked && (
-              <ThemedText type="small" themeColor="textSecondary" className="text-center">
-                {hint}
-              </ThemedText>
-            )}
-          </View>
-          <AvatarDisplay
-            uri={previewItemUrl(baseUrl, item, { png: true, size: THUMB_SIZE })}
-            chrome={false}
-          />
-        </View>
-      </View>
-    </Pressable>
   );
 }

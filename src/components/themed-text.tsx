@@ -5,11 +5,11 @@ import { Fonts, ThemeColor } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 export type ThemedTextProps = TextProps & {
-  type?: 'default' | 'title' | 'small' | 'smallBold' | 'subtitle' | 'link' | 'linkPrimary' | 'code';
+  type?: 'h1' | 'h2' | 'h3' | 'body-lg' | 'body' | 'body-sm' | 'code' | 'title' | 'subtitle' | 'default' | 'small' | 'smallBold';
   themeColor?: ThemeColor;
 };
 
-export function ThemedText({ style, type = 'default', themeColor, ...rest }: ThemedTextProps) {
+export function ThemedText({ style, type = 'body', themeColor, ...rest }: ThemedTextProps) {
   const theme = useTheme();
 
   return (
@@ -23,43 +23,65 @@ export function ThemedText({ style, type = 'default', themeColor, ...rest }: The
 cssInterop(ThemedText, { className: 'style' });
 
 const styles = StyleSheet.create({
-  small: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '500',
+  h1: {
+    fontSize: 28,
+    lineHeight: 32,
+    fontFamily: 'Unbounded_700Bold',
   },
-  smallBold: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '700',
+  h2: {
+    fontSize: 24,
+    lineHeight: 28,
+    fontFamily: 'Unbounded_700Bold',
   },
-  default: {
-    fontSize: 16,
+  h3: {
+    fontSize: 20,
     lineHeight: 24,
-    fontWeight: '500',
+    fontFamily: 'Unbounded_700Bold',
   },
-  title: {
-    fontSize: 48,
-    fontWeight: '600',
-    lineHeight: 52,
-  },
-  subtitle: {
-    fontSize: 32,
-    lineHeight: 44,
-    fontWeight: '600',
-  },
-  link: {
+  'body-lg': {
+    fontSize: 24,
     lineHeight: 30,
-    fontSize: 14,
+    fontFamily: 'Inter_400Regular',
   },
-  linkPrimary: {
-    lineHeight: 30,
-    fontSize: 14,
-    color: '#3c87f7',
+  body: {
+    fontSize: 20,
+    lineHeight: 26,
+    fontFamily: 'Inter_400Regular',
+  },
+  'body-sm': {
+    fontSize: 16,
+    lineHeight: 22,
+    fontFamily: 'Inter_400Regular',
   },
   code: {
     fontFamily: Fonts.mono,
     fontWeight: Platform.OS === 'android' ? '700' : '500',
     fontSize: 12,
+  },
+  // Compatibility mappings
+  title: {
+    fontSize: 28,
+    lineHeight: 32,
+    fontFamily: 'Unbounded_700Bold',
+  },
+  subtitle: {
+    fontSize: 24,
+    lineHeight: 28,
+    fontFamily: 'Unbounded_700Bold',
+  },
+  default: {
+    fontSize: 20,
+    lineHeight: 26,
+    fontFamily: 'Inter_400Regular',
+  },
+  small: {
+    fontSize: 16,
+    lineHeight: 22,
+    fontFamily: 'Inter_400Regular',
+  },
+  smallBold: {
+    fontSize: 16,
+    lineHeight: 22,
+    fontFamily: 'Inter_700Bold',
   },
 });

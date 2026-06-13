@@ -22,7 +22,8 @@
       "Bash(grep -E \"\\\\.tsx$\")",
       "Read(//c/Users/Cosmo/.claude/plugins/cache/ui-ux-pro-max-skill/ui-ux-pro-max/2.5.0/.claude/skills/ui-ux-pro-max/**)",
       "Bash(ls scripts *)",
-      "Bash(find . -name \"search.py\")"
+      "Bash(find . -name \"search.py\")",
+      "Bash(npx eslint *)"
     ],
     "additionalDirectories": [
       "C:\\FreeWrite-Django"

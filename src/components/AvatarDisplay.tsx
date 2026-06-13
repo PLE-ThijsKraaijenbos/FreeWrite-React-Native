@@ -21,12 +21,15 @@ type Props = {
 
 export function AvatarDisplay({ uri, size = 'small', chrome = true, className }: Props) {
   const large = size === 'large';
+  // The bare card thumbnail: scale the avatar up and use a shorter frame so the
+  // head sits right under the label instead of floating with a gap above it.
+  const thumb = !large && !chrome;
 
   return (
     // The avatar is clipped at the bottom so only the head and shoulders show,
     // matching the Figma frame.
     <View
-      className={`w-full items-center justify-end overflow-hidden ${chrome ? 'bg-primary-200 border-b-2 border-neutral-200' : ''} ${large ? 'aspect-square' : 'aspect-[1.4]'} ${className ?? ''}`}>
+      className={`w-full items-center justify-end overflow-hidden ${chrome ? 'bg-primary-200 border-b-2 border-neutral-200' : ''} ${large ? 'aspect-square' : thumb ? 'aspect-[1.5]' : 'aspect-[1.4]'} ${className ?? ''}`}>
       {/* Soft white glow behind the avatar (radial fade to transparent). */}
       {chrome && (
         <View pointerEvents="none" style={StyleSheet.absoluteFill}>
@@ -45,7 +48,7 @@ export function AvatarDisplay({ uri, size = 'small', chrome = true, className }:
       <Image
         source={uri ? { uri } : null}
         contentFit="contain"
-        className={large ? 'w-[72%] aspect-square' : 'w-[55%] aspect-square'}
+        className={large ? 'w-[72%] aspect-square' : thumb ? 'w-[64%] aspect-square' : 'w-[55%] aspect-square'}
       />
     </View>
   );

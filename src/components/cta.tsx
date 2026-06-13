@@ -108,7 +108,7 @@ export function DoubleCTA({ variant = 'default', leftLabel, rightLabel, onPressL
   const secondary = variant === 'secondary';
 
   return (
-    <View className="flex-row items-center gap-8">
+    <View className="w-full flex-row items-center gap-4">
       <Pressable onPress={onPressLeft} className="flex-1">
         <LinearGradient
           colors={secondary ? ['#FCAA88', '#F47D4E'] : ['#FAFAF8', '#EBEBE6']}
@@ -118,7 +118,7 @@ export function DoubleCTA({ variant = 'default', leftLabel, rightLabel, onPressL
         >
           <Text
             style={secondary ? [textShadow.white, textShadow.room] : undefined}
-            className={`flex-1 text-center text-h3 font-heading-bold ${secondary ? 'text-neutral-100' : 'text-neutral-600'}`}
+            className={`text-center text-h3 font-heading-bold ${secondary ? 'text-neutral-100' : 'text-neutral-600'}`}
           >
             {leftLabel}
           </Text>
@@ -131,7 +131,7 @@ export function DoubleCTA({ variant = 'default', leftLabel, rightLabel, onPressL
           style={shadows.drop}
           className="py-3 rounded-lg justify-center items-center"
         >
-          <Text style={[textShadow.white, textShadow.room]} className="flex-1 text-center text-neutral-100 text-h3 font-heading-bold">
+          <Text style={[textShadow.white, textShadow.room]} className="text-center text-h3 font-heading-bold text-neutral-100">
             {rightLabel}
           </Text>
         </LinearGradient>

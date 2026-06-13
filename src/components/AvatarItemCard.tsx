@@ -1,63 +1,76 @@
+import { LinearGradient } from 'expo-linear-gradient';
+import { cssInterop } from 'nativewind';
 import { memo } from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
+import CoinIcon from '@/assets/icons/coin.svg';
 import { AvatarDisplay } from '@/components/AvatarDisplay';
 import { ThemedText } from '@/components/themed-text';
 import { shadows } from '@/constants/shadows';
-import { useTheme } from '@/hooks/use-theme';
-import { parseAvatarParams, prerequisiteHint, previewItemUrl } from '@/lib/avatar';
+import { previewItemUrl } from '@/lib/avatar';
 import { AvatarItem } from '@/types/user';
 
-// Small PNG thumbnail (raster bitmap) instead of a parsed SVG per card.
+cssInterop(LinearGradient, { className: 'style' });
+
 const THUMB_SIZE = 128;
+
+export type AvatarItemCardVariant = 'shop' | 'unequipped' | 'equipped';
 
 type Props = {
   item: AvatarItem;
-  // The user's current avatar; the item is previewed worn on top of it.
   baseUrl?: string;
+  variant?: AvatarItemCardVariant;
+  hint?: string | null;
+  disabled?: boolean;
   onPress: (item: AvatarItem) => void;
 };
 
-// Single grid square in the item shop: the avatar wearing this item, with the
-// name/price below. Memoised + given a stable onPress so re-rendering the shop
-// (e.g. tapping another item) doesn't re-render every card. Styling is
-// intentionally minimal for now — the visual pass comes later.
-function AvatarItemCardComponent({ item, baseUrl, onPress }: Props) {
-  const theme = useTheme();
-  // When the user's current avatar lacks the prerequisite (e.g. a colour with no
-  // accessory equipped), the item can't be previewed or meaningfully bought yet —
-  // lock the card and explain what to equip first.
-  const hint = baseUrl ? prerequisiteHint(item.param_key, parseAvatarParams(baseUrl)) : null;
-  const unavailable = item.is_unlocked || !!hint;
+const labelShadow = StyleSheet.create({
+  white: {
+    textShadowColor: 'rgba(0,0,0,0.50)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 2,
+  },
+});
+
+
+function AvatarItemCardComponent({ item, baseUrl, variant = 'shop', hint, disabled, onPress }: Props) {
+  const equipped = variant === 'equipped';
+  const showPrice = variant === 'shop' && item.price > 0;
 
   return (
     <Pressable
       onPress={() => onPress(item)}
-      disabled={unavailable}
+      disabled={disabled}
       className="w-1/2 p-2"
-      style={{ opacity: unavailable ? 0.4 : 1 }}>
-      {/* Outer view carries the drop shadow; inner view clips to rounded corners
-          (shadow + overflow-hidden on the same view is clipped on iOS). Disabled
-          cards drop the shadow — elevation under opacity:0.4 renders a heavy halo. */}
-      <View
-        className="rounded-lg"
-        style={[
-          shadows.drop,
-          unavailable && { elevation: 0, shadowOpacity: 0 },
-          { backgroundColor: theme.backgroundElement },
-        ]}>
+      style={{ opacity: disabled ? 0.4 : 1 }}>
+      <View className="rounded-lg" style={[shadows.drop, disabled && { elevation: 0, shadowOpacity: 0 }]}>
         <View className="overflow-hidden rounded-lg">
-          <View className="items-center gap-0.5 px-2 pt-2 pb-1">
-            <ThemedText type="small" className="text-center">
+          {/* Card surface: top→bottom light→dark gradient — secondary when
+              equipped, neutral otherwise. */}
+          <LinearGradient
+            colors={equipped ? ['#FCAA88', '#F47D4E'] : ['#FAFAF8', '#EBEBE6']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={StyleSheet.absoluteFill}
+          />
+          <View className="gap-0.5 px-2 pt-1">
+            <ThemedText
+              type="smallBold"
+              className={equipped ? 'text-neutral-100' : 'text-neutral-500'}
+              style={equipped ? labelShadow.white : undefined}>
               {item.name}
             </ThemedText>
-            {item.price > 0 && (
-              <ThemedText type="small" themeColor="textSecondary">
-                {item.price} coins
-              </ThemedText>
+            {showPrice && (
+              <View className="h-6 flex-row items-center gap-0.5">
+                <CoinIcon width={24} height={24} />
+                <ThemedText type="smallBold" className="text-secondary-400">
+                  {item.price}
+                </ThemedText>
+              </View>
             )}
             {hint && (
-              <ThemedText type="small" themeColor="textSecondary" className="text-center">
+              <ThemedText type="small" className="text-neutral-400">
                 {hint}
               </ThemedText>
             )}
