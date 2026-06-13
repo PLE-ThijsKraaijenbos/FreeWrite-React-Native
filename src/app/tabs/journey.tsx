@@ -1,8 +1,8 @@
 import { useRouter } from 'expo-router';
 import { useMemo } from 'react';
 import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { PageHeader } from '@/components/PageHeader';
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
 import { useJourney } from '@/hooks/use-journey';
@@ -58,7 +58,6 @@ function StepCircle({
 export default function JourneyScreen() {
   const router = useRouter();
   const theme = useTheme();
-  const { top } = useSafeAreaInsets();
   const { data, isLoading, isError, refetch, isRefetching } = useJourney();
 
   const sorted = useMemo(
@@ -68,9 +67,7 @@ export default function JourneyScreen() {
 
   return (
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
-      <View className="px-4 pb-3" style={{ paddingTop: top + 16 }}>
-        <ThemedText type="subtitle">Journey</ThemedText>
-      </View>
+      <PageHeader subtitle="Write your own" title="Story" />
 
       {isLoading ? (
         <ThemedText className="text-center mt-12" themeColor="textSecondary">
