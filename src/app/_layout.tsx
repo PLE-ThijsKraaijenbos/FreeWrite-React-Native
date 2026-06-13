@@ -1,10 +1,10 @@
 import '@/global.css';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import React from 'react';
-import { useColorScheme } from 'react-native';
+import { colorScheme } from 'nativewind';
 import { useFonts } from 'expo-font';
 import {
   Unbounded_500Medium,
@@ -22,11 +22,11 @@ import { AuthProvider } from '@/lib/auth-context';
 
 SplashScreen.preventAutoHideAsync();
 
+colorScheme.set('light');
+
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
   const [fontsLoaded] = useFonts({
     Unbounded_500Medium,
     Unbounded_700Bold,
@@ -44,7 +44,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <ThemeProvider value={DefaultTheme}>
           <AuthProvider>
             <AnimatedSplashOverlay />
             <Stack screenOptions={{ headerShown: false }} />

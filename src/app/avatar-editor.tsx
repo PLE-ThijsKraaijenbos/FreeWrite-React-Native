@@ -1,19 +1,42 @@
-import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { ActivityIndicator, Pressable, RefreshControl, ScrollView, View } from 'react-native';
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRef, useState } from 'react';
 
 import { useAvatarItems, useEquipAvatarItem, useUnequipAvatarItem } from '@/api/avatar-items';
 import { patchAvatarUrlApi } from '@/api/auth';
+import { AvatarDisplay } from '@/components/AvatarDisplay';
 import { BackButton } from '@/components/BackButton';
 import { CategorySelect } from '@/components/CategorySelect';
+import { CTAButton } from '@/components/cta';
 import { ThemedText } from '@/components/themed-text';
+import { shadows } from '@/constants/shadows';
+import {
+  applyItem,
+  buildAvatarUrl,
+  parseAvatarParams,
+  prerequisiteHint,
+  previewItemUrl,
+  PROBABILITY_COMPANION,
+} from '@/lib/avatar';
 import { useAuth } from '@/lib/auth-context';
 import { useTheme } from '@/hooks/use-theme';
 import { AvatarItem } from '@/types/user';
 
-const DICEBEAR_BASE = 'https://api.dicebear.com/9.x/avataaars/svg';
+// Small PNG thumbnail (raster bitmap) for each item card.
+const THUMB_SIZE = 128;
+
+// White, shadowed label for the equipped (secondary-gradient) card — same
+// treatment as the colored CTA buttons, for readability over the orange.
+const itemStyles = StyleSheet.create({
+  selectedLabel: {
+    color: '#FAFAF8',
+    textShadowColor: 'rgba(0,0,0,0.50)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 2,
+  },
+});
 
 const CATEGORY_LABELS: Record<string, string> = {
   accessories: 'Accessories',
@@ -32,33 +55,6 @@ const CATEGORY_LABELS: Record<string, string> = {
   skinColor: 'Skin Colors',
 };
 
-// Handles both "key[]=value" and legacy "key=value" DiceBear formats.
-function parseAvatarParams(url: string): Record<string, string> {
-  const qs = url.split('?')[1] ?? '';
-  return Object.fromEntries(
-    [...new URLSearchParams(qs)].map(([k, v]) => [k.replace('[]', ''), v])
-  );
-}
-
-// DiceBear probability params are plain integers, not arrays — no [] suffix.
-const PLAIN_PARAMS = new Set(['facialHairProbability', 'accessoriesProbability']);
-
-// Selecting these param_keys requires forcing the paired probability to 100
-// so DiceBear actually renders the item (defaults are 10%).
-const PROBABILITY_COMPANION: Record<string, string> = {
-  facialHair: 'facialHairProbability',
-  accessories: 'accessoriesProbability',
-};
-
-function buildAvatarUrl(params: Record<string, string>): string {
-  const qs = Object.entries(params)
-    .map(([k, v]) =>
-      PLAIN_PARAMS.has(k) ? `${k}=${encodeURIComponent(v)}` : `${k}[]=${encodeURIComponent(v)}`
-    )
-    .join('&');
-  return qs ? `${DICEBEAR_BASE}?${qs}` : DICEBEAR_BASE;
-}
-
 function chunk<T>(arr: T[], size: number): T[][] {
   const rows: T[][] = [];
   for (let i = 0; i < arr.length; i += size) rows.push(arr.slice(i, i + size));
@@ -68,7 +64,7 @@ function chunk<T>(arr: T[], size: number): T[][] {
 export default function AvatarEditorScreen() {
   const router = useRouter();
   const theme = useTheme();
-  const { top } = useSafeAreaInsets();
+  const { top, bottom } = useSafeAreaInsets();
   const { user, updateUser } = useAuth();
   const { data: items = [], isLoading, refetch, isRefetching } = useAvatarItems();
   const { mutateAsync: equip } = useEquipAvatarItem();
@@ -128,9 +124,7 @@ export default function AvatarEditorScreen() {
       }
 
       // Select: set value and force probability to 100 so DiceBear always renders it
-      const next = { ...prev, [item.param_key]: item.param_value };
-      if (probKey) next[probKey] = '100';
-      return next;
+      return applyItem(prev, item);
     });
   }
 
@@ -164,81 +158,69 @@ export default function AvatarEditorScreen() {
 
   return (
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
-      <View
-        className="flex-row items-center justify-between px-4 pb-3"
-        style={{ paddingTop: top + 16 }}>
+      <AvatarDisplay uri={buildAvatarUrl(params)} />
+
+      <View className="absolute left-4 z-10" style={{ top: top + 16 }}>
         <BackButton onPress={() => router.back()} />
-        <ThemedText type="subtitle">Edit Avatar</ThemedText>
-        <Pressable
-          onPress={handleSave}
-          disabled={saving}
-          className="py-1 px-3 rounded-lg"
-          style={{ backgroundColor: theme.backgroundElement }}>
-          {saving ? (
-            <ActivityIndicator size="small" />
-          ) : (
-            <ThemedText type="small">Save</ThemedText>
-          )}
-        </Pressable>
       </View>
 
-      {saveError && (
-        <ThemedText className="text-center px-4 pb-2" themeColor="textSecondary">
-          {saveError}
-        </ThemedText>
-      )}
+      <View className="flex-1">
+        {isLoading ? (
+          <ActivityIndicator className="mt-12" />
+        ) : unlockedItems.length === 0 ? (
+          <ThemedText className="text-center mt-12" themeColor="textSecondary">
+            No items unlocked yet. Visit the shop!
+          </ThemedText>
+        ) : (
+          <>
+            <CategorySelect
+              categories={allSections.map((s) => ({ id: s.key, label: s.title }))}
+              selectedId={selectedCategory}
+              onSelect={(id) => setSelectedCategory(id === selectedCategory ? null : id)}
+            />
 
-      <View className="items-center py-6">
-        <Image
-          source={{ uri: buildAvatarUrl(params) }}
-          style={{ width: 160, height: 160 }}
-          contentFit="contain"
-        />
+            <ScrollView
+              className="flex-1"
+              contentContainerStyle={{ paddingBottom: 32 }}
+              refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}>
+              {sections.map((section) => (
+                <View key={section.key}>
+                  <ThemedText
+                    type="smallBold"
+                    themeColor="textSecondary"
+                    className="px-4 mt-6 mb-2">
+                    {section.title.toUpperCase()}
+                  </ThemedText>
+                  {chunk(section.items, 2).map((row, i) => (
+                    <View key={i} className="flex-row w-full">
+                      {row.map((item) => (
+                        <EditorItem
+                          key={item.id}
+                          item={item}
+                          active={isActive(item)}
+                          hint={prerequisiteHint(item.param_key, params)}
+                          baseUrl={user?.profile?.avatar_url}
+                          onPress={() => toggle(item)}
+                        />
+                      ))}
+                      {row.length === 1 && <View className="w-1/2" />}
+                    </View>
+                  ))}
+                </View>
+              ))}
+            </ScrollView>
+          </>
+        )}
       </View>
 
-      {isLoading ? (
-        <ActivityIndicator className="mt-12" />
-      ) : unlockedItems.length === 0 ? (
-        <ThemedText className="text-center mt-12" themeColor="textSecondary">
-          No items unlocked yet. Visit the shop!
-        </ThemedText>
-      ) : (
-        <>
-          <CategorySelect
-            categories={allSections.map((s) => ({ id: s.key, label: s.title }))}
-            selectedId={selectedCategory}
-            onSelect={(id) => setSelectedCategory(id === selectedCategory ? null : id)}
-          />
-
-          <ScrollView
-            contentContainerStyle={{ paddingBottom: 32 }}
-            refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}>
-            {sections.map((section) => (
-              <View key={section.key}>
-                <ThemedText
-                  type="smallBold"
-                  themeColor="textSecondary"
-                  className="px-4 mt-6 mb-2">
-                  {section.title.toUpperCase()}
-                </ThemedText>
-                {chunk(section.items, 2).map((row, i) => (
-                  <View key={i} className="flex-row w-full">
-                    {row.map((item) => (
-                      <EditorItem
-                        key={item.id}
-                        item={item}
-                        active={isActive(item)}
-                        onPress={() => toggle(item)}
-                      />
-                    ))}
-                    {row.length === 1 && <View className="w-1/2" />}
-                  </View>
-                ))}
-              </View>
-            ))}
-          </ScrollView>
-        </>
-      )}
+      <View className="px-4 pt-2" style={{ paddingBottom: bottom + 16 }}>
+        {saveError && (
+          <ThemedText className="text-center pb-2" themeColor="textSecondary">
+            {saveError}
+          </ThemedText>
+        )}
+        <CTAButton label={saving ? 'Saving…' : 'Save'} onPress={handleSave} disabled={saving} />
+      </View>
     </View>
   );
 }
@@ -247,26 +229,68 @@ export default function AvatarEditorScreen() {
 function EditorItem({
   item,
   active,
+  hint,
+  baseUrl,
   onPress,
 }: {
   item: AvatarItem;
   active: boolean;
+  // When set, the item's prerequisite isn't equipped yet — lock it and explain.
+  hint: string | null;
+  // The saved avatar the item is previewed on (stable, so toggling doesn't
+  // reload every thumbnail).
+  baseUrl?: string;
   onPress: () => void;
 }) {
   const theme = useTheme();
+  // Don't lock an already-active item, so it can always be deselected.
+  const locked = !!hint && !active;
+
   return (
     <Pressable
       onPress={onPress}
-      className="w-1/2 aspect-square items-center justify-center p-2"
-      style={({ pressed }) => ({
-        backgroundColor:
-          active || pressed ? theme.backgroundSelected : theme.backgroundElement,
-        borderWidth: 1,
-        borderColor: active ? theme.text : theme.backgroundSelected,
-      })}>
-      <ThemedText type="small" className="text-center">
-        {item.name}
-      </ThemedText>
+      disabled={locked}
+      className="w-1/2 p-2"
+      style={{ opacity: locked ? 0.4 : 1 }}>
+      {/* Outer view carries the drop shadow; inner view clips to rounded corners
+          (shadow + overflow-hidden on the same view is clipped on iOS). Locked
+          cards drop the shadow — elevation under opacity:0.4 renders a heavy halo. */}
+      <View
+        className="rounded-lg"
+        style={[
+          shadows.drop,
+          locked && { elevation: 0, shadowOpacity: 0 },
+          { backgroundColor: theme.backgroundElement },
+        ]}>
+        <View className="overflow-hidden rounded-lg">
+          {/* Equipped items get the secondary light->dark gradient instead of a border. */}
+          {active && (
+            <LinearGradient
+              colors={['#FCAA88', '#F47D4E']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={StyleSheet.absoluteFill}
+            />
+          )}
+          <View className="items-center gap-0.5 px-2 pt-2 pb-1">
+            <ThemedText
+              type="small"
+              className="text-center"
+              style={active ? itemStyles.selectedLabel : undefined}>
+              {item.name}
+            </ThemedText>
+            {locked && (
+              <ThemedText type="small" themeColor="textSecondary" className="text-center">
+                {hint}
+              </ThemedText>
+            )}
+          </View>
+          <AvatarDisplay
+            uri={previewItemUrl(baseUrl, item, { png: true, size: THUMB_SIZE })}
+            chrome={false}
+          />
+        </View>
+      </View>
     </Pressable>
   );
 }

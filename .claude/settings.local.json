@@ -12,7 +12,12 @@
       "Bash(node -e ' *)",
       "Bash(export PGPASSWORD=freewrite)",
       "Bash(psql -h localhost -p 5432 -U freewrite -d freewrite -c \"SELECT id, \\\\\"order\\\\\", title FROM phase ORDER BY \\\\\"order\\\\\";\")",
-      "Bash(psql -h localhost -p 5432 -U freewrite -d freewrite -c \"SELECT id, phase_id, \\\\\"order\\\\\", assignment_type, title FROM journey_step ORDER BY \\\\\"order\\\\\" LIMIT 20;\")"
+      "Bash(psql -h localhost -p 5432 -U freewrite -d freewrite -c \"SELECT id, phase_id, \\\\\"order\\\\\", assignment_type, title FROM journey_step ORDER BY \\\\\"order\\\\\" LIMIT 20;\")",
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 40)",
+      "Bash(npx patch-package *)",
+      "PowerShell($conns = Get-NetTCPConnection -LocalPort 8081 -State Listen -ErrorAction SilentlyContinue; if \\($conns\\) { $conns | ForEach-Object { $p = Get-Process -Id $_.OwningProcess -ErrorAction SilentlyContinue; if \\($p\\) { \"Port 8081 held by PID $\\($p.Id\\) \\($\\($p.ProcessName\\)\\)\"; Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue; \"Killed PID $\\($p.Id\\)\" } } } else { \"No process listening on 8081\" })",
+      "Read(//c/Users/Cosmo/AppData/Local/Temp/claude/C--FreeWrite-React-Native/5d091f16-159a-4ee4-94f7-244684e5dbe0/tasks/**)",
+      "Bash(node node_modules/typescript/bin/tsc --noEmit)"
     ],
     "additionalDirectories": [
       "C:\\FreeWrite-Django"
