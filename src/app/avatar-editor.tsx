@@ -6,6 +6,7 @@ import { useRef, useState } from 'react';
 
 import { useAvatarItems, useEquipAvatarItem, useUnequipAvatarItem } from '@/api/avatar-items';
 import { patchAvatarUrlApi } from '@/api/auth';
+import { CategorySelect } from '@/components/CategorySelect';
 import { ThemedText } from '@/components/themed-text';
 import { useAuth } from '@/lib/auth-context';
 import { useTheme } from '@/hooks/use-theme';
@@ -204,33 +205,11 @@ export default function AvatarEditorScreen() {
         </ThemedText>
       ) : (
         <>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={{ flexGrow: 0, flexShrink: 0, height: 44 }}
-            contentContainerStyle={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              paddingHorizontal: 16,
-              columnGap: 8,
-              paddingBottom: 8,
-            }}>
-            <CategoryChip
-              label="All"
-              selected={selectedCategory === null}
-              onPress={() => setSelectedCategory(null)}
-            />
-            {allSections.map((s) => (
-              <CategoryChip
-                key={s.key}
-                label={s.title}
-                selected={selectedCategory === s.key}
-                onPress={() =>
-                  setSelectedCategory(selectedCategory === s.key ? null : s.key)
-                }
-              />
-            ))}
-          </ScrollView>
+          <CategorySelect
+            categories={allSections.map((s) => ({ id: s.key, label: s.title }))}
+            selectedId={selectedCategory}
+            onSelect={(id) => setSelectedCategory(id === selectedCategory ? null : id)}
+          />
 
           <ScrollView
             contentContainerStyle={{ paddingBottom: 32 }}
@@ -265,27 +244,6 @@ export default function AvatarEditorScreen() {
   );
 }
 
-function CategoryChip({
-  label,
-  selected,
-  onPress,
-}: {
-  label: string;
-  selected: boolean;
-  onPress: () => void;
-}) {
-  const theme = useTheme();
-  return (
-    <Pressable
-      onPress={onPress}
-      className="py-1.5 px-3.5 rounded-full"
-      style={{
-        backgroundColor: selected ? theme.backgroundSelected : theme.backgroundElement,
-      }}>
-      <ThemedText type="small">{label}</ThemedText>
-    </Pressable>
-  );
-}
 
 function EditorItem({
   item,

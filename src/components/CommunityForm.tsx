@@ -20,9 +20,9 @@ type Props = {
 export function CommunityForm({ control, errors, imageUri, onPickImage }: Props) {
   return (
     <LinearGradient
-      colors={['#EBEBE6', '#FAFAF8']}
-      start={{ x: 1, y: 0 }}
-      end={{ x: 0, y: 0 }}
+      colors={['#FAFAF8', '#EBEBE6']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
       style={shadows.drop}
       className="rounded-lg overflow-hidden">
       <Pressable onPress={onPickImage} className="bg-neutral-200 items-center justify-center overflow-hidden">

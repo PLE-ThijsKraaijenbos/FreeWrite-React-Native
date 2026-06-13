@@ -7,7 +7,6 @@ import { shadows } from '@/constants/shadows';
 cssInterop(LinearGradient, { className: 'style' });
 
 const TOP_BOTTOM = { start: { x: 0, y: 0 }, end: { x: 0, y: 1 } };
-const RIGHT_LEFT = { start: { x: 1, y: 0 }, end: { x: 0, y: 0 } };
 
 const shadow = StyleSheet.create({
   text: {
@@ -35,8 +34,8 @@ export function SelectOption({ label, subtitle, size = 'default', selected = fal
   return (
     <Pressable onPress={onPress} className="w-full">
       <LinearGradient
-        colors={selected ? ['#FCAA88', '#F47D4E'] : ['#EBEBE6', '#FAFAF8']}
-        {...(selected ? TOP_BOTTOM : RIGHT_LEFT)}
+        colors={selected ? ['#FCAA88', '#F47D4E'] : ['#FAFAF8', '#EBEBE6']}
+        {...TOP_BOTTOM}
         style={shadows.drop}
         className="min-h-[70px] px-4 py-3 rounded-lg justify-center items-center gap-1"
       >

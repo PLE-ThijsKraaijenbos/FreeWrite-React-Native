@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { Alert, Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { CategorySelect } from '@/components/CategorySelect';
 import { CTAButton } from '@/components/cta';
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
@@ -78,6 +79,8 @@ export default function CommunityScreen() {
       <View className="px-4 pb-3" style={{ paddingTop: top + 16 }}>
         <ThemedText type="subtitle">Community</ThemedText>
       </View>
+
+      <CategorySelect />
 
       {isLoading ? (
         <ThemedText className="text-center mt-12" themeColor="textSecondary">

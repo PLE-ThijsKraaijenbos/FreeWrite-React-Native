@@ -10,6 +10,7 @@ function chunk<T>(arr: T[], size: number): T[][] {
 }
 
 import { useAvatarItems, useUnlockAvatarItem } from '@/api/avatar-items';
+import { CategorySelect } from '@/components/CategorySelect';
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
 import { useAuth } from '@/lib/auth-context';
@@ -78,25 +79,11 @@ export default function ShopScreen() {
         <ThemedText type="subtitle">Item Shop</ThemedText>
       </View>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={{ flexGrow: 0, flexShrink: 0, height: 44 }}
-        contentContainerStyle={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, columnGap: 8, paddingBottom: 8 }}>
-        <CategoryChip
-          label="All"
-          selected={selectedCategory === null}
-          onPress={() => setSelectedCategory(null)}
-        />
-        {allSections.map((s) => (
-          <CategoryChip
-            key={s.key}
-            label={s.title}
-            selected={selectedCategory === s.key}
-            onPress={() => setSelectedCategory(selectedCategory === s.key ? null : s.key)}
-          />
-        ))}
-      </ScrollView>
+      <CategorySelect
+        categories={allSections.map((s) => ({ id: s.key, label: s.title }))}
+        selectedId={selectedCategory}
+        onSelect={(id) => setSelectedCategory(id === selectedCategory ? null : id)}
+      />
 
       {isLoading ? (
         <ThemedText className="text-center mt-12" themeColor="textSecondary">Loading...</ThemedText>
@@ -127,17 +114,6 @@ export default function ShopScreen() {
   );
 }
 
-function CategoryChip({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
-  const theme = useTheme();
-  return (
-    <Pressable
-      onPress={onPress}
-      className="py-1.5 px-3.5 rounded-full"
-      style={{ backgroundColor: selected ? theme.backgroundSelected : theme.backgroundElement }}>
-      <ThemedText type="small">{label}</ThemedText>
-    </Pressable>
-  );
-}
 
 function ItemSquare({ item, onPress }: { item: AvatarItem; onPress: () => void }) {
   const theme = useTheme();
