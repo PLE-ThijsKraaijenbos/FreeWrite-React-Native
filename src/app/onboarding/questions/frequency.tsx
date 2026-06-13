@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CTAButton } from '@/components/cta';
 
 import { SelectOption } from '@/components/SelectOption';
-import { FormProgress } from '@/components/onboarding/FormProgress';
+import { OnboardingHeader } from '@/components/onboarding/OnboardingHeader';
 import { FrequencyValue, OnboardingFormData } from '@/types/onboarding';
 
 const OPTIONS: { label: string; value: FrequencyValue }[] = [
@@ -28,7 +28,7 @@ export default function FrequencyScreen() {
 
   return (
     <View className="flex-1 p-6" style={{ paddingBottom: bottom + 24 }}>
-      <FormProgress filled={5} length={6} />
+      <OnboardingHeader filled={5} length={6} />
       <View className="flex-1 gap-6 justify-center">
         <Text className="text-2xl font-bold">How often do you use?</Text>
         <Controller

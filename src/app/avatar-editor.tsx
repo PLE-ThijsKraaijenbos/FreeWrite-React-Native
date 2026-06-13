@@ -6,6 +6,7 @@ import { useRef, useState } from 'react';
 
 import { useAvatarItems, useEquipAvatarItem, useUnequipAvatarItem } from '@/api/avatar-items';
 import { patchAvatarUrlApi } from '@/api/auth';
+import { BackButton } from '@/components/BackButton';
 import { CategorySelect } from '@/components/CategorySelect';
 import { ThemedText } from '@/components/themed-text';
 import { useAuth } from '@/lib/auth-context';
@@ -166,9 +167,7 @@ export default function AvatarEditorScreen() {
       <View
         className="flex-row items-center justify-between px-4 pb-3"
         style={{ paddingTop: top + 16 }}>
-        <Pressable onPress={() => router.back()}>
-          <ThemedText themeColor="textSecondary">← Back</ThemedText>
-        </Pressable>
+        <BackButton onPress={() => router.back()} />
         <ThemedText type="subtitle">Edit Avatar</ThemedText>
         <Pressable
           onPress={handleSave}

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { BackButton } from '@/components/BackButton';
 import { CTAButton } from '@/components/cta';
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
@@ -57,9 +58,7 @@ export function ChoiceStoryAssignment({ content, responseData, onComplete }: Pro
   return (
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
       <View className="px-4 pb-3" style={{ paddingTop: top + 16 }}>
-        <Pressable onPress={() => router.back()}>
-          <ThemedText themeColor="textSecondary">← Back</ThemedText>
-        </Pressable>
+        <BackButton onPress={() => router.back()} />
       </View>
 
       <ScrollView className="flex-1 px-4">

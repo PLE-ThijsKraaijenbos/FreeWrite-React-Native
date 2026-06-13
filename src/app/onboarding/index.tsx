@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CTAButton } from '@/components/cta';
 
-import { BackButton } from '@/components/onboarding/back-button';
+import { BackButton } from '@/components/BackButton';
 import { FormProgress } from '@/components/onboarding/FormProgress';
 
 const SLIDES = [
@@ -43,11 +43,15 @@ export default function IntroScreen() {
       <Stack.Screen
         options={{
           headerLeft: () =>
-            step > 0 ? <BackButton onPress={() => setStep(step - 1)} /> : null,
+            step > 0 ? (
+              <BackButton variant="onboarding" onPress={() => setStep(step - 1)} />
+            ) : null,
         }}
       />
       <View className="flex-1 p-6" style={{ paddingBottom: bottom + 24 }}>
-        <FormProgress filled={step + 1} length={SLIDES.length} />
+        <View className="px-16">
+          <FormProgress filled={step + 1} length={SLIDES.length} />
+        </View>
         <View className="flex-1 gap-4">
           <Text className="text-2xl font-bold">{slide.title}</Text>
           <Text>{slide.body}</Text>

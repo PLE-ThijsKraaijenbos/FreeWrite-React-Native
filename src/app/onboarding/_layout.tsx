@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Stack, useRouter } from 'expo-router';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { BackButton } from '@/components/onboarding/back-button';
+import { BackButton } from '@/components/BackButton';
 import { onboardingSchema, type OnboardingFormData } from '@/types/onboarding';
 
 export default function OnboardingLayout() {
@@ -26,7 +26,9 @@ export default function OnboardingLayout() {
           headerShadowVisible: false,
           headerStyle: { backgroundColor: 'white' },
           headerLeft: ({ canGoBack }) =>
-            canGoBack ? <BackButton onPress={() => router.back()} /> : null,
+            canGoBack ? (
+              <BackButton variant="onboarding" onPress={() => router.back()} />
+            ) : null,
           contentStyle: { backgroundColor: 'white' },
         }}
       />

@@ -3,6 +3,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ActivityIndicator, Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { BackButton } from '@/components/BackButton';
 import { CTAButton } from '@/components/cta';
 import { ThemedText } from '@/components/themed-text';
 import { useBookmarkStep, useJourney, useStartStep } from '@/hooks/use-journey';
@@ -46,9 +47,7 @@ export default function JourneyStepScreen() {
   return (
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
       <View style={{ paddingTop: top + 16 }} className="px-4 pb-3 flex-row items-center justify-between">
-        <Pressable onPress={() => router.back()}>
-          <ThemedText themeColor="textSecondary">← Back</ThemedText>
-        </Pressable>
+        <BackButton onPress={() => router.back()} />
         <Pressable onPress={() => toggleBookmark(progressId)} disabled={isBookmarking}>
           <ThemedText className="text-2xl">{progress.bookmarked ? '★' : '☆'}</ThemedText>
         </Pressable>

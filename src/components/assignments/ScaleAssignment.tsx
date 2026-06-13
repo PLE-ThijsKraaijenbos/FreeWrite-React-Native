@@ -1,8 +1,9 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { BackButton } from '@/components/BackButton';
 import { CTAButton } from '@/components/cta';
 import { SliderInput } from '@/components/SliderInput';
 import { ThemedText } from '@/components/themed-text';
@@ -29,9 +30,7 @@ export function ScaleAssignment({ content, responseData, onComplete }: Props) {
   return (
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
       <View className="px-4 pb-3" style={{ paddingTop: top + 16 }}>
-        <Pressable onPress={() => router.back()}>
-          <ThemedText themeColor="textSecondary">← Back</ThemedText>
-        </Pressable>
+        <BackButton onPress={() => router.back()} />
       </View>
 
       <View className="flex-1 justify-center px-6">

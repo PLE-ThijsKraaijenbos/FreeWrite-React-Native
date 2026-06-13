@@ -10,6 +10,7 @@ function chunk<T>(arr: T[], size: number): T[][] {
 }
 
 import { useAvatarItems, useUnlockAvatarItem } from '@/api/avatar-items';
+import { BackButton } from '@/components/BackButton';
 import { CategorySelect } from '@/components/CategorySelect';
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
@@ -73,9 +74,7 @@ export default function ShopScreen() {
   return (
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
       <View className="px-4 pb-3 gap-2" style={{ paddingTop: top + 16 }}>
-        <Pressable onPress={() => router.back()}>
-          <ThemedText themeColor="textSecondary">← Back</ThemedText>
-        </Pressable>
+        <BackButton onPress={() => router.back()} />
         <ThemedText type="subtitle">Item Shop</ThemedText>
       </View>
 

@@ -1,8 +1,9 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { BackButton } from '@/components/BackButton';
 import { Bubbles } from '@/components/Bubbles';
 import { CTAButton } from '@/components/cta';
 import { ThemedText } from '@/components/themed-text';
@@ -28,9 +29,7 @@ export function BubblePopAssignment({ content, responseData, onComplete }: Props
   return (
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
       <View className="px-4 pb-3" style={{ paddingTop: top + 16 }}>
-        <Pressable onPress={() => router.back()}>
-          <ThemedText themeColor="textSecondary">← Back</ThemedText>
-        </Pressable>
+        <BackButton onPress={() => router.back()} />
       </View>
 
       <View className="flex-1 px-4" style={{ paddingBottom: bottom }}>

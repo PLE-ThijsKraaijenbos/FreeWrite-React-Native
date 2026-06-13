@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CTAButton } from '@/components/cta';
 
 import { SelectOption } from '@/components/SelectOption';
-import { FormProgress } from '@/components/onboarding/FormProgress';
+import { OnboardingHeader } from '@/components/onboarding/OnboardingHeader';
 import { isProfessionalHelpRecommended } from '@/lib/recommend-professional-help';
 import { OnboardingFormData, PreviousAttemptsValue } from '@/types/onboarding';
 
@@ -36,7 +36,7 @@ export default function PreviousAttemptsScreen() {
 
   return (
     <View className="flex-1 p-6" style={{ paddingBottom: bottom + 24 }}>
-      <FormProgress filled={6} length={6} />
+      <OnboardingHeader filled={6} length={6} />
       <View className="flex-1 gap-6 justify-center">
         <Text className="text-2xl font-bold">Have you tried to cut back or quit before?</Text>
         <Controller

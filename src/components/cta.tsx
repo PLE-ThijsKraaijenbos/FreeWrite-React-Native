@@ -43,7 +43,7 @@ export function CTAButton({ label, variant = 'primary', size = 'default', disabl
       <LinearGradient
         colors={colors}
         {...TOP_BOTTOM}
-        style={shadows.drop}
+        style={[shadows.drop, disabled && { elevation: 0 }]}
         className={`flex-row justify-center items-center rounded-lg ${small ? 'px-4 py-2' : 'py-3'}`}
       >
         <Text
