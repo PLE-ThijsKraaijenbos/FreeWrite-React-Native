@@ -2,13 +2,14 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { cssInterop } from 'nativewind';
-import { Alert, Pressable, Text, View } from 'react-native';
+import { Alert, Pressable, View } from 'react-native';
 
 import ChatBubbleIcon from '@/assets/icons/chat-bubble-outline.svg';
 import HeartIcon from '@/assets/icons/heart.svg';
 import HeartOutlineIcon from '@/assets/icons/heart-outline.svg';
 import PencilIcon from '@/assets/icons/pencil.svg';
 import { shadows } from '@/constants/shadows';
+import { ThemedText } from '@/components/themed-text';
 import { useDeletePost, useLikePost } from '@/hooks/use-community';
 import { Post } from '@/types/community';
 
@@ -50,16 +51,16 @@ export function CommunityPost({ post }: Props) {
         end={{ x: 0, y: 1 }}
         className="px-4 py-3 gap-1">
         <View className="flex-row items-start justify-between gap-2">
-          <Text className="font-heading-bold text-h3 text-neutral-600 flex-1">{post.title}</Text>
+          <ThemedText type="h3" className="flex-1">{post.title}</ThemedText>
           {post.is_own_post && (
             <Pressable onPress={handleEdit} onLongPress={confirmDelete} hitSlop={8}>
               <PencilIcon width={20} height={20} color="#2A2924" />
             </Pressable>
           )}
         </View>
-        <Text className="font-body text-body-sm text-neutral-400" numberOfLines={1}>
+        <ThemedText type="body-sm" className="text-neutral-400" numberOfLines={1}>
           {post.body}
-        </Text>
+        </ThemedText>
         <View className="flex-row items-center gap-4 mt-2">
           <Pressable
             className="flex-row items-center gap-0.5"
@@ -71,11 +72,11 @@ export function CommunityPost({ post }: Props) {
             ) : (
               <HeartOutlineIcon width={24} height={24} color="#2A2924" />
             )}
-            <Text className="font-body text-body-sm text-neutral-600">{post.likes_count}</Text>
+            <ThemedText type="body-sm" className="text-neutral-600">{post.likes_count}</ThemedText>
           </Pressable>
           <View className="flex-row items-center gap-0.5">
             <ChatBubbleIcon width={24} height={24} color="#2A2924" />
-            <Text className="font-body text-body-sm text-neutral-600">0</Text>
+            <ThemedText type="body-sm" className="text-neutral-600">0</ThemedText>
           </View>
         </View>
       </LinearGradient>

@@ -49,7 +49,7 @@ export default function JourneyStepScreen() {
       <View style={{ paddingTop: top + 16 }} className="px-4 pb-3 flex-row items-center justify-between">
         <BackButton onPress={() => router.back()} />
         <Pressable onPress={() => toggleBookmark(progressId)} disabled={isBookmarking}>
-          <ThemedText className="text-2xl">{progress.bookmarked ? '★' : '☆'}</ThemedText>
+          <ThemedText className="text-h2">{progress.bookmarked ? '★' : '☆'}</ThemedText>
         </Pressable>
       </View>
 
@@ -60,7 +60,7 @@ export default function JourneyStepScreen() {
       />
 
       <View className="flex-1 px-4 pt-6">
-        <ThemedText type="subtitle">{step.title}</ThemedText>
+        <ThemedText type="h2">{step.title}</ThemedText>
         <ThemedText themeColor="textSecondary" className="mt-3">
           {step.description}
         </ThemedText>

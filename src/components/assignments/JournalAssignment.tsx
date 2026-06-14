@@ -32,13 +32,13 @@ export function JournalAssignment({ content, responseData, onComplete }: Props) 
       </View>
 
       <ScrollView className="flex-1 px-4" keyboardShouldPersistTaps="handled">
-        <ThemedText type="subtitle" className="mb-6">
+        <ThemedText type="h2" className="mb-6">
           {content.title_text}
         </ThemedText>
 
         {saved?.text ? (
           <View className="p-4 rounded-xl min-h-40" style={{ backgroundColor: theme.backgroundElement }}>
-            <ThemedText className="text-base leading-6">{saved.text}</ThemedText>
+            <ThemedText className="text-body-sm">{saved.text}</ThemedText>
           </View>
         ) : (
           <TextInput

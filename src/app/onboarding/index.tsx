@@ -1,6 +1,8 @@
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+
+import { ThemedText } from '@/components/themed-text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CTAButton } from '@/components/cta';
@@ -15,7 +17,7 @@ const SLIDES = [
   },
   {
     title: 'Go on a journey. Meet yourself along the way.',
-    body: "Guide your character through missions and mini-games built on real therapy techniques. Every step you take for them, you take for yourself.",
+    body: "Guide yourself through missions built on narrative therapy techniques. Earn coins with every step you take, and use them to customise your character.",
   },
   {
     title: "You're not alone. Others have been here too.",
@@ -52,9 +54,9 @@ export default function IntroScreen() {
         <View className="px-16">
           <FormProgress filled={step + 1} length={SLIDES.length} />
         </View>
-        <View className="flex-1 gap-4">
-          <Text className="text-2xl font-bold">{slide.title}</Text>
-          <Text>{slide.body}</Text>
+        <View className="flex-1 gap-4 justify-center">
+          <ThemedText type="h2" className="text-center">{slide.title}</ThemedText>
+          <ThemedText type="body" className="text-center">{slide.body}</ThemedText>
         </View>
         <CTAButton label={isLast ? "Let's go" : 'Next'} onPress={handleNext} />
       </View>

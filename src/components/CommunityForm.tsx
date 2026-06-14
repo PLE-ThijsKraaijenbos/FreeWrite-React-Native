@@ -2,9 +2,10 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { cssInterop } from 'nativewind';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import { TextInput } from '@/components/TextInput';
+import { ThemedText } from '@/components/themed-text';
 import { shadows } from '@/constants/shadows';
 import { AddPostFormData } from '@/types/community';
 
@@ -30,7 +31,7 @@ export function CommunityForm({ control, errors, imageUri, onPickImage }: Props)
           <Image source={{ uri: imageUri }} style={{ width: '100%', aspectRatio: 16 / 9 }} contentFit="cover" />
         ) : (
           <View className="px-4 py-10 items-center justify-center">
-            <Text className="text-h3 font-body text-neutral-500">Click to add an image</Text>
+            <ThemedText type="body" className="text-neutral-500">Click to add an image</ThemedText>
           </View>
         )}
       </Pressable>
@@ -43,7 +44,7 @@ export function CommunityForm({ control, errors, imageUri, onPickImage }: Props)
               <TextInput label="Title" placeholder="What’s on your mind?" value={value} onChangeText={onChange} onBlur={onBlur} />
             )}
           />
-          {errors.title && <Text className="text-body-sm font-body text-secondary-500 pt-1">{errors.title.message}</Text>}
+          {errors.title && <ThemedText type="body-sm" className="text-secondary-500 pt-1">{errors.title.message}</ThemedText>}
         </View>
         <View>
           <Controller
@@ -53,7 +54,7 @@ export function CommunityForm({ control, errors, imageUri, onPickImage }: Props)
               <TextInput label="Message" placeholder="Share your thoughts." value={value} onChangeText={onChange} onBlur={onBlur} multiline />
             )}
           />
-          {errors.body && <Text className="text-body-sm font-body text-secondary-500 pt-1">{errors.body.message}</Text>}
+          {errors.body && <ThemedText type="body-sm" className="text-secondary-500 pt-1">{errors.body.message}</ThemedText>}
         </View>
       </View>
     </LinearGradient>

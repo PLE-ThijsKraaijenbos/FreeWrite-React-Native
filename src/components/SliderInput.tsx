@@ -104,10 +104,10 @@ export function SliderInput({
 
       {(leftLabel || rightLabel) && (
         <View className="flex-row justify-between mt-2">
-          <ThemedText className="text-neutral-600" type="small">
+          <ThemedText className="text-neutral-600" type="body-sm">
             {leftLabel}
           </ThemedText>
-          <ThemedText className="text-neutral-600" type="small">
+          <ThemedText className="text-neutral-600" type="body-sm">
             {rightLabel}
           </ThemedText>
         </View>

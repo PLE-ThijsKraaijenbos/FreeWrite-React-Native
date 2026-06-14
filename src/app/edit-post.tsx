@@ -62,7 +62,7 @@ export default function EditPostScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <View style={{ paddingTop: top + 16 }} className="px-4">
         <View className="flex-row items-center justify-between">
-          <ThemedText type="subtitle">Edit post</ThemedText>
+          <ThemedText type="h2">Edit post</ThemedText>
           <Pressable onPress={() => router.back()} hitSlop={8}>
             <ThemedText themeColor="textSecondary">Cancel</ThemedText>
           </Pressable>

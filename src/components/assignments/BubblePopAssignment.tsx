@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BackButton } from '@/components/BackButton';
@@ -33,7 +33,7 @@ export function BubblePopAssignment({ content, responseData, onComplete }: Props
       </View>
 
       <View className="flex-1 px-4" style={{ paddingBottom: bottom }}>
-        <ThemedText type="subtitle" className="mb-6">
+        <ThemedText type="h2" className="mb-6">
           {content.title_text}
         </ThemedText>
 
@@ -46,12 +46,13 @@ export function BubblePopAssignment({ content, responseData, onComplete }: Props
         ) : (
           <Bubbles onAllPopped={() => setPoppedAll(true)}>
             {content.thoughts.map((thought, index) => (
-              <Text
+              <ThemedText
                 key={index}
+                type="body-sm-bold"
                 style={styles.bubbleText}
-                className="max-w-[99px] text-center font-body-bold text-body-sm text-neutral-100">
+                className="max-w-[99px] text-center text-neutral-100">
                 {thought.text}
-              </Text>
+              </ThemedText>
             ))}
           </Bubbles>
         )}

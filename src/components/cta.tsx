@@ -1,8 +1,9 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { cssInterop } from 'nativewind';
 import { ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
+import { ThemedText } from '@/components/themed-text';
 import { shadows } from '@/constants/shadows';
 
 cssInterop(LinearGradient, { className: 'style' });
@@ -46,12 +47,13 @@ export function CTAButton({ label, variant = 'primary', size = 'default', disabl
         style={[shadows.drop, disabled && { elevation: 0 }]}
         className={`flex-row justify-center items-center rounded-lg ${small ? 'px-4 py-2' : 'py-3'}`}
       >
-        <Text
+        <ThemedText
+          type={small ? 'h3' : 'h2'}
           style={colored ? [textShadow.white, textShadow.room] : undefined}
-          className={`text-center ${small ? 'text-h3 font-heading-bold' : 'flex-1 text-h2 font-heading-medium'} ${colored ? 'text-neutral-100' : 'text-neutral-600'}`}
+          className={`text-center ${small ? '' : 'flex-1'} ${colored ? 'text-neutral-100' : 'text-neutral-600'}`}
         >
           {label}
-        </Text>
+        </ThemedText>
       </LinearGradient>
     </Pressable>
   );
@@ -83,9 +85,9 @@ export function CTALarge({ label, gradient, icon, onPress }: CTALargeProps) {
         style={shadows.drop}
         className="flex-row items-center gap-2.5 pl-3 pr-4 py-2 rounded-lg"
       >
-        <Text style={[textShadow.white, textShadow.room]} className="flex-1 text-center text-neutral-100 text-h3 font-heading-bold">
+        <ThemedText type="h3" style={[textShadow.white, textShadow.room]} className="flex-1 text-center text-neutral-100">
           {label}
-        </Text>
+        </ThemedText>
         {icon && (
           <View className="w-20 h-20 overflow-hidden">
             {icon}
@@ -116,12 +118,13 @@ export function DoubleCTA({ variant = 'default', leftLabel, rightLabel, onPressL
           style={shadows.drop}
           className="py-3 rounded-lg justify-center items-center"
         >
-          <Text
+          <ThemedText
+            type="h3"
             style={secondary ? [textShadow.white, textShadow.room] : undefined}
-            className={`text-center text-h3 font-heading-bold ${secondary ? 'text-neutral-100' : 'text-neutral-600'}`}
+            className={`text-center ${secondary ? 'text-neutral-100' : 'text-neutral-600'}`}
           >
             {leftLabel}
-          </Text>
+          </ThemedText>
         </LinearGradient>
       </Pressable>
       <Pressable onPress={onPressRight} className="flex-1">
@@ -131,9 +134,9 @@ export function DoubleCTA({ variant = 'default', leftLabel, rightLabel, onPressL
           style={shadows.drop}
           className="py-3 rounded-lg justify-center items-center"
         >
-          <Text style={[textShadow.white, textShadow.room]} className="text-center text-h3 font-heading-bold text-neutral-100">
+          <ThemedText type="h3" style={[textShadow.white, textShadow.room]} className="text-center text-neutral-100">
             {rightLabel}
-          </Text>
+          </ThemedText>
         </LinearGradient>
       </Pressable>
     </View>

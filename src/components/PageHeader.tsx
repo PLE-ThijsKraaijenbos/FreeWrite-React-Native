@@ -1,5 +1,7 @@
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { ThemedText } from '@/components/themed-text';
 
 type Props = {
   subtitle: string;
@@ -14,8 +16,8 @@ export function PageHeader({ subtitle, title, absolute }: Props) {
     <View
       className={`px-4 pb-3 gap-0.5 ${absolute ? 'absolute top-0 left-0 right-0 z-10' : ''}`}
       style={{ paddingTop: top + 4 }}>
-      <Text className="font-body text-body text-neutral-500">{subtitle}</Text>
-      <Text className="font-heading-medium text-h2 text-neutral-600">{title}</Text>
+      <ThemedText type="body">{subtitle}</ThemedText>
+      <ThemedText type="h2">{title}</ThemedText>
     </View>
   );
 }

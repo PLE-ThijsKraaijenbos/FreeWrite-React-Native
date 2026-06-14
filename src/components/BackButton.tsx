@@ -1,6 +1,7 @@
-import { Pressable, Text } from 'react-native';
+import { Pressable } from 'react-native';
 
 import ChevronLeftIcon from '@/assets/icons/chevron-left.svg';
+import { ThemedText } from '@/components/themed-text';
 
 type Props = {
   onPress: () => void;
@@ -21,7 +22,7 @@ export function BackButton({ onPress, variant = 'default' }: Props) {
   return (
     <Pressable onPress={onPress} hitSlop={8} className="flex-row items-center gap-2">
       <ChevronLeftIcon width={24} height={24} color="#2A2924" />
-      <Text className="font-heading-bold text-h3 text-neutral-600">Go back</Text>
+      <ThemedText type="h3">Go back</ThemedText>
     </Pressable>
   );
 }

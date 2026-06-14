@@ -1,7 +1,8 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { cssInterop } from 'nativewind';
-import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
+import { Pressable, ScrollView, StyleSheet } from 'react-native';
 
+import { ThemedText } from '@/components/themed-text';
 import { shadows } from '@/constants/shadows';
 
 cssInterop(LinearGradient, { className: 'style' });
@@ -36,13 +37,14 @@ function Tag({ label, selected, onPress }: { label: string; selected: boolean; o
         style={shadows.drop}
         className="px-4 py-2 rounded-lg justify-center items-center overflow-hidden"
       >
-        <Text
+        <ThemedText
           numberOfLines={1}
+          type="body-sm-bold"
           style={selected ? styles.textShadow : undefined}
-          className={`text-body-sm font-body-bold ${selected ? 'text-neutral-100' : 'text-neutral-600'}`}
+          className={selected ? 'text-neutral-100' : 'text-neutral-600'}
         >
           {label}
-        </Text>
+        </ThemedText>
       </LinearGradient>
     </Pressable>
   );

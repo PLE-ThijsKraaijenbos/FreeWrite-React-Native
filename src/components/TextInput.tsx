@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { NativeSyntheticEvent, TextInput as RNTextInput, TextInputContentSizeChangeEventData, TextInputProps, Text, View } from 'react-native';
+import { NativeSyntheticEvent, TextInput as RNTextInput, TextInputContentSizeChangeEventData, TextInputProps, View } from 'react-native';
 
 import PostageStampIcon from '@/assets/icons/postage-stamp.svg';
+import { ThemedText } from '@/components/themed-text';
 import { shadows } from '@/constants/shadows';
 
 type Props = TextInputProps & {
@@ -9,9 +10,7 @@ type Props = TextInputProps & {
   label?: string;
 };
 
-const LETTER_FONT_SIZE = 20;
 const LETTER_LINE_HEIGHT = 26;
-const JOURNAL_FONT_SIZE = 16;
 const JOURNAL_LINE_HEIGHT = 22;
 const JOURNAL_MARGIN = 32;
 
@@ -29,7 +28,7 @@ export function TextInput({ variant = 'default', label, placeholder, value, onCh
     return (
       <View style={shadows.drop} className="rounded-lg bg-secondary-100 border-4 border-secondary-300 p-4">
         <View className="flex-row justify-between items-start pb-2">
-          <Text className="text-body font-body text-neutral-600">Dear me,</Text>
+          <ThemedText type="body" className="text-neutral-600">Dear me,</ThemedText>
           <PostageStampIcon width={24} height={24} />
         </View>
         <View style={{ position: 'relative', minHeight: minLines * LETTER_LINE_HEIGHT }}>
@@ -55,10 +54,8 @@ export function TextInput({ variant = 'default', label, placeholder, value, onCh
             onChangeText={onChangeText}
             textAlignVertical="top"
             onContentSizeChange={handleContentSizeChange}
+            className="text-body font-body"
             style={{
-              fontSize: LETTER_FONT_SIZE,
-              lineHeight: LETTER_LINE_HEIGHT,
-              fontFamily: 'Inter_400Regular',
               color: '#2A2924',
               minHeight: minLines * LETTER_LINE_HEIGHT,
               backgroundColor: 'transparent',
@@ -105,20 +102,18 @@ export function TextInput({ variant = 'default', label, placeholder, value, onCh
             </View>
           ))}
           {!value && (
-            <Text
+            <ThemedText
+              type="body-sm"
               style={{
                 position: 'absolute',
                 top: 0,
                 left: JOURNAL_MARGIN + 8,
                 right: 16,
-                fontSize: JOURNAL_FONT_SIZE,
-                lineHeight: JOURNAL_LINE_HEIGHT,
-                fontFamily: 'Inter_400Regular',
                 color: '#8F8D84',
                 pointerEvents: 'none',
               }}>
               {placeholder ?? 'Reflect on your thoughts, feelings and experiences...'}
-            </Text>
+            </ThemedText>
           )}
           <RNTextInput
             {...rest}
@@ -128,10 +123,8 @@ export function TextInput({ variant = 'default', label, placeholder, value, onCh
             onChangeText={onChangeText}
             textAlignVertical="top"
             onContentSizeChange={handleContentSizeChange}
+            className="text-body-sm font-body"
             style={{
-              fontSize: JOURNAL_FONT_SIZE,
-              lineHeight: JOURNAL_LINE_HEIGHT,
-              fontFamily: 'Inter_400Regular',
               color: '#2A2924',
               minHeight: minLines * JOURNAL_LINE_HEIGHT,
               backgroundColor: 'transparent',
@@ -160,7 +153,7 @@ export function TextInput({ variant = 'default', label, placeholder, value, onCh
 
   return (
     <View>
-      {label && <Text className="text-body font-body-bold text-neutral-500 pb-1">{label}</Text>}
+      {label && <ThemedText type="body-bold" className="pb-1">{label}</ThemedText>}
       <View
         style={shadows.drop}
         className={`rounded-lg bg-neutral-200 flex-row ${multiline ? 'items-start' : 'items-center'} px-4 py-2`}>

@@ -1,6 +1,8 @@
 import { useRouter } from 'expo-router';
 import { Controller, useFormContext } from 'react-hook-form';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+
+import { ThemedText } from '@/components/themed-text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CTAButton } from '@/components/cta';
@@ -30,7 +32,10 @@ export default function FrequencyScreen() {
     <View className="flex-1 p-6" style={{ paddingBottom: bottom + 24 }}>
       <OnboardingHeader filled={5} length={6} />
       <View className="flex-1 gap-6 justify-center">
-        <Text className="text-2xl font-bold">How often do you use?</Text>
+        <View className="gap-2">
+          <ThemedText type="h2" className="text-center">How often do you use?</ThemedText>
+          <ThemedText type="body" className="text-center">This helps us personalise your journey.</ThemedText>
+        </View>
         <Controller
           control={control}
           name="frequency"

@@ -24,7 +24,9 @@
       "Bash(ls scripts *)",
       "Bash(find . -name \"search.py\")",
       "Bash(npx eslint *)",
-      "Bash(git rm *)"
+      "Bash(git rm *)",
+      "WebFetch(domain:docs.expo.dev)",
+      "Bash(node -e \"const c=require\\('./tailwind.config.js'\\); console.log\\('colors.neutral[500]=', c.theme.extend.colors.neutral[500]\\); console.log\\('fontSize.h2=', JSON.stringify\\(c.theme.extend.fontSize.h2\\)\\); console.log\\('fontFamily heading-bold=', c.theme.extend.fontFamily['heading-bold']\\);\")"
     ],
     "additionalDirectories": [
       "C:\\FreeWrite-Django"

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Text, View, useWindowDimensions } from 'react-native';
+import { View, useWindowDimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   Easing,
@@ -11,6 +11,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import { ThemedText } from '@/components/themed-text';
 import { shadows } from '@/constants/shadows';
 
 const SWIPE_THRESHOLD = 80;
@@ -62,9 +63,9 @@ export function SwipeOption({ text, onSwipeLeft, onSwipeRight }: Props) {
         style={cardStyle}
         className="absolute inset-0 z-10 flex-row items-center justify-center">
         <View style={shadows.drop} className="flex-1 items-center justify-center self-stretch rounded-lg bg-neutral-100 p-8">
-          <Text className="max-w-[210px] text-center font-heading-medium text-h2 text-neutral-600">
+          <ThemedText type="h2" className="max-w-[210px] text-center">
             {text}
-          </Text>
+          </ThemedText>
         </View>
       </Animated.View>
     </GestureDetector>

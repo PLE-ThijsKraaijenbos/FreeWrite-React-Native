@@ -1,7 +1,9 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+
+import { ThemedText } from '@/components/themed-text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CTAButton } from '@/components/cta';
@@ -47,11 +49,11 @@ export default function AvatarScreen() {
     <View className="flex-1 p-6" style={{ paddingBottom: bottom + 24 }}>
       <View className="flex-1 gap-6 justify-center">
         <View className="gap-2">
-          <Text className="text-2xl font-bold">Choose your character</Text>
-          <Text>
+          <ThemedText type="h2" className="text-center">Choose your character</ThemedText>
+          <ThemedText type="body" className="text-center">
             Pick one of the default avatars and give yourself a name. Throughout your journey you
             will unlock different items which you can equip on your avatar.
-          </Text>
+          </ThemedText>
         </View>
         <Controller
           control={control}

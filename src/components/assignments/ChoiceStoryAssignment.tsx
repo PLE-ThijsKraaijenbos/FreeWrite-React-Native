@@ -62,7 +62,7 @@ export function ChoiceStoryAssignment({ content, responseData, onComplete }: Pro
       </View>
 
       <ScrollView className="flex-1 px-4">
-        <ThemedText type="subtitle" className="mb-6">
+        <ThemedText type="h2" className="mb-6">
           {content.title_text}
         </ThemedText>
 
@@ -76,7 +76,7 @@ export function ChoiceStoryAssignment({ content, responseData, onComplete }: Pro
                     <ThemedText>{node?.text}</ThemedText>
                   </View>
                   <View className="self-end px-3.5 py-2 rounded-full bg-primary">
-                    <ThemedText className="text-white font-semibold">
+                    <ThemedText type="body-bold" className="text-white">
                       {entry.choiceLabel}
                     </ThemedText>
                   </View>
@@ -103,7 +103,7 @@ export function ChoiceStoryAssignment({ content, responseData, onComplete }: Pro
                     onPress={() => handleChoice(choice.label, choice.next)}
                     className="py-4 px-4 rounded-xl"
                     style={{ backgroundColor: theme.backgroundElement }}>
-                    <ThemedText className="font-semibold">{choice.label}</ThemedText>
+                    <ThemedText type="body-bold">{choice.label}</ThemedText>
                   </Pressable>
                 ))}
               </View>

@@ -3,7 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { cssInterop } from 'nativewind';
 import { useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ChatBubbleIcon from '@/assets/icons/chat-bubble-outline.svg';
@@ -13,6 +13,7 @@ import { BackButton } from '@/components/BackButton';
 import { CTAButton } from '@/components/cta';
 import { Divider } from '@/components/Divider';
 import { TextInput } from '@/components/TextInput';
+import { ThemedText } from '@/components/themed-text';
 import { shadows } from '@/constants/shadows';
 import { useLikePost, usePost } from '@/hooks/use-community';
 
@@ -30,10 +31,10 @@ function CommentCard({ comment }: { comment: Comment }) {
       end={{ x: 0, y: 1 }}
       style={shadows.drop}
       className="rounded-lg px-4 py-3 gap-1">
-      <Text className="font-body text-body-sm text-neutral-500">{comment.body}</Text>
+      <ThemedText type="body-sm" className="text-neutral-500">{comment.body}</ThemedText>
       <View className="flex-row items-center gap-0.5">
         <HeartOutlineIcon width={24} height={24} color="#2A2924" />
-        <Text className="font-body text-body-sm text-neutral-600">{comment.likes_count}</Text>
+        <ThemedText type="body-sm" className="text-neutral-600">{comment.likes_count}</ThemedText>
       </View>
     </LinearGradient>
   );
@@ -58,7 +59,7 @@ export default function CommunityPostScreen() {
   if (!post) {
     return (
       <View className="flex-1 items-center justify-center bg-neutral-100 px-4">
-        <Text className="font-body text-body text-neutral-500">Post not found.</Text>
+        <ThemedText type="body" className="text-neutral-500">Post not found.</ThemedText>
       </View>
     );
   }
@@ -77,8 +78,8 @@ export default function CommunityPostScreen() {
         )}
 
         <View className="px-4 pt-4 gap-3">
-          <Text className="font-heading-bold text-h2 text-neutral-600">{post.title}</Text>
-          <Text className="font-body text-body-sm text-neutral-500">{post.body}</Text>
+          <ThemedText type="h2">{post.title}</ThemedText>
+          <ThemedText type="body-sm" className="text-neutral-500">{post.body}</ThemedText>
 
           <View className="flex-row items-center gap-4">
             <Pressable
@@ -91,11 +92,11 @@ export default function CommunityPostScreen() {
               ) : (
                 <HeartOutlineIcon width={24} height={24} color="#2A2924" />
               )}
-              <Text className="font-body text-body-sm text-neutral-600">{post.likes_count}</Text>
+              <ThemedText type="body-sm" className="text-neutral-600">{post.likes_count}</ThemedText>
             </Pressable>
             <View className="flex-row items-center gap-0.5">
               <ChatBubbleIcon width={24} height={24} color="#2A2924" />
-              <Text className="font-body text-body-sm text-neutral-600">{DUMMY_COMMENTS.length}</Text>
+              <ThemedText type="body-sm" className="text-neutral-600">{DUMMY_COMMENTS.length}</ThemedText>
             </View>
           </View>
 
@@ -118,7 +119,7 @@ export default function CommunityPostScreen() {
 
           <Divider />
 
-          <Text className="font-heading-bold text-h2 text-neutral-600">Comments</Text>
+          <ThemedText type="h2">Comments</ThemedText>
           <View className="gap-3">
             {DUMMY_COMMENTS.map((c) => (
               <CommentCard key={c.id} comment={c} />

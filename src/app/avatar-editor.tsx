@@ -5,7 +5,6 @@ import { useRef, useState } from 'react';
 
 import { useAvatarItems, useEquipAvatarItem, useUnequipAvatarItem } from '@/api/avatar-items';
 import { patchAvatarUrlApi } from '@/api/auth';
-import { AppTabBar } from '@/components/AppTabBar';
 import { AvatarDisplay } from '@/components/AvatarDisplay';
 import { AvatarItemCard } from '@/components/AvatarItemCard';
 import { BackButton } from '@/components/BackButton';
@@ -173,10 +172,7 @@ export default function AvatarEditorScreen() {
               refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}>
               {sections.map((section) => (
                 <View key={section.key}>
-                  <ThemedText
-                    type="smallBold"
-                    themeColor="textSecondary"
-                    className="px-4 mt-6 mb-2">
+                  <ThemedText type="h3" className="px-4 mt-6 mb-2">
                     {section.title.toUpperCase()}
                   </ThemedText>
                   {chunk(section.items, 2).map((row, i) => (
@@ -214,8 +210,6 @@ export default function AvatarEditorScreen() {
         )}
         <CTAButton label={saving ? 'Saving…' : 'Save'} onPress={handleSave} disabled={saving} />
       </View>
-
-      <AppTabBar />
     </View>
   );
 }

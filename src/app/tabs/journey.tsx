@@ -47,7 +47,7 @@ function StepCircle({
       <View
         className="w-14 h-14 rounded-full items-center justify-center"
         style={{ backgroundColor: dotColor }}>
-        <ThemedText className="text-white text-lg font-bold">
+        <ThemedText type="body-bold" className="text-white">
           {statusLabel || String(progress.step.order)}
         </ThemedText>
       </View>

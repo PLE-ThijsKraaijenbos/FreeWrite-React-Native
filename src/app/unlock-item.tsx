@@ -51,12 +51,12 @@ export default function UnlockItemScreen() {
 
       <View className="flex-1 px-4" style={{ paddingBottom: bottom + 16 }}>
         <View className="items-center">
-          <ThemedText type="body-lg" className="mt-6 text-center max-w-[340px]">
-            Do you want to unlock <ThemedText type="body-lg" className="font-body-bold">{item.name}</ThemedText> for
+          <ThemedText type="body-lg" className="mt-6 text-center max-w-[340px] text-neutral-600">
+            Do you want to unlock <ThemedText type="body-lg-bold" className="text-neutral-600">{item.name}</ThemedText> for
           </ThemedText>
           <View className="mt-1 flex-row items-center gap-1">
             <CoinIcon width={32} height={32} />
-            <ThemedText className="text-body-lg font-body-bold text-secondary-400">{item.price}</ThemedText>
+            <ThemedText type="body-lg-bold" className="text-secondary-400">{item.price}</ThemedText>
           </View>
 
           <View className="my-6 w-full">

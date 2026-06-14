@@ -34,7 +34,7 @@ export function ScaleAssignment({ content, responseData, onComplete }: Props) {
       </View>
 
       <View className="flex-1 justify-center px-6">
-        <ThemedText type="subtitle" className="mb-12">
+        <ThemedText type="h2" className="mb-12">
           {content.title_text}
         </ThemedText>
 

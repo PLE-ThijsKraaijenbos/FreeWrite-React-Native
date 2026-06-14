@@ -7,13 +7,15 @@ import '@/global.css';
 
 import { Platform } from 'react-native';
 
+import { colors } from '@/constants/tokens';
+
 export const Colors = {
   light: {
-    text: '#000000',
-    background: '#FAFAF8',
+    text: colors.neutral[500],
+    background: colors.neutral[100],
     backgroundElement: '#F0F0F3',
     backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
+    textSecondary: colors.neutral[400],
   },
   dark: {
     text: '#ffffff',

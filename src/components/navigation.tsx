@@ -1,9 +1,10 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { cssInterop } from 'nativewind';
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { ThemedText } from '@/components/themed-text';
 import { shadows } from '@/constants/shadows';
 
 import ChatBubbleIcon from '@/assets/icons/chat-bubble.svg';
@@ -67,11 +68,12 @@ export function Navigation({ activeTab, onTabPress, variant = 'icon-only' }: Nav
               </View>
             )}
             {showLabel && (
-              <Text
-                className={`text-body-sm font-body mt-1 ${isActive ? 'text-primary-400' : 'text-neutral-400'}`}
+              <ThemedText
+                type="body-sm"
+                className={`mt-1 ${isActive ? 'text-primary-400' : 'text-neutral-400'}`}
               >
                 {label}
-              </Text>
+              </ThemedText>
             )}
           </TouchableOpacity>
         );

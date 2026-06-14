@@ -1,6 +1,8 @@
 import { useRouter } from 'expo-router';
 import { Controller, useFormContext } from 'react-hook-form';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+
+import { ThemedText } from '@/components/themed-text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CTAButton } from '@/components/cta';
@@ -31,8 +33,8 @@ export default function SubstanceScreen() {
       <OnboardingHeader filled={1} length={6} />
       <View className="flex-1 gap-6 justify-center">
         <View className="gap-2">
-          <Text className="text-2xl font-bold">What are you struggling with?</Text>
-          <Text>This helps us personalise your journey.</Text>
+          <ThemedText type="h2" className="text-center">What are you struggling with?</ThemedText>
+          <ThemedText type="body" className="text-center">This helps us personalise your journey.</ThemedText>
         </View>
         <Controller
           control={control}

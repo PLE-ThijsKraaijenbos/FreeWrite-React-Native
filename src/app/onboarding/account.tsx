@@ -2,7 +2,9 @@ import { isAxiosError } from 'axios';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import { Alert, Text, View } from 'react-native';
+import { Alert, View } from 'react-native';
+
+import { ThemedText } from '@/components/themed-text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AuthSelection } from '@/components/onboarding/AuthSelection';
@@ -52,7 +54,12 @@ export default function AccountScreen() {
   return (
     <View className="flex-1 p-6" style={{ paddingBottom: bottom + 24 }}>
       <View className="flex-1 gap-6 justify-center">
-        <Text className="text-2xl font-bold">{isRegister ? 'Create your account' : 'Welcome back'}</Text>
+        <View className="gap-2">
+          <ThemedText type="h2" className="text-center">Welcome</ThemedText>
+          <ThemedText type="body" className="text-center">
+            Whenever you're ready create an account to begin, or log in to continue your journey.
+          </ThemedText>
+        </View>
         <AuthSelection
           selected={mode}
           onSelectRegister={() => setMode('register')}
@@ -75,7 +82,7 @@ export default function AccountScreen() {
               />
             )}
           />
-          {errors.email && <Text className="text-red-500">{errors.email.message}</Text>}
+          {errors.email && <ThemedText type="body-sm" className="text-red-500">{errors.email.message}</ThemedText>}
         </View>
         <View className="gap-2">
           <Controller
@@ -93,7 +100,7 @@ export default function AccountScreen() {
               />
             )}
           />
-          {errors.password && <Text className="text-red-500">{errors.password.message}</Text>}
+          {errors.password && <ThemedText type="body-sm" className="text-red-500">{errors.password.message}</ThemedText>}
         </View>
       </View>
       <CTAButton

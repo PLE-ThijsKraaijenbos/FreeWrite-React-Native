@@ -55,7 +55,7 @@ export function SpeechBubbleAssignment({ content, responseData, onComplete }: Pr
 
       {isReadOnly ? (
         <ScrollView className="flex-1 px-4" contentContainerClassName="pb-8">
-          <ThemedText type="subtitle" className="mb-6">
+          <ThemedText type="h2" className="mb-6">
             {content.title_text}
           </ThemedText>
           {saved!.classifications!.map((item, index) => (
@@ -66,7 +66,7 @@ export function SpeechBubbleAssignment({ content, responseData, onComplete }: Pr
               <ThemedText className="mb-2">{item.bubble}</ThemedText>
               <View
                 className={`self-start px-3 py-1 rounded-full ${item.attribution === 'self' ? 'bg-primary' : 'bg-amber-500'}`}>
-                <ThemedText className="text-white text-xs font-semibold">
+                <ThemedText type="body-sm-bold" className="text-white">
                   {item.attribution === 'self' ? 'Me' : 'Addiction'}
                 </ThemedText>
               </View>
@@ -76,7 +76,7 @@ export function SpeechBubbleAssignment({ content, responseData, onComplete }: Pr
       ) : (
         <>
           <View className="px-4 mb-4">
-            <ThemedText type="subtitle">{content.title_text}</ThemedText>
+            <ThemedText type="h2">{content.title_text}</ThemedText>
             <ThemedText themeColor="textSecondary" className="mt-1">
               {isDone ? 'All done!' : `${currentIndex + 1} of ${total}`}
             </ThemedText>
@@ -98,7 +98,7 @@ export function SpeechBubbleAssignment({ content, responseData, onComplete }: Pr
           {!isDone && (
             <ThemedText
               themeColor="textSecondary"
-              className="text-center text-[13px] mb-3">
+              className="text-center text-body-sm mb-3">
               ← addiction · me →
             </ThemedText>
           )}
@@ -111,12 +111,12 @@ export function SpeechBubbleAssignment({ content, responseData, onComplete }: Pr
                 <Pressable
                   onPress={() => handleSwipe('addiction')}
                   className="flex-1 items-center py-4 rounded-xl bg-amber-500">
-                  <ThemedText className="text-white font-semibold">Addiction</ThemedText>
+                  <ThemedText type="body-bold" className="text-white">Addiction</ThemedText>
                 </Pressable>
                 <Pressable
                   onPress={() => handleSwipe('self')}
                   className="flex-1 items-center py-4 rounded-xl bg-primary">
-                  <ThemedText className="text-white font-semibold">Me</ThemedText>
+                  <ThemedText type="body-bold" className="text-white">Me</ThemedText>
                 </Pressable>
               </>
             )}

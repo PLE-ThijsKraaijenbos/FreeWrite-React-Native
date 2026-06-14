@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import React from 'react';
-import { colorScheme } from 'nativewind';
+import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import {
   Unbounded_500Medium,
@@ -21,8 +21,6 @@ import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { AuthProvider } from '@/lib/auth-context';
 
 SplashScreen.preventAutoHideAsync();
-
-colorScheme.set('light');
 
 const queryClient = new QueryClient();
 
@@ -46,6 +44,7 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider value={DefaultTheme}>
           <AuthProvider>
+            <StatusBar style="dark" />
             <AnimatedSplashOverlay />
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="add-post" options={{ presentation: 'modal' }} />

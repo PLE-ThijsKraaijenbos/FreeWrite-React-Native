@@ -1,7 +1,8 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { cssInterop } from 'nativewind';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 
+import { ThemedText } from '@/components/themed-text';
 import { shadows } from '@/constants/shadows';
 
 cssInterop(LinearGradient, { className: 'style' });
@@ -39,19 +40,21 @@ export function SelectOption({ label, subtitle, size = 'default', selected = fal
         style={shadows.drop}
         className="min-h-[70px] px-4 py-3 rounded-lg justify-center items-center gap-1"
       >
-        <Text
+        <ThemedText
+          type={small ? 'body-bold' : 'body-lg-bold'}
           style={[shadow.room, selected && shadow.text]}
-          className={`self-stretch text-center font-body-bold ${small ? 'text-h3' : 'text-h2'} ${selected ? 'text-neutral-100' : 'text-neutral-600'}`}
+          className={`self-stretch text-center ${selected ? 'text-neutral-100' : 'text-neutral-600'}`}
         >
           {label}
-        </Text>
+        </ThemedText>
         {subtitle && (
-          <Text
+          <ThemedText
+            type="body-sm"
             style={[shadow.room, selected && shadow.text]}
-            className={`self-stretch text-center text-body-sm font-body ${selected ? 'text-neutral-200' : 'text-neutral-500'}`}
+            className={`self-stretch text-center ${selected ? 'text-neutral-200' : 'text-neutral-500'}`}
           >
             {subtitle}
-          </Text>
+          </ThemedText>
         )}
       </LinearGradient>
     </Pressable>

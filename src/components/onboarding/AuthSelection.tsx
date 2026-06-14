@@ -1,5 +1,6 @@
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
+import { ThemedText } from '@/components/themed-text';
 import { shadows } from '@/constants/shadows';
 
 interface AuthSelectionProps {
@@ -16,9 +17,9 @@ export function AuthSelection({ selected, onSelectRegister, onSelectLogin }: Aut
           onPress={onSelectRegister}
           className={`flex-1 items-center justify-center py-4 ${selected === 'register' ? 'bg-secondary-400' : ''}`}
         >
-          <Text className={`text-body-lg font-body-bold text-center ${selected === 'register' ? 'text-neutral-100' : 'text-neutral-600'}`}>
+          <ThemedText type="body-lg-bold" className={`text-center ${selected === 'register' ? 'text-neutral-100' : 'text-neutral-600'}`}>
             Create account
-          </Text>
+          </ThemedText>
         </Pressable>
 
         <View className="w-px bg-neutral-400" />
@@ -27,9 +28,9 @@ export function AuthSelection({ selected, onSelectRegister, onSelectLogin }: Aut
           onPress={onSelectLogin}
           className={`flex-1 items-center justify-center py-4 ${selected === 'login' ? 'bg-secondary-400' : ''}`}
         >
-          <Text className={`text-body-lg font-body-bold text-center ${selected === 'login' ? 'text-neutral-100' : 'text-neutral-600'}`}>
+          <ThemedText type="body-lg-bold" className={`text-center ${selected === 'login' ? 'text-neutral-100' : 'text-neutral-600'}`}>
             Log in
-          </Text>
+          </ThemedText>
         </Pressable>
       </View>
     </View>

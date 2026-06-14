@@ -56,7 +56,7 @@ function AvatarItemCardComponent({ item, baseUrl, variant = 'shop', hint, disabl
           />
           <View className="gap-0.5 px-2 pt-1">
             <ThemedText
-              type="smallBold"
+              type="body-sm-bold"
               className={equipped ? 'text-neutral-100' : 'text-neutral-500'}
               style={equipped ? labelShadow.white : undefined}>
               {item.name}
@@ -64,13 +64,13 @@ function AvatarItemCardComponent({ item, baseUrl, variant = 'shop', hint, disabl
             {showPrice && (
               <View className="h-6 flex-row items-center gap-0.5">
                 <CoinIcon width={24} height={24} />
-                <ThemedText type="smallBold" className="text-secondary-400">
+                <ThemedText type="body-sm-bold" className="text-secondary-400">
                   {item.price}
                 </ThemedText>
               </View>
             )}
             {hint && (
-              <ThemedText type="small" className="text-neutral-400">
+              <ThemedText type="body-sm" className="text-neutral-400">
                 {hint}
               </ThemedText>
             )}
