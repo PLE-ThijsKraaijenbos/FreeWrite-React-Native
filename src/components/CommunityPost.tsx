@@ -23,7 +23,7 @@ export function CommunityPost({ post }: Props) {
   const { mutate: toggleLike, isPending } = useLikePost();
   const { mutate: deletePost } = useDeletePost();
 
-  const openDetail = () => router.push({ pathname: '/tabs/community/[id]', params: { id: post.id } });
+  const openDetail = () => router.push({ pathname: '/community/[id]', params: { id: post.id } });
 
   const handleEdit = () => {
     router.push({

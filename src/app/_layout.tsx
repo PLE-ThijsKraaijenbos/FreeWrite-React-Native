@@ -47,7 +47,14 @@ export default function RootLayout() {
         <ThemeProvider value={DefaultTheme}>
           <AuthProvider>
             <AnimatedSplashOverlay />
-            <Stack screenOptions={{ headerShown: false }} />
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="add-post" options={{ presentation: 'modal' }} />
+              <Stack.Screen name="edit-post" options={{ presentation: 'modal' }} />
+              <Stack.Screen name="unlock-item" options={{ presentation: 'modal' }} />
+              <Stack.Screen name="journey/assignment" options={{ presentation: 'modal' }} />
+              <Stack.Screen name="journey/[progressId]" options={{ presentation: 'modal' }} />
+              <Stack.Screen name="community/[id]" options={{ presentation: 'modal' }} />
+            </Stack>
           </AuthProvider>
         </ThemeProvider>
       </QueryClientProvider>

@@ -25,7 +25,7 @@ const TABS = [
 ];
 
 interface NavigationProps {
-  activeTab: TabKey;
+  activeTab: TabKey | null;
   onTabPress: (tab: TabKey) => void;
   variant?: Variant;
 }

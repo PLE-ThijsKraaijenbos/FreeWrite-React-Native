@@ -10,6 +10,7 @@ function chunk<T>(arr: T[], size: number): T[][] {
 }
 
 import { useAvatarItems } from '@/api/avatar-items';
+import { AppTabBar } from '@/components/AppTabBar';
 import { AvatarDisplay } from '@/components/AvatarDisplay';
 import { AvatarItemCard } from '@/components/AvatarItemCard';
 import { BackButton } from '@/components/BackButton';
@@ -163,6 +164,8 @@ export default function ShopScreen() {
           windowSize={7}
         />
       )}
+
+      <AppTabBar />
     </View>
   );
 }

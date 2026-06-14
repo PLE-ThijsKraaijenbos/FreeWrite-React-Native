@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as ImagePicker from 'expo-image-picker';
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
@@ -60,8 +60,6 @@ export default function EditPostScreen() {
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: theme.background }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <Stack.Screen options={{ presentation: 'modal' }} />
-
       <View style={{ paddingTop: top + 16 }} className="px-4">
         <View className="flex-row items-center justify-between">
           <ThemedText type="subtitle">Edit post</ThemedText>

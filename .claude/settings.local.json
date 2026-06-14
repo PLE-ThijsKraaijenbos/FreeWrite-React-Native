@@ -23,7 +23,8 @@
       "Read(//c/Users/Cosmo/.claude/plugins/cache/ui-ux-pro-max-skill/ui-ux-pro-max/2.5.0/.claude/skills/ui-ux-pro-max/**)",
       "Bash(ls scripts *)",
       "Bash(find . -name \"search.py\")",
-      "Bash(npx eslint *)"
+      "Bash(npx eslint *)",
+      "Bash(git rm *)"
     ],
     "additionalDirectories": [
       "C:\\FreeWrite-Django"

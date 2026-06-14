@@ -5,6 +5,7 @@ import { useRef, useState } from 'react';
 
 import { useAvatarItems, useEquipAvatarItem, useUnequipAvatarItem } from '@/api/avatar-items';
 import { patchAvatarUrlApi } from '@/api/auth';
+import { AppTabBar } from '@/components/AppTabBar';
 import { AvatarDisplay } from '@/components/AvatarDisplay';
 import { AvatarItemCard } from '@/components/AvatarItemCard';
 import { BackButton } from '@/components/BackButton';
@@ -49,7 +50,7 @@ function chunk<T>(arr: T[], size: number): T[][] {
 export default function AvatarEditorScreen() {
   const router = useRouter();
   const theme = useTheme();
-  const { top, bottom } = useSafeAreaInsets();
+  const { top } = useSafeAreaInsets();
   const { user, updateUser } = useAuth();
   const { data: items = [], isLoading, refetch, isRefetching } = useAvatarItems();
   const { mutateAsync: equip } = useEquipAvatarItem();
@@ -205,7 +206,7 @@ export default function AvatarEditorScreen() {
         )}
       </View>
 
-      <View className="px-4 pt-2" style={{ paddingBottom: bottom + 16 }}>
+      <View className="px-4 pt-2 pb-4">
         {saveError && (
           <ThemedText className="text-center pb-2" themeColor="textSecondary">
             {saveError}
@@ -213,6 +214,8 @@ export default function AvatarEditorScreen() {
         )}
         <CTAButton label={saving ? 'Saving…' : 'Save'} onPress={handleSave} disabled={saving} />
       </View>
+
+      <AppTabBar />
     </View>
   );
 }
