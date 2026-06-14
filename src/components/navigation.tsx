@@ -36,7 +36,7 @@ export function Navigation({ activeTab, onTabPress, variant = 'icon-only' }: Nav
 
   return (
     <View
-      className="flex-row items-center justify-around bg-neutral-100 border-t border-neutral-200 px-4 pt-3"
+      className="flex-row items-center justify-around bg-neutral-100 border-t-2 border-neutral-200 px-4 pt-3"
       style={{ paddingBottom: bottom + 12 }}
     >
       {TABS.map(({ key, label, Icon, OutlineIcon }) => {
