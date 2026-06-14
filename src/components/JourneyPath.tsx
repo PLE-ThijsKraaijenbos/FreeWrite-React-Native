@@ -55,7 +55,7 @@ export function JourneyPath({ points, width, height }: JourneyPathProps) {
       style={{ position: 'absolute', left: 0, top: 0 }}>
       <Path
         d={d}
-        stroke={colors.primary[100]}
+        stroke={colors.secondary[100]}
         strokeWidth={8}
         strokeDasharray={[40]}
         strokeLinecap="square"

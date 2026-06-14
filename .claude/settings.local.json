@@ -26,7 +26,8 @@
       "Bash(npx eslint *)",
       "Bash(git rm *)",
       "WebFetch(domain:docs.expo.dev)",
-      "Bash(node -e \"const c=require\\('./tailwind.config.js'\\); console.log\\('colors.neutral[500]=', c.theme.extend.colors.neutral[500]\\); console.log\\('fontSize.h2=', JSON.stringify\\(c.theme.extend.fontSize.h2\\)\\); console.log\\('fontFamily heading-bold=', c.theme.extend.fontFamily['heading-bold']\\);\")"
+      "Bash(node -e \"const c=require\\('./tailwind.config.js'\\); console.log\\('colors.neutral[500]=', c.theme.extend.colors.neutral[500]\\); console.log\\('fontSize.h2=', JSON.stringify\\(c.theme.extend.fontSize.h2\\)\\); console.log\\('fontFamily heading-bold=', c.theme.extend.fontFamily['heading-bold']\\);\")",
+      "PowerShell(npx tsc --noEmit -p C:\\\\FreeWrite-React-Native\\\\tsconfig.json)"
     ],
     "additionalDirectories": [
       "C:\\FreeWrite-Django"

@@ -4,6 +4,7 @@ import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import Animated, { Easing, SlideInDown, SlideOutDown } from 'react-native-reanimated';
 
 import { CTASmall } from '@/components/cta';
+import { JourneyBackground } from '@/components/JourneyBackground';
 import { JourneyMarker } from '@/components/JourneyMarker';
 import { JourneyNodes } from '@/components/JourneyNodes';
 import { JourneyPath } from '@/components/JourneyPath';
@@ -50,6 +51,7 @@ export default function JourneyScreen() {
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [width, setWidth] = useState(0);
+  const [headerHeight, setHeaderHeight] = useState(0);
 
   const offsetsRef = useRef(new Map<string, { x: number; y: number }>());
   const getOffset = (id: string) => {
@@ -141,7 +143,11 @@ export default function JourneyScreen() {
 
   return (
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
-      <PageHeader subtitle="Write your own" title="Story" />
+      <JourneyBackground topInset={headerHeight} />
+
+      <View onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}>
+        <PageHeader subtitle="Write your own" title="Story" />
+      </View>
 
       {isLoading ? (
         <ThemedText className="text-center mt-12" themeColor="textSecondary">
