@@ -1,33 +1,23 @@
 import { Image } from 'expo-image';
 import { cssInterop } from 'nativewind';
+import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
 
-// expo-image isn't NativeWind-interop'd by default, so className would be
-// ignored (and the image would render at zero size). Wire it up once here.
 cssInterop(Image, { className: 'style' });
 
 type Props = {
   uri?: string | null;
-  // `small` is the default head-and-shoulders hero used on the home, editor and
-  // shop screens; `large` is the taller bust framing for the buy confirmation.
   size?: 'small' | 'large';
-  // Card chrome = the green background, bottom border and radial glow. Off for the
-  // small shop thumbnails: they sit bare on their own card surface, and dropping
-  // the per-card Svg glow also keeps the grid scrolling smoothly.
   chrome?: boolean;
   className?: string;
 };
 
-export function AvatarDisplay({ uri, size = 'small', chrome = true, className }: Props) {
+function AvatarDisplayComponent({ uri, size = 'small', chrome = true, className }: Props) {
   const large = size === 'large';
-  // The bare card thumbnail: scale the avatar up and use a shorter frame so the
-  // head sits right under the label instead of floating with a gap above it.
   const thumb = !large && !chrome;
 
   return (
-    // The avatar is clipped at the bottom so only the head and shoulders show,
-    // matching the Figma frame.
     <View
       className={`w-full items-center justify-end overflow-hidden ${chrome ? 'bg-primary-200 border-b-2 border-neutral-200' : ''} ${large ? 'aspect-square' : thumb ? 'aspect-[1.5]' : 'aspect-[1.4]'} ${className ?? ''}`}>
       {/* Soft white glow behind the avatar (radial fade to transparent). */}
@@ -53,3 +43,5 @@ export function AvatarDisplay({ uri, size = 'small', chrome = true, className }:
     </View>
   );
 }
+
+export const AvatarDisplay = memo(AvatarDisplayComponent);

@@ -38,10 +38,11 @@ const CATEGORY_LABELS: Record<string, string> = {
   skinColor: 'Skin Colors',
 };
 
-// One FlatList entry: either a section header or a row of up to two item cards.
+type ShopItem = { item: AvatarItem; hint: string | null; uri: string };
+
 type ShopRow =
   | { type: 'header'; key: string; title: string }
-  | { type: 'items'; key: string; items: AvatarItem[] };
+  | { type: 'items'; key: string; items: ShopItem[] };
 
 export default function ShopScreen() {
   const router = useRouter();
@@ -74,14 +75,21 @@ export default function ShopScreen() {
       ? allSections.filter((s) => s.key === selectedCategory)
       : allSections;
     const result: ShopRow[] = [];
+    const params = baseUrl ? parseAvatarParams(baseUrl) : {};
+    
     for (const section of sections) {
       result.push({ type: 'header', key: `h:${section.key}`, title: section.title });
-      chunk(section.items, 2).forEach((rowItems, i) =>
-        result.push({ type: 'items', key: `r:${section.key}:${i}`, items: rowItems })
-      );
+      chunk(section.items, 2).forEach((rowItems, i) => {
+        const itemsWithMetadata: ShopItem[] = rowItems.map((item) => ({
+          item,
+          hint: prerequisiteHint(item.param_key, params),
+          uri: previewItemUrl(baseUrl, item, { png: true, size: 128 }),
+        }));
+        result.push({ type: 'items', key: `r:${section.key}:${i}`, items: itemsWithMetadata });
+      });
     }
     return result;
-  }, [allSections, selectedCategory]);
+  }, [allSections, selectedCategory, baseUrl]);
 
   const handlePress = useCallback(
     (item: AvatarItem) => {
@@ -103,19 +111,17 @@ export default function ShopScreen() {
       }
       return (
         <View className="flex-row w-full">
-          {row.items.map((item) => {
-            const hint = baseUrl ? prerequisiteHint(item.param_key, parseAvatarParams(baseUrl)) : null;
-            return (
-              <AvatarItemCard
-                key={item.id}
-                item={item}
-                baseUrl={baseUrl}
-                hint={hint}
-                disabled={item.is_unlocked || !!hint}
-                onPress={handlePress}
-              />
-            );
-          })}
+          {row.items.map(({ item, hint, uri }) => (
+            <AvatarItemCard
+              key={item.id}
+              item={item}
+              uri={uri}
+              baseUrl={baseUrl}
+              hint={hint}
+              disabled={item.is_unlocked || !!hint}
+              onPress={handlePress}
+            />
+          ))}
           {row.items.length === 1 && <View className="w-1/2" />}
         </View>
       );

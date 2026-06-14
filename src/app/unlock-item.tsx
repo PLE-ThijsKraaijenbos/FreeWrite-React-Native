@@ -55,8 +55,10 @@ export default function UnlockItemScreen() {
             Do you want to unlock <ThemedText type="body-lg-bold" className="text-neutral-600">{item.name}</ThemedText> for
           </ThemedText>
           <View className="mt-1 flex-row items-center gap-1">
-            <CoinIcon width={32} height={32} />
-            <ThemedText type="body-lg-bold" className="text-secondary-400">{item.price}</ThemedText>
+            {item.price > 0 && <CoinIcon width={32} height={32} />}
+            <ThemedText type="body-lg-bold" className="text-secondary-400">
+              {item.price > 0 ? item.price : 'FREE'}
+            </ThemedText>
           </View>
 
           <View className="my-6 w-full">
