@@ -3,7 +3,8 @@ import { View } from 'react-native';
 
 import { BubblePopAssignment } from '@/components/assignments/BubblePopAssignment';
 import { ChoiceStoryAssignment } from '@/components/assignments/ChoiceStoryAssignment';
-import { JournalAssignment, LetterAssignment } from '@/components/assignments/JournalAssignment';
+import { JournalAssignment } from '@/components/assignments/JournalAssignment';
+import { LetterAssignment } from '@/components/assignments/LetterAssignment';
 import { ScaleAssignment } from '@/components/assignments/ScaleAssignment';
 import { SpeechBubbleAssignment } from '@/components/assignments/SpeechBubbleAssignment';
 import { ThemedText } from '@/components/themed-text';

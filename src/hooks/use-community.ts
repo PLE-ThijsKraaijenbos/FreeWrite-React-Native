@@ -7,6 +7,14 @@ export function usePosts() {
   return useQuery({ queryKey: ['community', 'posts'], queryFn: getPosts });
 }
 
+export function usePost(id: number) {
+  return useQuery({
+    queryKey: ['community', 'posts'],
+    queryFn: getPosts,
+    select: (posts) => posts.find((p) => p.id === id),
+  });
+}
+
 export function useLikePost() {
   const queryClient = useQueryClient();
   return useMutation({

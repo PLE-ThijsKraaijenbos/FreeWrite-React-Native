@@ -1,17 +1,28 @@
-import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { ActivityIndicator, Pressable, RefreshControl, ScrollView, View } from 'react-native';
+import { ActivityIndicator, FlatList, RefreshControl, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { useAvatarItems, useEquipAvatarItem, useUnequipAvatarItem } from '@/api/avatar-items';
 import { patchAvatarUrlApi } from '@/api/auth';
+import { AvatarDisplay } from '@/components/AvatarDisplay';
+import { AvatarItemCard } from '@/components/AvatarItemCard';
+import { BackButton } from '@/components/BackButton';
+import { CategorySelect } from '@/components/CategorySelect';
+import { CoinBalance } from '@/components/CoinBalance';
+import { CTAButton } from '@/components/cta';
 import { ThemedText } from '@/components/themed-text';
+import {
+  applyItem,
+  buildAvatarUrl,
+  parseAvatarParams,
+  prerequisiteHint,
+  previewItemUrl,
+  PROBABILITY_COMPANION,
+} from '@/lib/avatar';
 import { useAuth } from '@/lib/auth-context';
 import { useTheme } from '@/hooks/use-theme';
 import { AvatarItem } from '@/types/user';
-
-const DICEBEAR_BASE = 'https://api.dicebear.com/9.x/avataaars/svg';
 
 const CATEGORY_LABELS: Record<string, string> = {
   accessories: 'Accessories',
@@ -30,38 +41,17 @@ const CATEGORY_LABELS: Record<string, string> = {
   skinColor: 'Skin Colors',
 };
 
-// Handles both "key[]=value" and legacy "key=value" DiceBear formats.
-function parseAvatarParams(url: string): Record<string, string> {
-  const qs = url.split('?')[1] ?? '';
-  return Object.fromEntries(
-    [...new URLSearchParams(qs)].map(([k, v]) => [k.replace('[]', ''), v])
-  );
-}
-
-// DiceBear probability params are plain integers, not arrays — no [] suffix.
-const PLAIN_PARAMS = new Set(['facialHairProbability', 'accessoriesProbability']);
-
-// Selecting these param_keys requires forcing the paired probability to 100
-// so DiceBear actually renders the item (defaults are 10%).
-const PROBABILITY_COMPANION: Record<string, string> = {
-  facialHair: 'facialHairProbability',
-  accessories: 'accessoriesProbability',
-};
-
-function buildAvatarUrl(params: Record<string, string>): string {
-  const qs = Object.entries(params)
-    .map(([k, v]) =>
-      PLAIN_PARAMS.has(k) ? `${k}=${encodeURIComponent(v)}` : `${k}[]=${encodeURIComponent(v)}`
-    )
-    .join('&');
-  return qs ? `${DICEBEAR_BASE}?${qs}` : DICEBEAR_BASE;
-}
-
 function chunk<T>(arr: T[], size: number): T[][] {
   const rows: T[][] = [];
   for (let i = 0; i < arr.length; i += size) rows.push(arr.slice(i, i + size));
   return rows;
 }
+
+type EditorItem = { item: AvatarItem; hint: string | null; uri: string; active: boolean };
+
+type EditorRow =
+  | { type: 'header'; key: string; title: string }
+  | { type: 'items'; key: string; items: EditorItem[] };
 
 export default function AvatarEditorScreen() {
   const router = useRouter();
@@ -83,54 +73,106 @@ export default function AvatarEditorScreen() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const unlockedItems = items.filter((i) => i.is_unlocked);
+  const unlockedItems = useMemo(() => items.filter((i) => i.is_unlocked), [items]);
 
-  const allSections = Object.entries(CATEGORY_LABELS)
-    .map(([key, title]) => ({
-      key,
-      title,
-      items: unlockedItems.filter((i) => i.param_key === key),
-    }))
-    .filter((s) => s.items.length > 0);
+  const allSections = useMemo(
+    () =>
+      Object.entries(CATEGORY_LABELS)
+        .map(([key, title]) => ({
+          key,
+          title,
+          items: unlockedItems.filter((i) => i.param_key === key),
+        }))
+        .filter((s) => s.items.length > 0),
+    [unlockedItems]
+  );
 
-  const sections = selectedCategory
-    ? allSections.filter((s) => s.key === selectedCategory)
-    : allSections;
+  const baseUrl = user?.profile?.avatar_url;
 
-  // An item is "active" when its value is currently in the params map,
-  // regardless of whether it came from onboarding or a previous equip.
-  const isActive = (item: AvatarItem) => params[item.param_key] === item.param_value;
+  const rows = useMemo<EditorRow[]>(() => {
+    const sections = selectedCategory
+      ? allSections.filter((s) => s.key === selectedCategory)
+      : allSections;
+    const result: EditorRow[] = [];
+    for (const section of sections) {
+      result.push({ type: 'header', key: `h:${section.key}`, title: section.title });
+      chunk(section.items, 2).forEach((rowItems, i) => {
+        const itemsWithMetadata: EditorItem[] = rowItems.map((item) => {
+          const active = params[item.param_key] === item.param_value;
+          return {
+            item,
+            hint: prerequisiteHint(item.param_key, params),
+            uri: previewItemUrl(baseUrl, item, { png: true, size: 128 }),
+            active,
+          };
+        });
+        result.push({ type: 'items', key: `r:${section.key}:${i}`, items: itemsWithMetadata });
+      });
+    }
+    return result;
+  }, [allSections, selectedCategory, params, baseUrl]);
 
-  function toggle(item: AvatarItem) {
-    setParams((prev) => {
-      const probKey = PROBABILITY_COMPANION[item.param_key];
+  const toggle = useCallback(
+    (item: AvatarItem) => {
+      setParams((prev) => {
+        const probKey = PROBABILITY_COMPANION[item.param_key];
 
-      if (prev[item.param_key] === item.param_value) {
-        const next = { ...prev };
-        const fallback = originalParams.current[item.param_key];
-        if (fallback !== undefined) {
-          next[item.param_key] = fallback;
-          if (probKey) {
-            const origProb = originalParams.current[probKey];
-            if (origProb !== undefined) {
-              next[probKey] = origProb;
-            } else {
-              delete next[probKey];
+        if (prev[item.param_key] === item.param_value) {
+          const next = { ...prev };
+          const fallback = originalParams.current[item.param_key];
+          if (fallback !== undefined) {
+            next[item.param_key] = fallback;
+            if (probKey) {
+              const origProb = originalParams.current[probKey];
+              if (origProb !== undefined) {
+                next[probKey] = origProb;
+              } else {
+                delete next[probKey];
+              }
             }
+          } else {
+            delete next[item.param_key];
+            if (probKey) delete next[probKey];
           }
-        } else {
-          delete next[item.param_key];
-          if (probKey) delete next[probKey];
+          return next;
         }
-        return next;
-      }
 
-      // Select: set value and force probability to 100 so DiceBear always renders it
-      const next = { ...prev, [item.param_key]: item.param_value };
-      if (probKey) next[probKey] = '100';
-      return next;
-    });
-  }
+        // Select: set value and force probability to 100 so DiceBear always renders it
+        return applyItem(prev, item);
+      });
+    },
+    []
+  );
+
+  const renderRow = useCallback(
+    ({ item: row }: { item: EditorRow }) => {
+      if (row.type === 'header') {
+        return (
+          <ThemedText type="h3" className="px-4 mt-6 mb-2">
+            {row.title.toUpperCase()}
+          </ThemedText>
+        );
+      }
+      return (
+        <View className="flex-row w-full">
+          {row.items.map(({ item, hint, uri, active }) => (
+            <AvatarItemCard
+              key={item.id}
+              item={item}
+              uri={uri}
+              variant={active ? 'equipped' : 'unequipped'}
+              hint={active ? null : hint}
+              disabled={!active && !!hint}
+              baseUrl={baseUrl}
+              onPress={toggle}
+            />
+          ))}
+          {row.items.length === 1 && <View className="w-1/2" />}
+        </View>
+      );
+    },
+    [toggle, baseUrl]
+  );
 
   async function handleSave() {
     setSaving(true);
@@ -162,154 +204,53 @@ export default function AvatarEditorScreen() {
 
   return (
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
-      <View
-        className="flex-row items-center justify-between px-4 pb-3"
-        style={{ paddingTop: top + 16 }}>
-        <Pressable onPress={() => router.back()}>
-          <ThemedText themeColor="textSecondary">← Back</ThemedText>
-        </Pressable>
-        <ThemedText type="subtitle">Edit Avatar</ThemedText>
-        <Pressable
-          onPress={handleSave}
-          disabled={saving}
-          className="py-1 px-3 rounded-lg"
-          style={{ backgroundColor: theme.backgroundElement }}>
-          {saving ? (
-            <ActivityIndicator size="small" />
-          ) : (
-            <ThemedText type="small">Save</ThemedText>
-          )}
-        </Pressable>
+      <AvatarDisplay uri={buildAvatarUrl(params)} />
+
+      <View className="absolute left-4 z-10" style={{ top: top + 4 }}>
+        <BackButton onPress={() => router.back()} />
       </View>
 
-      {saveError && (
-        <ThemedText className="text-center px-4 pb-2" themeColor="textSecondary">
-          {saveError}
-        </ThemedText>
-      )}
+      <CoinBalance coins={user?.profile?.coins ?? 0} onPress={() => router.push('/shop')} />
 
-      <View className="items-center py-6">
-        <Image
-          source={{ uri: buildAvatarUrl(params) }}
-          style={{ width: 160, height: 160 }}
-          contentFit="contain"
-        />
-      </View>
-
-      {isLoading ? (
-        <ActivityIndicator className="mt-12" />
-      ) : unlockedItems.length === 0 ? (
-        <ThemedText className="text-center mt-12" themeColor="textSecondary">
-          No items unlocked yet. Visit the shop!
-        </ThemedText>
-      ) : (
-        <>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={{ flexGrow: 0, flexShrink: 0, height: 44 }}
-            contentContainerStyle={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              paddingHorizontal: 16,
-              columnGap: 8,
-              paddingBottom: 8,
-            }}>
-            <CategoryChip
-              label="All"
-              selected={selectedCategory === null}
-              onPress={() => setSelectedCategory(null)}
+      <View className="flex-1">
+        {isLoading ? (
+          <ActivityIndicator className="mt-12" />
+        ) : unlockedItems.length === 0 ? (
+          <ThemedText className="text-center mt-12" themeColor="textSecondary">
+            No items unlocked yet. Visit the shop!
+          </ThemedText>
+        ) : (
+          <>
+            <CategorySelect
+              categories={allSections.map((s) => ({ id: s.key, label: s.title }))}
+              selectedId={selectedCategory}
+              onSelect={(id) => setSelectedCategory(id === selectedCategory ? null : id)}
             />
-            {allSections.map((s) => (
-              <CategoryChip
-                key={s.key}
-                label={s.title}
-                selected={selectedCategory === s.key}
-                onPress={() =>
-                  setSelectedCategory(selectedCategory === s.key ? null : s.key)
-                }
-              />
-            ))}
-          </ScrollView>
 
-          <ScrollView
-            contentContainerStyle={{ paddingBottom: 32 }}
-            refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}>
-            {sections.map((section) => (
-              <View key={section.key}>
-                <ThemedText
-                  type="smallBold"
-                  themeColor="textSecondary"
-                  className="px-4 mt-6 mb-2">
-                  {section.title.toUpperCase()}
-                </ThemedText>
-                {chunk(section.items, 2).map((row, i) => (
-                  <View key={i} className="flex-row w-full">
-                    {row.map((item) => (
-                      <EditorItem
-                        key={item.id}
-                        item={item}
-                        active={isActive(item)}
-                        onPress={() => toggle(item)}
-                      />
-                    ))}
-                    {row.length === 1 && <View className="w-1/2" />}
-                  </View>
-                ))}
-              </View>
-            ))}
-          </ScrollView>
-        </>
-      )}
+            <FlatList
+              style={{ flex: 1 }}
+              data={rows}
+              keyExtractor={(row) => row.key}
+              renderItem={renderRow}
+              contentContainerStyle={{ paddingBottom: 32 }}
+              refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
+              removeClippedSubviews
+              initialNumToRender={6}
+              maxToRenderPerBatch={6}
+              windowSize={7}
+            />
+          </>
+        )}
+      </View>
+
+      <View className="px-4 pt-2 pb-4">
+        {saveError && (
+          <ThemedText className="text-center pb-2" themeColor="textSecondary">
+            {saveError}
+          </ThemedText>
+        )}
+        <CTAButton label={saving ? 'Saving…' : 'Save'} onPress={handleSave} disabled={saving} />
+      </View>
     </View>
-  );
-}
-
-function CategoryChip({
-  label,
-  selected,
-  onPress,
-}: {
-  label: string;
-  selected: boolean;
-  onPress: () => void;
-}) {
-  const theme = useTheme();
-  return (
-    <Pressable
-      onPress={onPress}
-      className="py-1.5 px-3.5 rounded-full"
-      style={{
-        backgroundColor: selected ? theme.backgroundSelected : theme.backgroundElement,
-      }}>
-      <ThemedText type="small">{label}</ThemedText>
-    </Pressable>
-  );
-}
-
-function EditorItem({
-  item,
-  active,
-  onPress,
-}: {
-  item: AvatarItem;
-  active: boolean;
-  onPress: () => void;
-}) {
-  const theme = useTheme();
-  return (
-    <Pressable
-      onPress={onPress}
-      className="w-1/2 aspect-square items-center justify-center p-2"
-      style={({ pressed }) => ({
-        backgroundColor:
-          active || pressed ? theme.backgroundSelected : theme.backgroundElement,
-        borderWidth: 1,
-        borderColor: active ? theme.text : theme.backgroundSelected,
-      })}>
-      <ThemedText type="small" className="text-center">
-        {item.name}
-      </ThemedText>
-    </Pressable>
   );
 }

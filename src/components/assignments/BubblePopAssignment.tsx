@@ -1,9 +1,11 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { BackButton } from '@/components/BackButton';
+import { Bubbles } from '@/components/Bubbles';
+import { CTAButton } from '@/components/cta';
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
 import { BubblePopContent } from '@/types/journey';
@@ -14,56 +16,24 @@ type Props = {
   onComplete: (responseData: unknown) => void;
 };
 
-function Bubble({ text, onPop }: { text: string; onPop: () => void }) {
-  const theme = useTheme();
-  const scale = useSharedValue(1);
-  const opacity = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-    opacity: opacity.value,
-  }));
-
-  function handlePress() {
-    scale.value = withTiming(0, { duration: 300 });
-    opacity.value = withTiming(0, { duration: 300 }, (finished) => {
-      if (finished) runOnJS(onPop)();
-    });
-  }
-
-  return (
-    <Animated.View style={animatedStyle}>
-      <Pressable
-        onPress={handlePress}
-        className="rounded-3xl px-4 py-2.5 m-1"
-        style={{ backgroundColor: theme.backgroundElement }}>
-        <ThemedText type="small">{text}</ThemedText>
-      </Pressable>
-    </Animated.View>
-  );
-}
-
 export function BubblePopAssignment({ content, responseData, onComplete }: Props) {
   const router = useRouter();
   const theme = useTheme();
   const { top, bottom } = useSafeAreaInsets();
-  const [poppedCount, setPoppedCount] = useState(0);
+  const [poppedAll, setPoppedAll] = useState(false);
 
   const saved = responseData as { popped_all?: boolean } | undefined;
   const isReadOnly = saved?.popped_all === true;
   const total = content.thoughts.length;
-  const allPopped = isReadOnly || poppedCount >= total;
 
   return (
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
       <View className="px-4 pb-3" style={{ paddingTop: top + 16 }}>
-        <Pressable onPress={() => router.back()}>
-          <ThemedText themeColor="textSecondary">← Back</ThemedText>
-        </Pressable>
+        <BackButton onPress={() => router.back()} />
       </View>
 
-      <ScrollView className="flex-1 px-4">
-        <ThemedText type="subtitle" className="mb-6">
+      <View className="flex-1 px-4" style={{ paddingBottom: bottom }}>
+        <ThemedText type="h2" className="mb-6">
           {content.title_text}
         </ThemedText>
 
@@ -74,27 +44,33 @@ export function BubblePopAssignment({ content, responseData, onComplete }: Props
             </ThemedText>
           </View>
         ) : (
-          <View className="flex-row flex-wrap">
+          <Bubbles onAllPopped={() => setPoppedAll(true)}>
             {content.thoughts.map((thought, index) => (
-              <Bubble
+              <ThemedText
                 key={index}
-                text={thought.text}
-                onPop={() => setPoppedCount((c) => c + 1)}
-              />
+                type="body-sm-bold"
+                style={styles.bubbleText}
+                className="max-w-[99px] text-center text-neutral-100">
+                {thought.text}
+              </ThemedText>
             ))}
-          </View>
+          </Bubbles>
         )}
-      </ScrollView>
+      </View>
 
-      {!isReadOnly && allPopped && (
+      {!isReadOnly && poppedAll && (
         <View className="px-4" style={{ paddingBottom: bottom + 24 }}>
-          <Pressable
-            onPress={() => onComplete({ popped_all: true })}
-            className="items-center justify-center py-4 rounded-xl bg-green-500">
-            <ThemedText className="text-white font-bold">Done</ThemedText>
-          </Pressable>
+          <CTAButton label="Done" onPress={() => onComplete({ popped_all: true })} />
         </View>
       )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  bubbleText: {
+    textShadowColor: 'rgba(0,0,0,0.50)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 2,
+  },
+});

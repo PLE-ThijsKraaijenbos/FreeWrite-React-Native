@@ -1,7 +1,12 @@
 import { isAxiosError } from 'axios';
 import { useRouter } from 'expo-router';
 import { useFormContext } from 'react-hook-form';
-import { Alert, Pressable, Text, View } from 'react-native';
+import { Alert, View } from 'react-native';
+
+import { ThemedText } from '@/components/themed-text';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { CTAButton } from '@/components/cta';
 
 import { useCompleteProfile } from '@/api/onboarding';
 import { useAuth } from '@/lib/auth-context';
@@ -11,6 +16,7 @@ export default function CompleteScreen() {
   const router = useRouter();
   const { mutateAsync, isPending } = useCompleteProfile();
   const { getValues } = useFormContext<OnboardingFormData>();
+  const { bottom } = useSafeAreaInsets();
   const { updateUser } = useAuth();
 
   const handleStart = async () => {
@@ -25,20 +31,15 @@ export default function CompleteScreen() {
   };
 
   return (
-    <View className="flex-1 p-6">
+    <View className="flex-1 p-6" style={{ paddingBottom: bottom + 24 }}>
       <View className="flex-1 gap-4 justify-center">
-        <Text className="text-2xl font-bold">{"You're all set!"}</Text>
-        <Text>
+        <ThemedText type="h2" className="text-center">{"You're all set!"}</ThemedText>
+        <ThemedText type="body" className="text-center">
           Your next chapter begins now. You've told us your story so far. Now it's time to start
           rewriting it at your own pace, on your own terms.
-        </Text>
+        </ThemedText>
       </View>
-      <Pressable
-        onPress={handleStart}
-        disabled={isPending}
-        className="p-4 border items-center disabled:opacity-50">
-        <Text>{isPending ? 'Setting up…' : 'Start my journey'}</Text>
-      </Pressable>
+      <CTAButton label={isPending ? 'Setting up…' : 'Start my journey'} disabled={isPending} onPress={handleStart} />
     </View>
   );
 }

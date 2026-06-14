@@ -1,9 +1,11 @@
-import Slider from '@react-native-community/slider';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { BackButton } from '@/components/BackButton';
+import { CTAButton } from '@/components/cta';
+import { SliderInput } from '@/components/SliderInput';
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/hooks/use-theme';
 import { ScaleContent } from '@/types/journey';
@@ -28,52 +30,29 @@ export function ScaleAssignment({ content, responseData, onComplete }: Props) {
   return (
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
       <View className="px-4 pb-3" style={{ paddingTop: top + 16 }}>
-        <Pressable onPress={() => router.back()}>
-          <ThemedText themeColor="textSecondary">← Back</ThemedText>
-        </Pressable>
+        <BackButton onPress={() => router.back()} />
       </View>
 
       <View className="flex-1 justify-center px-6">
-        <ThemedText type="subtitle" className="mb-12">
+        <ThemedText type="h2" className="mb-12">
           {content.title_text}
         </ThemedText>
 
-        <View className="items-center mb-8">
-          <ThemedText className="text-primary text-[64px] font-bold leading-[72px]">
-            {displayValue}
-          </ThemedText>
-        </View>
-
-        <Slider
+        <SliderInput
           value={displayValue}
           minimumValue={1}
           maximumValue={10}
           step={1}
           disabled={isReadOnly}
           onValueChange={setValue}
-          minimumTrackTintColor="#3c87f7"
-          maximumTrackTintColor={theme.backgroundElement}
-          thumbTintColor="#3c87f7"
-          style={{ width: '100%' }}
+          leftLabel={content.left_label}
+          rightLabel={content.right_label}
         />
-
-        <View className="flex-row justify-between mt-2">
-          <ThemedText themeColor="textSecondary" type="small">
-            {content.left_label}
-          </ThemedText>
-          <ThemedText themeColor="textSecondary" type="small">
-            {content.right_label}
-          </ThemedText>
-        </View>
       </View>
 
       {!isReadOnly && (
         <View className="px-4" style={{ paddingBottom: bottom + 24 }}>
-          <Pressable
-            onPress={() => onComplete({ value })}
-            className="items-center justify-center py-4 rounded-xl bg-primary">
-            <ThemedText className="text-white font-bold">Submit</ThemedText>
-          </Pressable>
+          <CTAButton label="Submit" onPress={() => onComplete({ value })} />
         </View>
       )}
     </View>

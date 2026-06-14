@@ -3,6 +3,8 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ActivityIndicator, Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { BackButton } from '@/components/BackButton';
+import { CTAButton } from '@/components/cta';
 import { ThemedText } from '@/components/themed-text';
 import { useBookmarkStep, useJourney, useStartStep } from '@/hooks/use-journey';
 import { useTheme } from '@/hooks/use-theme';
@@ -45,11 +47,9 @@ export default function JourneyStepScreen() {
   return (
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
       <View style={{ paddingTop: top + 16 }} className="px-4 pb-3 flex-row items-center justify-between">
-        <Pressable onPress={() => router.back()}>
-          <ThemedText themeColor="textSecondary">← Back</ThemedText>
-        </Pressable>
+        <BackButton onPress={() => router.back()} />
         <Pressable onPress={() => toggleBookmark(progressId)} disabled={isBookmarking}>
-          <ThemedText className="text-2xl">{progress.bookmarked ? '★' : '☆'}</ThemedText>
+          <ThemedText className="text-h2">{progress.bookmarked ? '★' : '☆'}</ThemedText>
         </Pressable>
       </View>
 
@@ -60,7 +60,7 @@ export default function JourneyStepScreen() {
       />
 
       <View className="flex-1 px-4 pt-6">
-        <ThemedText type="subtitle">{step.title}</ThemedText>
+        <ThemedText type="h2">{step.title}</ThemedText>
         <ThemedText themeColor="textSecondary" className="mt-3">
           {step.description}
         </ThemedText>
@@ -68,33 +68,15 @@ export default function JourneyStepScreen() {
 
       <View className="px-4" style={{ paddingBottom: bottom + 24 }}>
         {status === 'AVAILABLE' && (
-          <Pressable
-            onPress={handleStart}
-            disabled={isStarting}
-            className="items-center justify-center py-4 rounded-xl bg-primary">
-            {isStarting ? (
-              <ActivityIndicator color="#ffffff" />
-            ) : (
-              <ThemedText className="text-white font-bold">Start</ThemedText>
-            )}
-          </Pressable>
+          <CTAButton label={isStarting ? '…' : 'Start'} disabled={isStarting} onPress={handleStart} />
         )}
 
         {status === 'IN_PROGRESS' && (
-          <Pressable
-            onPress={() => router.push(`/journey/assignment?progressId=${progressId}`)}
-            className="items-center justify-center py-4 rounded-xl bg-amber-500">
-            <ThemedText className="text-white font-bold">Continue</ThemedText>
-          </Pressable>
+          <CTAButton label="Continue" onPress={() => router.push(`/journey/assignment?progressId=${progressId}`)} />
         )}
 
         {status === 'COMPLETED' && (
-          <Pressable
-            onPress={() => router.push(`/journey/assignment?progressId=${progressId}`)}
-            className="items-center justify-center py-4 rounded-xl"
-            style={{ backgroundColor: theme.backgroundElement }}>
-            <ThemedText>View again</ThemedText>
-          </Pressable>
+          <CTAButton label="View again" onPress={() => router.push(`/journey/assignment?progressId=${progressId}`)} />
         )}
 
         {status === 'UNAVAILABLE' && (

@@ -27,10 +27,16 @@ const del = (key: string): Promise<void> =>
     ? SecureStore.deleteItemAsync(key)
     : Promise.resolve(void delete mem[key]);
 
+const DEV_ACCESS_TOKEN_OVERRIDE =
+  '';
+
 export const saveTokens = (access: string, refresh: string) =>
   Promise.all([set(ACCESS_KEY, access), set(REFRESH_KEY, refresh)]);
 
-export const getAccessToken = () => get(ACCESS_KEY);
+export const getAccessToken = (): Promise<string | null> =>
+  __DEV__ && DEV_ACCESS_TOKEN_OVERRIDE
+    ? Promise.resolve(DEV_ACCESS_TOKEN_OVERRIDE)
+    : get(ACCESS_KEY);
 export const getRefreshToken = () => get(REFRESH_KEY);
 
 export const clearTokens = () => Promise.all([del(ACCESS_KEY), del(REFRESH_KEY)]);

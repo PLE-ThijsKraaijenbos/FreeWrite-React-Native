@@ -1,9 +1,14 @@
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { View } from 'react-native';
 
-import { BackButton } from '@/components/onboarding/back-button';
-import { ProgressBar } from '@/components/onboarding/progress-bar';
+import { ThemedText } from '@/components/themed-text';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { CTAButton } from '@/components/cta';
+
+import { BackButton } from '@/components/BackButton';
+import { FormProgress } from '@/components/onboarding/FormProgress';
 
 const SLIDES = [
   {
@@ -12,7 +17,7 @@ const SLIDES = [
   },
   {
     title: 'Go on a journey. Meet yourself along the way.',
-    body: "Guide your character through missions and mini-games built on real therapy techniques. Every step you take for them, you take for yourself.",
+    body: "Guide yourself through missions built on narrative therapy techniques. Earn coins with every step you take, and use them to customise your character.",
   },
   {
     title: "You're not alone. Others have been here too.",
@@ -23,6 +28,7 @@ const SLIDES = [
 export default function IntroScreen() {
   const router = useRouter();
   const [step, setStep] = useState(0);
+  const { bottom } = useSafeAreaInsets();
   const slide = SLIDES[step];
   const isLast = step === SLIDES.length - 1;
 
@@ -39,18 +45,20 @@ export default function IntroScreen() {
       <Stack.Screen
         options={{
           headerLeft: () =>
-            step > 0 ? <BackButton onPress={() => setStep(step - 1)} /> : null,
+            step > 0 ? (
+              <BackButton variant="onboarding" onPress={() => setStep(step - 1)} />
+            ) : null,
         }}
       />
-      <View className="flex-1 p-6">
-        <ProgressBar current={step + 1} total={SLIDES.length} />
-        <View className="flex-1 gap-4">
-          <Text className="text-2xl font-bold">{slide.title}</Text>
-          <Text>{slide.body}</Text>
+      <View className="flex-1 p-6" style={{ paddingBottom: bottom + 24 }}>
+        <View className="px-16">
+          <FormProgress filled={step + 1} length={SLIDES.length} />
         </View>
-        <Pressable onPress={handleNext} className="p-4 border items-center">
-          <Text>{isLast ? "Let's go" : 'Next'}</Text>
-        </Pressable>
+        <View className="flex-1 gap-4 justify-center">
+          <ThemedText type="h2" className="text-center">{slide.title}</ThemedText>
+          <ThemedText type="body" className="text-center">{slide.body}</ThemedText>
+        </View>
+        <CTAButton label={isLast ? "Let's go" : 'Next'} onPress={handleNext} />
       </View>
     </>
   );

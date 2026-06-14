@@ -2,14 +2,21 @@ import { isAxiosError } from 'axios';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import { Alert, Pressable, Text, TextInput, View } from 'react-native';
+import { Alert, View } from 'react-native';
 
+import { ThemedText } from '@/components/themed-text';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { AuthSelection } from '@/components/onboarding/AuthSelection';
+import { CTAButton } from '@/components/cta';
+import { TextInput } from '@/components/TextInput';
 import { useAuth } from '@/lib/auth-context';
 import { OnboardingFormData } from '@/types/onboarding';
 
 export default function AccountScreen() {
   const router = useRouter();
-  const { register } = useAuth();
+  const { register, login } = useAuth();
+  const [mode, setMode] = useState<'register' | 'login'>('register');
   const [isPending, setIsPending] = useState(false);
   const {
     control,
@@ -17,6 +24,7 @@ export default function AccountScreen() {
     getValues,
     formState: { errors },
   } = useFormContext<OnboardingFormData>();
+  const { bottom } = useSafeAreaInsets();
 
   const handleNext = async () => {
     const valid = await trigger(['email', 'password']);
@@ -24,28 +32,46 @@ export default function AccountScreen() {
     setIsPending(true);
     try {
       const { email, password } = getValues();
-      await register(email, password);
+      if (mode === 'register') {
+        await register(email, password);
+      } else {
+        await login(email, password);
+        router.replace('/tabs');
+        return;
+      }
       router.push('/onboarding/questions/substance');
     } catch (err) {
       const message = isAxiosError(err) ? err.response?.data?.detail : undefined;
-      Alert.alert('Registration failed', message ?? 'Please try again.');
+      const errorType = mode === 'register' ? 'Registration failed' : 'Login failed';
+      Alert.alert(errorType, message ?? 'Please try again.');
     } finally {
       setIsPending(false);
     }
   };
 
+  const isRegister = mode === 'register';
+
   return (
-    <View className="flex-1 p-6">
+    <View className="flex-1 p-6" style={{ paddingBottom: bottom + 24 }}>
       <View className="flex-1 gap-6 justify-center">
-        <Text className="text-2xl font-bold">Create your account</Text>
         <View className="gap-2">
-          <Text>Email</Text>
+          <ThemedText type="h2" className="text-center">Welcome</ThemedText>
+          <ThemedText type="body" className="text-center">
+            Whenever you're ready create an account to begin, or log in to continue your journey.
+          </ThemedText>
+        </View>
+        <AuthSelection
+          selected={mode}
+          onSelectRegister={() => setMode('register')}
+          onSelectLogin={() => setMode('login')}
+        />
+        <View className="gap-2">
           <Controller
             control={control}
             name="email"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                className="border p-3"
+                label="Email"
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
@@ -56,37 +82,40 @@ export default function AccountScreen() {
               />
             )}
           />
-          {errors.email && <Text className="text-red-500">{errors.email.message}</Text>}
+          {errors.email && <ThemedText type="body-sm" className="text-red-500">{errors.email.message}</ThemedText>}
         </View>
         <View className="gap-2">
-          <Text>Password</Text>
           <Controller
             control={control}
             name="password"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                className="border p-3"
+                label="Password"
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
-                placeholder="Min. 8 characters"
+                placeholder={isRegister ? 'Min. 8 characters' : 'Your password'}
                 secureTextEntry
-                autoComplete="new-password"
+                autoComplete={isRegister ? 'new-password' : 'current-password'}
               />
             )}
           />
-          {errors.password && <Text className="text-red-500">{errors.password.message}</Text>}
+          {errors.password && <ThemedText type="body-sm" className="text-red-500">{errors.password.message}</ThemedText>}
         </View>
       </View>
-      <Pressable onPress={() => router.push('/onboarding/login')} className="items-center p-4">
-        <Text className="text-blue-500">Log in instead</Text>
-      </Pressable>
-      <Pressable
-        onPress={handleNext}
+      <CTAButton
+        label={
+          isPending
+            ? isRegister
+              ? 'Creating account…'
+              : 'Logging in…'
+            : isRegister
+              ? 'Continue'
+              : 'Log in'
+        }
         disabled={isPending}
-        className="p-4 border items-center disabled:opacity-50">
-        <Text>{isPending ? 'Creating account…' : 'Continue'}</Text>
-      </Pressable>
+        onPress={handleNext}
+      />
     </View>
   );
 }

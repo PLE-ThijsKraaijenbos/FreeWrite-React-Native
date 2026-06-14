@@ -1,9 +1,14 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import { Image } from 'expo-image';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { View } from 'react-native';
 
+import { ThemedText } from '@/components/themed-text';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { CTAButton } from '@/components/cta';
+import { TextInput } from '@/components/TextInput';
+import { AvatarSelect } from '@/components/onboarding/AvatarSelect';
 import { OnboardingFormData } from '@/types/onboarding';
 
 const BASE = 'https://api.dicebear.com/9.x/avataaars/svg';
@@ -27,6 +32,7 @@ const OPTIONS = [
 export default function AvatarScreen() {
   const router = useRouter();
   const { control, setValue, trigger } = useFormContext<OnboardingFormData>();
+  const { bottom } = useSafeAreaInsets();
   const [selected, setSelected] = useState<'MALE' | 'FEMALE' | null>(null);
 
   const handleSelect = (opt: (typeof OPTIONS)[number]) => {
@@ -40,42 +46,30 @@ export default function AvatarScreen() {
   };
 
   return (
-    <View className="flex-1 p-6">
+    <View className="flex-1 p-6" style={{ paddingBottom: bottom + 24 }}>
       <View className="flex-1 gap-6 justify-center">
         <View className="gap-2">
-          <Text className="text-2xl font-bold">Choose your character</Text>
-          <Text>Pick one of the default avatars and give yourself a name. Throughout your journey you will unlock different items which you can equip on your avatar.</Text>
+          <ThemedText type="h2" className="text-center">Choose your character</ThemedText>
+          <ThemedText type="body" className="text-center">
+            Pick one of the default avatars and give yourself a name. Throughout your journey you
+            will unlock different items which you can equip on your avatar.
+          </ThemedText>
         </View>
         <Controller
           control={control}
           name="name"
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
+              placeholder="Your name"
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
-              placeholder="Your name"
-              className="p-4 border border-gray-400"
             />
           )}
         />
-        <View className="flex-row gap-4">
-          {OPTIONS.map((opt) => (
-            <Pressable
-              key={opt.value}
-              onPress={() => handleSelect(opt)}
-              className={`flex-1 items-center p-4 gap-3 border-2 ${
-                selected === opt.value ? 'border-black' : 'border-gray-200'
-              }`}>
-              <Image source={{ uri: opt.uri }} style={{ width: 120, height: 120 }} />
-              <Text className="font-medium">{opt.label}</Text>
-            </Pressable>
-          ))}
-        </View>
+        <AvatarSelect options={OPTIONS} selected={selected} onSelect={handleSelect} />
       </View>
-      <Pressable onPress={handleNext} className="p-4 border items-center">
-        <Text>Next</Text>
-      </Pressable>
+      <CTAButton label="Next" onPress={handleNext} />
     </View>
   );
 }

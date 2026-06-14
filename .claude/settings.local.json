@@ -3,7 +3,31 @@
     "allow": [
       "WebFetch(domain:www.dicebear.com)",
       "WebFetch(domain:api.dicebear.com)",
-      "Bash(xargs grep -l \"AvatarItem\\\\.\")"
+      "Bash(xargs grep -l \"AvatarItem\\\\.\")",
+      "Bash(Get-ChildItem -Path \"C:\\\\FreeWrite-React-Native\" -Recurse)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(npx tsc *)",
+      "Bash(npx expo *)",
+      "Bash(npm i *)",
+      "Bash(node -e ' *)",
+      "Bash(export PGPASSWORD=freewrite)",
+      "Bash(psql -h localhost -p 5432 -U freewrite -d freewrite -c \"SELECT id, \\\\\"order\\\\\", title FROM phase ORDER BY \\\\\"order\\\\\";\")",
+      "Bash(psql -h localhost -p 5432 -U freewrite -d freewrite -c \"SELECT id, phase_id, \\\\\"order\\\\\", assignment_type, title FROM journey_step ORDER BY \\\\\"order\\\\\" LIMIT 20;\")",
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 40)",
+      "Bash(npx patch-package *)",
+      "PowerShell($conns = Get-NetTCPConnection -LocalPort 8081 -State Listen -ErrorAction SilentlyContinue; if \\($conns\\) { $conns | ForEach-Object { $p = Get-Process -Id $_.OwningProcess -ErrorAction SilentlyContinue; if \\($p\\) { \"Port 8081 held by PID $\\($p.Id\\) \\($\\($p.ProcessName\\)\\)\"; Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue; \"Killed PID $\\($p.Id\\)\" } } } else { \"No process listening on 8081\" })",
+      "Read(//c/Users/Cosmo/AppData/Local/Temp/claude/C--FreeWrite-React-Native/5d091f16-159a-4ee4-94f7-244684e5dbe0/tasks/**)",
+      "Bash(node node_modules/typescript/bin/tsc --noEmit)",
+      "PowerShell(npx tsc --noEmit -p C:\\\\FreeWrite-React-Native 2>&1 | Select-Object -First 30)",
+      "Bash(grep -E \"\\\\.tsx$\")",
+      "Read(//c/Users/Cosmo/.claude/plugins/cache/ui-ux-pro-max-skill/ui-ux-pro-max/2.5.0/.claude/skills/ui-ux-pro-max/**)",
+      "Bash(ls scripts *)",
+      "Bash(find . -name \"search.py\")",
+      "Bash(npx eslint *)",
+      "Bash(git rm *)",
+      "WebFetch(domain:docs.expo.dev)",
+      "Bash(node -e \"const c=require\\('./tailwind.config.js'\\); console.log\\('colors.neutral[500]=', c.theme.extend.colors.neutral[500]\\); console.log\\('fontSize.h2=', JSON.stringify\\(c.theme.extend.fontSize.h2\\)\\); console.log\\('fontFamily heading-bold=', c.theme.extend.fontFamily['heading-bold']\\);\")",
+      "PowerShell(npx tsc --noEmit -p C:\\\\FreeWrite-React-Native\\\\tsconfig.json)"
     ],
     "additionalDirectories": [
       "C:\\FreeWrite-Django"
