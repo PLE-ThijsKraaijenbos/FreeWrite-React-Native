@@ -1,7 +1,8 @@
 import { isAxiosError } from 'axios';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { Alert, View } from 'react-native';
+import { View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,15 +19,17 @@ export default function CompleteScreen() {
   const { getValues } = useFormContext<OnboardingFormData>();
   const { bottom } = useSafeAreaInsets();
   const { updateUser } = useAuth();
+  const [formError, setFormError] = useState<string | null>(null);
 
   const handleStart = async () => {
+    setFormError(null);
     try {
       const user = await mutateAsync(getValues());
       updateUser(user);
       router.replace('/tabs');
     } catch (err) {
       const message = isAxiosError(err) ? err.response?.data?.detail : undefined;
-      Alert.alert('Setup failed', message ?? 'Please try again.');
+      setFormError(message ?? "We couldn't finish setting up your account. Please try again.");
     }
   };
 
@@ -39,6 +42,9 @@ export default function CompleteScreen() {
           rewriting it at your own pace, on your own terms.
         </ThemedText>
       </View>
+      {formError && (
+        <ThemedText type="body-sm" className="text-secondary-500 text-center pb-3">{formError}</ThemedText>
+      )}
       <CTAButton label={isPending ? 'Setting up…' : 'Start my journey'} disabled={isPending} onPress={handleStart} />
     </View>
   );

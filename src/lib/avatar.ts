@@ -2,28 +2,14 @@ import { AvatarItem } from '@/types/user';
 
 const DICEBEAR_BASE = 'https://api.dicebear.com/9.x/avataaars';
 
-// SVG is crisp but expensive to parse/render — fine for the one big avatar on a
-// screen. For the many small shop thumbnails, request a small PNG instead: it
-// decodes to a cheap, cacheable bitmap. `size` only applies to the raster PNG.
 export type AvatarUrlOptions = { png?: boolean; size?: number };
 
-// DiceBear probability params are plain integers, not arrays — no [] suffix.
 export const PLAIN_PARAMS = new Set(['facialHairProbability', 'accessoriesProbability']);
 
-// Selecting these param_keys requires forcing the paired probability to 100
-// so DiceBear actually renders the item (defaults are 10%).
-export const PROBABILITY_COMPANION: Record<string, string> = {
+export const PROBABILITY_PARAM: Record<string, string> = {
   facialHair: 'facialHairProbability',
   accessories: 'accessoriesProbability',
 };
-
-// Handles both "key[]=value" and legacy "key=value" DiceBear formats.
-export function parseAvatarParams(url: string): Record<string, string> {
-  const qs = url.split('?')[1] ?? '';
-  return Object.fromEntries(
-    [...new URLSearchParams(qs)].map(([k, v]) => [k.replace('[]', ''), v])
-  );
-}
 
 export function buildAvatarUrl(params: Record<string, string>, opts: AvatarUrlOptions = {}): string {
   const parts = Object.entries(params).map(([k, v]) =>
@@ -35,66 +21,119 @@ export function buildAvatarUrl(params: Record<string, string>, opts: AvatarUrlOp
   return qs ? `${base}?${qs}` : base;
 }
 
-// Selects a single item into a params map: sets its value and, when the item is
-// gated behind a probability param, forces that to 100 so it always renders.
-// Mirrors the "select" branch of the avatar editor's toggle.
 export function applyItem(
   params: Record<string, string>,
   item: AvatarItem
 ): Record<string, string> {
-  const probKey = PROBABILITY_COMPANION[item.param_key];
+  const probKey = PROBABILITY_PARAM[item.param_key];
   const next = { ...params, [item.param_key]: item.param_value };
   if (probKey) next[probKey] = '100';
+  const dependent = dependentDefault(next, item.param_key, item.param_value);
+  if (dependent && next[dependent.key] === undefined) next[dependent.key] = dependent.value;
   return next;
 }
 
-// Builds a preview URL of `item` worn on top of the avatar described by `baseUrl`.
 export function previewItemUrl(
-  baseUrl: string | undefined,
+  baseParams: Record<string, string>,
   item: AvatarItem,
   opts?: AvatarUrlOptions
 ): string {
-  return buildAvatarUrl(applyItem(parseAvatarParams(baseUrl ?? ''), item), opts);
+  return buildAvatarUrl(applyItem(baseParams, item), opts);
 }
 
-// DiceBear renders SVG; some stored urls point at the legacy /png endpoint.
-export const toSvgUrl = (url: string | null | undefined) => url?.replace('/png', '/svg') ?? null;
-
 // `top` values that are head coverings rather than hair (so hatColor applies).
-const HAT_TOPS = new Set(['hat', 'hijab', 'turban', 'winterHat1', 'winterHat02', 'winterHat03', 'winterHat04']);
+export const HAT_TOPS = new Set(['hat', 'hijab', 'turban', 'winterHat1', 'winterHat02', 'winterHat03', 'winterHat04']);
 
-// Some params only render when another item is equipped — e.g. an accessory
-// colour does nothing without an accessory, a clothing graphic needs the Graphic
-// Shirt. Each entry reports whether its prerequisite is met by a params map and
-// the hint to show when it isn't. Keys not listed here always render (e.g.
-// hairColor / clothesColor, since top and clothing are always set).
-type Prerequisite = { hint: string; met: (params: Record<string, string>) => boolean };
+const DEFAULT_ACCESSORIES_COLOR = '262e33';
+const DEFAULT_CLOTHING_GRAPHIC = 'skullOutline';
+const DEFAULT_HAT_COLOR = '262e33';
+const DEFAULT_HAIR_COLOR = '4a312c';
 
-export const ITEM_PREREQUISITES: Record<string, Prerequisite> = {
-  accessoriesColor: {
-    hint: 'Equip an accessory first',
-    met: (p) => !!p.accessories && p.accessoriesProbability === '100',
-  },
-  clothingGraphic: {
-    hint: 'Equip the Graphic Shirt first',
-    met: (p) => p.clothing === 'graphicShirt',
-  },
-  facialHairColor: {
-    hint: 'Equip facial hair first',
-    met: (p) => !!p.facialHair && p.facialHairProbability === '100',
-  },
-  hatColor: {
-    hint: 'Equip a hat first',
-    met: (p) => HAT_TOPS.has(p.top),
-  },
+type DependentRule = {
+  parentKey: string;
+  appliesTo?: (value: string) => boolean;
+  dependentKey: string;
+  defaultValue: (params: Record<string, string>) => string;
+  hint: string;
 };
 
-// Returns a hint when `paramKey`'s prerequisite is NOT met by `params`, else null.
+const DEPENDENT_RULES: DependentRule[] = [
+  {
+    parentKey: 'accessories',
+    dependentKey: 'accessoriesColor',
+    defaultValue: () => DEFAULT_ACCESSORIES_COLOR,
+    hint: 'Equip an accessory first',
+  },
+  {
+    parentKey: 'clothing',
+    appliesTo: (v) => v === 'graphicShirt',
+    dependentKey: 'clothingGraphic',
+    defaultValue: () => DEFAULT_CLOTHING_GRAPHIC,
+    hint: 'Equip the Graphic Shirt first',
+  },
+  {
+    parentKey: 'facialHair',
+    dependentKey: 'facialHairColor',
+    defaultValue: (p) => p.hairColor ?? DEFAULT_HAIR_COLOR,
+    hint: 'Equip facial hair first',
+  },
+  {
+    parentKey: 'top',
+    appliesTo: (v) => HAT_TOPS.has(v),
+    dependentKey: 'hatColor',
+    defaultValue: () => DEFAULT_HAT_COLOR,
+    hint: 'Equip a hat first',
+  },
+];
+
+function dependentDefault(
+  params: Record<string, string>,
+  paramKey: string,
+  paramValue: string
+): { key: string; value: string } | null {
+  const rule = DEPENDENT_RULES.find(
+    (r) => r.parentKey === paramKey && (!r.appliesTo || r.appliesTo(paramValue))
+  );
+  if (!rule) return null;
+  return { key: rule.dependentKey, value: rule.defaultValue(params) };
+}
+
+// Hint shown when `paramKey`'s parent isn't equipped; null for keys with no rule.
 export function prerequisiteHint(
   paramKey: string,
   params: Record<string, string>
 ): string | null {
-  const req = ITEM_PREREQUISITES[paramKey];
-  if (!req) return null;
-  return req.met(params) ? null : req.hint;
+  const rule = DEPENDENT_RULES.find((r) => r.dependentKey === paramKey);
+  if (!rule) return null;
+  const parentValue = params[rule.parentKey];
+  const probKey = PROBABILITY_PARAM[rule.parentKey];
+  const met =
+    parentValue !== undefined &&
+    (!rule.appliesTo || rule.appliesTo(parentValue)) &&
+    (!probKey || params[probKey] === '100');
+  return met ? null : rule.hint;
 }
+
+// Shop/editor sections. Most map 1:1 to a param_key, but `top` (hair AND hats in
+// DiceBear) splits into two; the items' param_key stays 'top' either way.
+export type DisplayCategory = { id: string; title: string; match: (item: AvatarItem) => boolean };
+
+const byKey = (key: string) => (item: AvatarItem) => item.param_key === key;
+
+export const DISPLAY_CATEGORIES: DisplayCategory[] = [
+  { id: 'accessories', title: 'Accessories', match: byKey('accessories') },
+  { id: 'accessoriesColor', title: 'Accessory Colors', match: byKey('accessoriesColor') },
+  { id: 'clothing', title: 'Clothing', match: byKey('clothing') },
+  { id: 'clothesColor', title: 'Clothing Colors', match: byKey('clothesColor') },
+  { id: 'clothingGraphic', title: 'Clothing Graphics', match: byKey('clothingGraphic') },
+  { id: 'eyebrows', title: 'Eyebrows', match: byKey('eyebrows') },
+  { id: 'eyes', title: 'Eyes', match: byKey('eyes') },
+  { id: 'facialHair', title: 'Facial Hair', match: byKey('facialHair') },
+  { id: 'facialHairColor', title: 'Facial Hair Colors', match: byKey('facialHairColor') },
+  { id: 'mouth', title: 'Mouths', match: byKey('mouth') },
+  { id: 'hair', title: 'Hair', match: (i) => i.param_key === 'top' && !HAT_TOPS.has(i.param_value) },
+  { id: 'hats', title: 'Hats', match: (i) => i.param_key === 'top' && HAT_TOPS.has(i.param_value) },
+  { id: 'hairColor', title: 'Hair Colors', match: byKey('hairColor') },
+  { id: 'hatColor', title: 'Hat Colors', match: byKey('hatColor') },
+  { id: 'skinColor', title: 'Skin Colors', match: byKey('skinColor') },
+];

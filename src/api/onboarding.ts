@@ -7,7 +7,7 @@ import client from './client';
 async function completeProfile(data: Omit<OnboardingFormData, 'password'>): Promise<User> {
   const res = await client.post<User>('/api/user/complete-profile/', {
     name: data.name,
-    avatar_url: data.avatar_url,
+    avatar: data.avatar,
     substance: data.substance,
     usage_duration: data.duration,
     goal: data.goal,

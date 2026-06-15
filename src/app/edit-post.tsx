@@ -31,7 +31,6 @@ export default function EditPostScreen() {
   const {
     control,
     handleSubmit,
-    formState: { errors },
   } = useForm<AddPostFormData>({
     resolver: zodResolver(addPostSchema),
     defaultValues: { title, body },
@@ -74,7 +73,6 @@ export default function EditPostScreen() {
         contentContainerStyle={{ padding: 16, paddingBottom: bottom + 24, gap: 24 }}>
         <CommunityForm
           control={control}
-          errors={errors}
           imageUri={currentImageUri}
           onPickImage={pickImage}
         />
