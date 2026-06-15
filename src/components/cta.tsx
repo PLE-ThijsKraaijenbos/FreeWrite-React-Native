@@ -99,6 +99,8 @@ export function CTALarge({ label, gradient, icon, onPress }: CTALargeProps) {
 }
 
 type DoubleCTAProps = {
+  // 'default' — neutral grey left + green right (e.g. Cancel / Confirm).
+  // 'secondary' — orange left + green right (two distinct choices).
   variant?: 'default' | 'secondary';
   leftLabel: string;
   rightLabel: string;

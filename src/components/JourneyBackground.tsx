@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useWindowDimensions, View } from 'react-native';
 
 import { colors } from '@/constants/tokens';
@@ -18,7 +18,7 @@ type JourneyBackgroundProps = {
   topInset?: number;
 };
 
-export function JourneyBackground({ topInset = 0 }: JourneyBackgroundProps) {
+export const JourneyBackground = React.memo(({ topInset = 0 }: JourneyBackgroundProps) => {
   const { width, height: windowHeight } = useWindowDimensions();
   const [areaHeight, setAreaHeight] = useState(0);
 
@@ -45,4 +45,4 @@ export function JourneyBackground({ topInset = 0 }: JourneyBackgroundProps) {
       ))}
     </View>
   );
-}
+});

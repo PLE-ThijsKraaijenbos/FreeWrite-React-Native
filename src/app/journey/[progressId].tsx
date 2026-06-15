@@ -3,8 +3,11 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ActivityIndicator, Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import BookmarkIcon from '@/assets/icons/bookmark.svg';
+import BookmarkOutlineIcon from '@/assets/icons/bookmark-outline.svg';
 import { BackButton } from '@/components/BackButton';
 import { CTAButton } from '@/components/cta';
+import { Divider } from '@/components/Divider';
 import { ThemedText } from '@/components/themed-text';
 import { useBookmarkStep, useJourney, useStartStep } from '@/hooks/use-journey';
 import { useTheme } from '@/hooks/use-theme';
@@ -44,49 +47,56 @@ export default function JourneyStepScreen() {
     });
   }
 
+  function goToAssignment() {
+    router.push(`/journey/assignment?progressId=${progressId}`);
+  }
+
   return (
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
-      <View style={{ paddingTop: top + 16 }} className="px-4 pb-3 flex-row items-center justify-between">
-        <BackButton onPress={() => router.back()} />
-        <Pressable onPress={() => toggleBookmark(progressId)} disabled={isBookmarking}>
-          <ThemedText className="text-h2">{progress.bookmarked ? '★' : '☆'}</ThemedText>
-        </Pressable>
-      </View>
-
-      <Image
-        source={{ uri: step.banner_url }}
-        style={{ width: '100%', height: 200 }}
-        contentFit="cover"
-      />
-
-      <View className="flex-1 px-4 pt-6">
-        <ThemedText type="h2">{step.title}</ThemedText>
-        <ThemedText themeColor="textSecondary" className="mt-3">
-          {step.description}
-        </ThemedText>
-      </View>
-
-      <View className="px-4" style={{ paddingBottom: bottom + 24 }}>
-        {status === 'AVAILABLE' && (
-          <CTAButton label={isStarting ? '…' : 'Start'} disabled={isStarting} onPress={handleStart} />
-        )}
-
-        {status === 'IN_PROGRESS' && (
-          <CTAButton label="Continue" onPress={() => router.push(`/journey/assignment?progressId=${progressId}`)} />
-        )}
-
-        {status === 'COMPLETED' && (
-          <CTAButton label="View again" onPress={() => router.push(`/journey/assignment?progressId=${progressId}`)} />
-        )}
-
-        {status === 'UNAVAILABLE' && (
-          <View className="items-center py-4">
-            <ThemedText themeColor="textSecondary">Not yet available</ThemedText>
+      <View className="flex-1 gap-6" style={{ paddingBottom: bottom + 24 }}>
+        {/* Banner with the back button floating over it */}
+        <View>
+          <Image
+            source={{ uri: step.banner_url }}
+            style={{ width: '100%', height: 200 }}
+            contentFit="cover"
+          />
+          <View className="absolute left-4 z-10" style={{ top: top + 8 }}>
+            <BackButton onPress={() => router.back()} />
           </View>
-        )}
+        </View>
+
+        {/* Title + description */}
+        <View className="px-4 gap-2">
+          <ThemedText type="h2">{step.title}</ThemedText>
+          <ThemedText themeColor="textSecondary">{step.description}</ThemedText>
+        </View>
+
+        <View className="px-4">
+          <Divider />
+        </View>
+
+        <View className="px-4 flex-row items-center gap-8">
+          <Pressable onPress={() => toggleBookmark(progressId)} disabled={isBookmarking} hitSlop={8}>
+            {progress.bookmarked ? (
+              <BookmarkIcon width={40} height={40} color="#F47D4E" />
+            ) : (
+              <BookmarkOutlineIcon width={40} height={40} color="#2A2924" />
+            )}
+          </Pressable>
+
+          <View className="flex-1">
+            {status === 'AVAILABLE' && (
+              <CTAButton label={isStarting ? '…' : "Let's do it"} disabled={isStarting} onPress={handleStart} />
+            )}
+            {status === 'IN_PROGRESS' && <CTAButton label="Continue" onPress={goToAssignment} />}
+            {status === 'COMPLETED' && <CTAButton label="View again" onPress={goToAssignment} />}
+            {status === 'UNAVAILABLE' && <CTAButton label="Not yet available" disabled />}
+          </View>
+        </View>
 
         {isStartError && (
-          <ThemedText themeColor="textSecondary" className="text-center mt-2">
+          <ThemedText themeColor="textSecondary" className="text-center px-4">
             Failed to start. Please try again.
           </ThemedText>
         )}
