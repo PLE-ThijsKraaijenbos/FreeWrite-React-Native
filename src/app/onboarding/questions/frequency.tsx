@@ -1,14 +1,13 @@
 import { useRouter } from 'expo-router';
 import { Controller, useFormContext } from 'react-hook-form';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CTAButton } from '@/components/cta';
-
+import { Divider } from '@/components/Divider';
+import { OnboardingFormLayout } from '@/components/onboarding/OnboardingFormLayout';
 import { SelectOption } from '@/components/SelectOption';
-import { OnboardingHeader } from '@/components/onboarding/OnboardingHeader';
 import { FrequencyValue, OnboardingFormData } from '@/types/onboarding';
 
 const OPTIONS: { label: string; value: FrequencyValue }[] = [
@@ -21,7 +20,6 @@ const OPTIONS: { label: string; value: FrequencyValue }[] = [
 export default function FrequencyScreen() {
   const router = useRouter();
   const { control, trigger } = useFormContext<OnboardingFormData>();
-  const { bottom } = useSafeAreaInsets();
 
   const handleNext = async () => {
     const valid = await trigger('frequency');
@@ -29,18 +27,28 @@ export default function FrequencyScreen() {
   };
 
   return (
-    <View className="flex-1 p-6" style={{ paddingBottom: bottom + 24 }}>
-      <OnboardingHeader filled={5} length={6} />
-      <View className="flex-1 gap-6 justify-center">
-        <View className="gap-2">
-          <ThemedText type="h2" className="text-center">How often do you use?</ThemedText>
-          <ThemedText type="body" className="text-center">This helps us personalise your journey.</ThemedText>
-        </View>
+    <OnboardingFormLayout
+      onBack={() => router.back()}
+      progress={{ filled: 5, length: 6 }}
+      gap="gap-6"
+      footer={<CTAButton label="Continue" onPress={handleNext} />}
+    >
+      <View className="gap-2">
+        <ThemedText type="h2" className="text-center">How often do you use?</ThemedText>
+        <ThemedText type="body" className="text-center">This helps us personalise your journey.</ThemedText>
+      </View>
+      <Divider />
+      <ScrollView
+        className="flex-1"
+        style={{ marginHorizontal: -8 }}
+        contentContainerStyle={{ paddingHorizontal: 8, paddingTop: 8, paddingBottom: 16 }}
+        persistentScrollbar
+      >
         <Controller
           control={control}
           name="frequency"
           render={({ field: { onChange, value } }) => (
-            <View className="gap-2">
+            <View className="gap-4">
               {OPTIONS.map((opt) => (
                 <SelectOption
                   key={opt.value}
@@ -52,8 +60,8 @@ export default function FrequencyScreen() {
             </View>
           )}
         />
-      </View>
-      <CTAButton label="Continue" onPress={handleNext} />
-    </View>
+      </ScrollView>
+      <Divider />
+    </OnboardingFormLayout>
   );
 }

@@ -14,7 +14,7 @@ export function BackButton({ onPress, variant = 'default' }: Props) {
   if (variant === 'onboarding') {
     return (
       <Pressable onPress={onPress} hitSlop={8} className="p-2 -ml-2">
-        <ChevronLeftIcon width={28} height={28} color="#CCCBC4" />
+        <ChevronLeftIcon width={36} height={36} color="#CCCBC4" />
       </Pressable>
     );
   }

@@ -5,10 +5,11 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AuthSelection } from '@/components/onboarding/AuthSelection';
 import { CTAButton } from '@/components/cta';
+import { Divider } from '@/components/Divider';
+import { OnboardingFormLayout } from '@/components/onboarding/OnboardingFormLayout';
 import { TextInput } from '@/components/TextInput';
 import { useAuth } from '@/lib/auth-context';
 import { OnboardingFormData } from '@/types/onboarding';
@@ -29,7 +30,6 @@ export default function AccountScreen() {
     trigger,
     getValues,
   } = useFormContext<OnboardingFormData>();
-  const { bottom } = useSafeAreaInsets();
 
   const handleNext = async () => {
     const valid = await trigger(['email', 'password']);
@@ -61,77 +61,82 @@ export default function AccountScreen() {
   const isRegister = mode === 'register';
 
   return (
-    <View className="flex-1 p-6" style={{ paddingBottom: bottom + 24 }}>
-      <View className="flex-1 gap-6 justify-center">
-        <View className="gap-2">
-          <ThemedText type="h2" className="text-center">Welcome</ThemedText>
-          <ThemedText type="body" className="text-center">
-            Whenever you're ready create an account to begin, or log in to continue your journey.
-          </ThemedText>
-        </View>
-        <AuthSelection
-          selected={mode}
-          onSelectRegister={() => switchMode('register')}
-          onSelectLogin={() => switchMode('login')}
-        />
-        <View className="gap-2">
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-              <>
-                <TextInput
-                  label="Email"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  placeholder="you@example.com"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoComplete="email"
-                />
-                {error && <ThemedText type="body-sm" className="text-secondary-500 pt-1">{error.message}</ThemedText>}
-              </>
-            )}
+    <OnboardingFormLayout
+      onBack={() => router.back()}
+      gap="gap-8"
+      footer={
+        <View className="gap-3">
+          {formError && (
+            <ThemedText type="body-sm" className="text-secondary-500 text-center">{formError}</ThemedText>
+          )}
+          <CTAButton
+            label={
+              isPending
+                ? isRegister
+                  ? 'Creating account…'
+                  : 'Logging in…'
+                : isRegister
+                  ? 'Continue'
+                  : 'Log in'
+            }
+            disabled={isPending}
+            onPress={handleNext}
           />
         </View>
-        <View className="gap-2">
-          <Controller
-            control={control}
-            name="password"
-            render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
-              <>
-                <TextInput
-                  label="Password"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  placeholder={isRegister ? 'Min. 8 characters' : 'Your password'}
-                  secureTextEntry
-                  autoComplete={isRegister ? 'new-password' : 'current-password'}
-                />
-                {error && <ThemedText type="body-sm" className="text-secondary-500 pt-1">{error.message}</ThemedText>}
-              </>
-            )}
-          />
-        </View>
+      }
+    >
+      <View className="gap-2">
+        <ThemedText type="h2" className="text-center">Welcome</ThemedText>
+        <ThemedText type="body" className="text-center">
+          Whenever you're ready create an account to begin, or log in to continue your journey.
+        </ThemedText>
       </View>
-      {formError && (
-        <ThemedText type="body-sm" className="text-secondary-500 text-center pb-3">{formError}</ThemedText>
-      )}
-      <CTAButton
-        label={
-          isPending
-            ? isRegister
-              ? 'Creating account…'
-              : 'Logging in…'
-            : isRegister
-              ? 'Continue'
-              : 'Log in'
-        }
-        disabled={isPending}
-        onPress={handleNext}
+      <Divider />
+      <AuthSelection
+        selected={mode}
+        onSelectRegister={() => switchMode('register')}
+        onSelectLogin={() => switchMode('login')}
       />
-    </View>
+      <View className="gap-6">
+        <Controller
+          control={control}
+          name="email"
+          render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+            <View className="gap-2">
+              <TextInput
+                label="Email"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                placeholder="you@example.com"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoComplete="email"
+              />
+              {error && <ThemedText type="body-sm" className="text-secondary-500 pt-1">{error.message}</ThemedText>}
+            </View>
+          )}
+        />
+        <Controller
+          control={control}
+          name="password"
+          render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+            <View className="gap-2">
+              <TextInput
+                label="Password"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                placeholder={isRegister ? 'Min. 8 characters' : 'Your password'}
+                secureTextEntry
+                autoComplete={isRegister ? 'new-password' : 'current-password'}
+              />
+              {error && <ThemedText type="body-sm" className="text-secondary-500 pt-1">{error.message}</ThemedText>}
+            </View>
+          )}
+        />
+      </View>
+      <Divider />
+    </OnboardingFormLayout>
   );
 }

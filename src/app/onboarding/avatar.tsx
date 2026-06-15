@@ -4,9 +4,10 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CTAButton } from '@/components/cta';
+import { Divider } from '@/components/Divider';
+import { OnboardingFormLayout } from '@/components/onboarding/OnboardingFormLayout';
 import { TextInput } from '@/components/TextInput';
 import { AvatarSelect } from '@/components/onboarding/AvatarSelect';
 import { buildAvatarUrl } from '@/lib/avatar';
@@ -36,7 +37,6 @@ const OPTIONS = [
 export default function AvatarScreen() {
   const router = useRouter();
   const { control, setValue, trigger } = useFormContext<OnboardingFormData>();
-  const { bottom } = useSafeAreaInsets();
   const [selected, setSelected] = useState<'MALE' | 'FEMALE' | null>(null);
   const [attemptedNext, setAttemptedNext] = useState(false);
 
@@ -52,21 +52,27 @@ export default function AvatarScreen() {
   };
 
   return (
-    <View className="flex-1 p-6" style={{ paddingBottom: bottom + 24 }}>
-      <View className="flex-1 gap-6 justify-center">
-        <View className="gap-2">
-          <ThemedText type="h1" className="text-center">Create your avatar</ThemedText>
-          <ThemedText type="body" className="text-center">
-            Pick one of the default avatars and give yourself a name. Throughout your journey you
-            will unlock different items which you can equip on your avatar.
-          </ThemedText>
-        </View>
+    <OnboardingFormLayout
+      onBack={() => router.back()}
+      gap="gap-8"
+      footer={<CTAButton label="Continue" onPress={handleNext} />}
+    >
+      <View className="gap-2">
+        <ThemedText type="h1" className="text-center">Create your avatar</ThemedText>
+        <ThemedText type="body" className="text-center">
+          Pick one of the default avatars and give yourself a name. Throughout your journey you
+          will unlock different items which you can equip on your avatar.
+        </ThemedText>
+      </View>
+      <Divider />
+      <View className="gap-4">
         <Controller
           control={control}
           name="name"
           render={({ field: { onChange, onBlur, value }, fieldState: { error, isTouched } }) => (
             <View className="gap-1">
               <TextInput
+                label="Name"
                 placeholder="Your name"
                 value={value}
                 onChangeText={onChange}
@@ -80,7 +86,7 @@ export default function AvatarScreen() {
         />
         <AvatarSelect options={OPTIONS} selected={selected} onSelect={handleSelect} />
       </View>
-      <CTAButton label="Next" onPress={handleNext} />
-    </View>
+      <Divider />
+    </OnboardingFormLayout>
   );
 }
