@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CommunityForm } from '@/components/CommunityForm';
 import { CTAButton } from '@/components/cta';
 import { ThemedText } from '@/components/themed-text';
-import { useCreatePost } from '@/hooks/use-community';
+import { useCreatePost, useTags } from '@/hooks/use-community';
 import { useTheme } from '@/hooks/use-theme';
 import { addPostSchema, AddPostFormData } from '@/types/community';
 
@@ -18,6 +18,7 @@ export default function AddPostScreen() {
   const theme = useTheme();
   const { top, bottom } = useSafeAreaInsets();
   const { mutate: createPost, isPending } = useCreatePost();
+  const { data: tags = [] } = useTags();
   const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>(null);
 
   const {
@@ -25,7 +26,7 @@ export default function AddPostScreen() {
     handleSubmit,
   } = useForm<AddPostFormData>({
     resolver: zodResolver(addPostSchema),
-    defaultValues: { title: '', body: '' },
+    defaultValues: { title: '', body: '', tag_ids: [] },
   });
 
   const pickImage = async () => {
@@ -46,9 +47,7 @@ export default function AddPostScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: theme.background }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+    <View style={{ flex: 1, backgroundColor: theme.background }}>
       <View style={{ paddingTop: top + 16 }} className="px-4">
         <View className="flex-row items-center justify-between">
           <ThemedText type="h2">New post</ThemedText>
@@ -58,21 +57,28 @@ export default function AddPostScreen() {
         </View>
       </View>
 
-      <ScrollView
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ padding: 16, paddingBottom: bottom + 24, gap: 24 }}>
-        <CommunityForm
-          control={control}
-          imageUri={image?.uri}
-          onPickImage={pickImage}
-        />
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{ padding: 16, gap: 24 }}>
+          <CommunityForm
+            control={control}
+            imageUri={image?.uri}
+            onPickImage={pickImage}
+            tags={tags}
+          />
+        </ScrollView>
+      </KeyboardAvoidingView>
 
+      <View className="px-4 pt-2" style={{ paddingBottom: bottom + 16 }}>
         <CTAButton
           label={isPending ? 'Posting...' : 'Post'}
           onPress={handleSubmit(onSubmit)}
           disabled={isPending}
         />
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </View>
+    </View>
   );
 }

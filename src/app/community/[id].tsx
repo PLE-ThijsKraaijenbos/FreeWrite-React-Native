@@ -81,6 +81,22 @@ export default function CommunityPostScreen() {
           <ThemedText type="h2">{post.title}</ThemedText>
           <ThemedText type="body-sm" className="text-neutral-500">{post.body}</ThemedText>
 
+          {post.tags.length > 0 && (
+            <View className="flex-row flex-wrap gap-2">
+              {post.tags.map((tag) => (
+                <LinearGradient
+                  key={tag.id}
+                  colors={['#FFF3EE', '#FDD4BE']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 0, y: 1 }}
+                  style={shadows.drop}
+                  className="px-3 py-1 rounded-lg overflow-hidden">
+                  <ThemedText type="body-sm-bold" className="text-neutral-600">{tag.value}</ThemedText>
+                </LinearGradient>
+              ))}
+            </View>
+          )}
+
           <View className="flex-row items-center gap-4">
             <Pressable
               className="flex-row items-center gap-0.5"
