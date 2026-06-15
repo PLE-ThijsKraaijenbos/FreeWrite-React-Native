@@ -29,7 +29,7 @@ export default function HomeScreen() {
       <PageHeader absolute subtitle={getGreeting()} title={user?.profile?.name ?? ''} />
       <CoinBalance coins={user?.profile?.coins ?? 0} onPress={() => router.push('/shop')} />
       <AvatarDisplay uri={buildAvatarUrl(user?.profile?.avatar ?? {})} />
-      <View className="px-4 mt-6 gap-4">
+      <View className="px-4 mt-6 gap-6">
         <CTALarge label="Pick up where you left off" gradient={1} icon={<QuillIcon color="#FAFAF8" width="100%" height="100%" />} onPress={() => router.push('/tabs/journey?focus=available')} />
         <CTALarge label="Item shop" gradient={2} icon={<ShopIcon color="#FAFAF8" width="100%" height="100%" />} onPress={() => router.push('/shop')} />
         <CTALarge label="Edit avatar" gradient={3} icon={<UserEditIcon color="#FAFAF8" width="100%" height="100%" />} onPress={() => router.push('/avatar-editor')} />

@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
 import { useCallback, useMemo } from 'react';
 
@@ -16,10 +17,6 @@ export type GridCard = {
 
 export type GridSection = { key: string; title: string; cards: GridCard[] };
 
-type GridRow =
-  | { type: 'header'; key: string; title: string }
-  | { type: 'items'; key: string; cards: GridCard[] };
-
 function chunk<T>(arr: T[], size: number): T[][] {
   const rows: T[][] = [];
   for (let i = 0; i < arr.length; i += size) rows.push(arr.slice(i, i + size));
@@ -34,6 +31,8 @@ type Props = {
   baseParams?: Record<string, string>;
   refreshing: boolean;
   onRefresh: () => void;
+  /** Optional content rendered above CategorySelect, inside the gap-6 scroll flow. */
+  header?: ReactNode;
 };
 
 export function AvatarItemGrid({
@@ -44,68 +43,66 @@ export function AvatarItemGrid({
   baseParams,
   refreshing,
   onRefresh,
+  header,
 }: Props) {
-  const rows = useMemo<GridRow[]>(() => {
-    const visible = selectedCategory ? sections.filter((s) => s.key === selectedCategory) : sections;
-    const result: GridRow[] = [];
-    for (const section of visible) {
-      result.push({ type: 'header', key: `h:${section.key}`, title: section.title });
-      chunk(section.cards, 2).forEach((cards, i) => {
-        result.push({ type: 'items', key: `r:${section.key}:${i}`, cards });
-      });
-    }
-    return result;
-  }, [sections, selectedCategory]);
+  const visibleSections = useMemo(
+    () => (selectedCategory ? sections.filter((s) => s.key === selectedCategory) : sections),
+    [sections, selectedCategory]
+  );
 
-  const renderRow = useCallback(
-    ({ item: row }: { item: GridRow }) => {
-      if (row.type === 'header') {
-        return (
-          <ThemedText type="h3" className="px-4 mt-6 mb-2">
-            {row.title.toUpperCase()}
-          </ThemedText>
-        );
-      }
-      return (
-        <View className="flex-row w-full">
-          {row.cards.map(({ item, uri, hint, variant, disabled }) => (
-            <AvatarItemCard
-              key={item.id}
-              item={item}
-              uri={uri}
-              variant={variant}
-              hint={hint}
-              disabled={disabled}
-              baseParams={baseParams}
-              onPress={onPressItem}
-            />
+  // Each category is one list item: a gap-2 group of its title + its 2-column grid.
+  const renderSection = useCallback(
+    ({ item: section }: { item: GridSection }) => (
+      <View className="gap-2">
+        <ThemedText type="h3" className="px-4">
+          {section.title.toUpperCase()}
+        </ThemedText>
+        <View>
+          {chunk(section.cards, 2).map((cards, i) => (
+            <View key={i} className="flex-row w-full">
+              {cards.map(({ item, uri, hint, variant, disabled }) => (
+                <AvatarItemCard
+                  key={item.id}
+                  item={item}
+                  uri={uri}
+                  variant={variant}
+                  hint={hint}
+                  disabled={disabled}
+                  baseParams={baseParams}
+                  onPress={onPressItem}
+                />
+              ))}
+              {cards.length === 1 && <View className="w-1/2" />}
+            </View>
           ))}
-          {row.cards.length === 1 && <View className="w-1/2" />}
         </View>
-      );
-    },
+      </View>
+    ),
     [baseParams, onPressItem]
   );
 
   return (
-    <>
-      <CategorySelect
-        categories={sections.map((s) => ({ id: s.key, label: s.title }))}
-        selectedId={selectedCategory}
-        onSelect={(id) => onSelectCategory(id === selectedCategory ? null : id)}
-      />
-      <FlatList
-        style={{ flex: 1 }}
-        data={rows}
-        keyExtractor={(row) => row.key}
-        renderItem={renderRow}
-        contentContainerStyle={{ paddingBottom: 32 }}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-        removeClippedSubviews
-        initialNumToRender={6}
-        maxToRenderPerBatch={6}
-        windowSize={7}
-      />
-    </>
+    <FlatList
+      style={{ flex: 1 }}
+      data={visibleSections}
+      keyExtractor={(section) => section.key}
+      renderItem={renderSection}
+      ListHeaderComponent={
+        <View className="gap-6">
+          {header}
+          <CategorySelect
+            categories={sections.map((s) => ({ id: s.key, label: s.title }))}
+            selectedId={selectedCategory}
+            onSelect={(id) => onSelectCategory(id === selectedCategory ? null : id)}
+          />
+        </View>
+      }
+      contentContainerStyle={{ gap: 24, paddingTop: 24, paddingBottom: 32 }}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      removeClippedSubviews
+      initialNumToRender={6}
+      maxToRenderPerBatch={6}
+      windowSize={7}
+    />
   );
 }

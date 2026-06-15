@@ -48,29 +48,31 @@ export default function UnlockItemScreen() {
         <BackButton onPress={() => router.back()} />
       </View>
 
-      <View className="flex-1 px-4" style={{ paddingBottom: bottom + 16 }}>
-        <View className="items-center">
-          <ThemedText type="body-lg" className="mt-6 text-center max-w-[340px] text-neutral-600">
+      <View
+        className="flex-1 px-4 items-center gap-6"
+        style={{ paddingTop: 24, paddingBottom: bottom + 16 }}>
+        <View className="items-center gap-2">
+          <ThemedText type="body-lg" className="text-center max-w-[340px] text-neutral-600">
             Do you want to unlock <ThemedText type="body-lg-bold" className="text-neutral-600">{item.name}</ThemedText> for
           </ThemedText>
-          <View className="mt-1 flex-row items-center gap-1">
+          <View className="flex-row items-center gap-1">
             {item.price > 0 && <CoinIcon width={32} height={32} />}
             <ThemedText type="body-lg-bold" className="text-secondary-400">
               {item.price > 0 ? item.price : 'FREE'}
             </ThemedText>
           </View>
-
-          <View className="my-6 w-full">
-            <Divider />
-          </View>
-
-          <DoubleCTA
-            leftLabel="Cancel"
-            rightLabel="Unlock Item"
-            onPressLeft={() => router.back()}
-            onPressRight={handleUnlock}
-          />
         </View>
+
+        <View className="w-full">
+          <Divider />
+        </View>
+
+        <DoubleCTA
+          leftLabel="Cancel"
+          rightLabel="Unlock Item"
+          onPressLeft={() => router.back()}
+          onPressRight={handleUnlock}
+        />
       </View>
     </View>
   );
