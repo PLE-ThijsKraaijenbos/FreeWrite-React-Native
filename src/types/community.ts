@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 export const addPostSchema = z.object({
-  title: z.string().min(1, 'Required'),
-  body: z.string().min(1, 'Required'),
+  title: z.string().trim().min(1, 'Please add a title.'),
+  body: z.string().trim().min(1, 'Please add a message.'),
 });
 
 export type AddPostFormData = z.infer<typeof addPostSchema>;

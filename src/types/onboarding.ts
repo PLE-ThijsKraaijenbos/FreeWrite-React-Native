@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 export const onboardingSchema = z.object({
-  email: z.string().trim().toLowerCase().email(),
-  password: z.string().min(8),
+  email: z.string().trim().toLowerCase().email('Please enter a valid email address.'),
+  password: z.string().min(8, 'Password must be at least 8 characters.'),
   substance: z.enum(['COCAINE', 'CATHINONES', 'AMPHETAMINE', 'MDMA']),
   duration: z.enum(['<6M', '6-12M', '1-2Y', '>2Y', 'NOT_SURE']),
   goal: z.enum(['USE_LESS', 'QUIT', 'NOT_SURE']),

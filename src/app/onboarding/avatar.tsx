@@ -13,8 +13,7 @@ import { OnboardingFormData } from '@/types/onboarding';
 
 const BASE = 'https://api.dicebear.com/9.x/avataaars/svg';
 const SHARED_PARAMS =
-  'hairColor[]=4a312c&clothing[]=shirtCrewNeck&clothesColor[]=262e33' +
-  '&eyes[]=default&eyebrows[]=default&mouth[]=default&skinColor[]=f8d25c';
+  'hairColor[]=4a312c&clothing[]=shirtCrewNeck&clothesColor[]=262e33&eyes[]=default&eyebrows[]=default&mouth[]=default&skinColor[]=f8d25c';
 
 const OPTIONS = [
   {
@@ -58,13 +57,16 @@ export default function AvatarScreen() {
         <Controller
           control={control}
           name="name"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              placeholder="Your name"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-            />
+          render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+            <View className="gap-1">
+              <TextInput
+                placeholder="Your name"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+              />
+              {error && <ThemedText type="body-sm" className="text-secondary-500 pt-1">{error.message}</ThemedText>}
+            </View>
           )}
         />
         <AvatarSelect options={OPTIONS} selected={selected} onSelect={handleSelect} />

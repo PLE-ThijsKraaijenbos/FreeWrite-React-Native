@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { cssInterop } from 'nativewind';
-import { Control, Controller, FieldErrors } from 'react-hook-form';
+import { Control, Controller } from 'react-hook-form';
 import { Pressable, View } from 'react-native';
 
 import { TextInput } from '@/components/TextInput';
@@ -13,12 +13,11 @@ cssInterop(LinearGradient, { className: 'style' });
 
 type Props = {
   control: Control<AddPostFormData>;
-  errors: FieldErrors<AddPostFormData>;
   imageUri?: string | null;
   onPickImage: () => void;
 };
 
-export function CommunityForm({ control, errors, imageUri, onPickImage }: Props) {
+export function CommunityForm({ control, imageUri, onPickImage }: Props) {
   return (
     <LinearGradient
       colors={['#FAFAF8', '#EBEBE6']}
@@ -40,21 +39,25 @@ export function CommunityForm({ control, errors, imageUri, onPickImage }: Props)
           <Controller
             control={control}
             name="title"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput label="Title" placeholder="What’s on your mind?" value={value} onChangeText={onChange} onBlur={onBlur} />
+            render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+              <>
+                <TextInput label="Title" placeholder="What’s on your mind?" value={value} onChangeText={onChange} onBlur={onBlur} />
+                {error && <ThemedText type="body-sm" className="text-secondary-500 pt-1">{error.message}</ThemedText>}
+              </>
             )}
           />
-          {errors.title && <ThemedText type="body-sm" className="text-secondary-500 pt-1">{errors.title.message}</ThemedText>}
         </View>
         <View>
           <Controller
             control={control}
             name="body"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput label="Message" placeholder="Share your thoughts." value={value} onChangeText={onChange} onBlur={onBlur} multiline />
+            render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+              <>
+                <TextInput label="Message" placeholder="Share your thoughts." value={value} onChangeText={onChange} onBlur={onBlur} multiline />
+                {error && <ThemedText type="body-sm" className="text-secondary-500 pt-1">{error.message}</ThemedText>}
+              </>
             )}
           />
-          {errors.body && <ThemedText type="body-sm" className="text-secondary-500 pt-1">{errors.body.message}</ThemedText>}
         </View>
       </View>
     </LinearGradient>
