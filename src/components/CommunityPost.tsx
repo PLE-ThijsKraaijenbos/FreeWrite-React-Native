@@ -2,7 +2,7 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { cssInterop } from 'nativewind';
-import { Alert, Pressable, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import ChatBubbleIcon from '@/assets/icons/chat-bubble-outline.svg';
 import HeartIcon from '@/assets/icons/heart.svg';
@@ -14,6 +14,14 @@ import { useDeletePost, useLikePost } from '@/hooks/use-community';
 import { Post } from '@/types/community';
 
 cssInterop(LinearGradient, { className: 'style' });
+
+const styles = StyleSheet.create({
+  textShadow: {
+    textShadowColor: 'rgba(0,0,0,0.50)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 2,
+  },
+});
 
 type Props = {
   post: Post;
@@ -61,6 +69,21 @@ export function CommunityPost({ post }: Props) {
         <ThemedText type="body-sm" className="text-neutral-400" numberOfLines={1}>
           {post.body}
         </ThemedText>
+        {post.tags.length > 0 && (
+          <View className="flex-row flex-wrap gap-2 mt-2">
+            {post.tags.map((tag) => (
+              <LinearGradient
+                key={tag.id}
+                colors={['#FFF3EE', '#FDD4BE']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                style={shadows.drop}
+                className="px-3 py-1 rounded-lg overflow-hidden">
+                <ThemedText type="body-sm-bold" className="text-neutral-600">{tag.value}</ThemedText>
+              </LinearGradient>
+            ))}
+          </View>
+        )}
         <View className="flex-row items-center gap-4 mt-2">
           <Pressable
             className="flex-row items-center gap-0.5"

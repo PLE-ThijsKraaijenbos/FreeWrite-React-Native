@@ -1,10 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { createPost, deletePost, getPosts, likePost, unlikePost, updatePost } from '@/api/community';
+import { createPost, deletePost, getPosts, getTags, likePost, unlikePost, updatePost } from '@/api/community';
 import { Post } from '@/types/community';
 
 export function usePosts() {
   return useQuery({ queryKey: ['community', 'posts'], queryFn: getPosts });
+}
+
+export function useTags() {
+  return useQuery({ queryKey: ['community', 'tags'], queryFn: getTags });
 }
 
 export function usePost(id: number) {
