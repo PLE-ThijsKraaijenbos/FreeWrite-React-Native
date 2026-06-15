@@ -11,7 +11,9 @@ export type AvatarItem = {
 export type UserProfile = {
   id: string;
   name: string;
-  avatar_url: string;
+  // Derived server-side from equipped items: a {param_key: param_value} map the
+  // client turns into a DiceBear URL. The avatar is no longer stored as a URL.
+  avatar: Record<string, string>;
   substance: string;
   usage_duration: string;
   goal: string;

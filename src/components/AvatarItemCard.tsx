@@ -18,7 +18,7 @@ export type AvatarItemCardVariant = 'shop' | 'unequipped' | 'equipped';
 
 type Props = {
   item: AvatarItem;
-  baseUrl?: string;
+  baseParams?: Record<string, string>;
   uri?: string;
   variant?: AvatarItemCardVariant;
   hint?: string | null;
@@ -35,7 +35,7 @@ const labelShadow = StyleSheet.create({
 });
 
 
-function AvatarItemCardComponent({ item, baseUrl, uri: propUri, variant = 'shop', hint, disabled, onPress }: Props) {
+function AvatarItemCardComponent({ item, baseParams, uri: propUri, variant = 'shop', hint, disabled, onPress }: Props) {
   const equipped = variant === 'equipped';
   const isShop = variant === 'shop';
   const isOwned = isShop && item.is_unlocked;
@@ -43,7 +43,7 @@ function AvatarItemCardComponent({ item, baseUrl, uri: propUri, variant = 'shop'
   // Dim the card if it's disabled (missing prerequisite) OR if it's already owned in the shop
   const isDimmed = (disabled && !isOwned) || isOwned;
 
-  const uri = propUri ?? previewItemUrl(baseUrl, item, { png: true, size: THUMB_SIZE });
+  const uri = propUri ?? previewItemUrl(baseParams ?? {}, item, { png: true, size: THUMB_SIZE });
 
   return (
     <Pressable

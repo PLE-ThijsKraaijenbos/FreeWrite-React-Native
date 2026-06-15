@@ -10,7 +10,7 @@ export const onboardingSchema = z.object({
   frequency: z.enum(['RARELY', 'MONTHLY', 'WEEKLY', 'DAILY']),
   previousAttempts: z.enum(['WENT_WELL', 'ONCE_HARD', 'MULTIPLE_RELAPSED', 'THOUGHT_ABOUT_IT', 'NEVER']),
   name: z.string().trim().min(1, 'Please enter a name.'),
-  avatar_url: z.string().optional(),
+  avatar: z.record(z.string(), z.string()).optional(),
 });
 
 export type OnboardingFormData = z.infer<typeof onboardingSchema>;

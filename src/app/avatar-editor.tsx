@@ -1,57 +1,73 @@
 import { useRouter } from 'expo-router';
-import { ActivityIndicator, FlatList, RefreshControl, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { useAvatarItems, useEquipAvatarItem, useUnequipAvatarItem } from '@/api/avatar-items';
-import { patchAvatarUrlApi } from '@/api/auth';
+import { getProfileApi } from '@/api/auth';
 import { AvatarDisplay } from '@/components/AvatarDisplay';
-import { AvatarItemCard } from '@/components/AvatarItemCard';
+import { AvatarItemGrid, GridCard, GridSection } from '@/components/AvatarItemGrid';
 import { BackButton } from '@/components/BackButton';
-import { CategorySelect } from '@/components/CategorySelect';
 import { CoinBalance } from '@/components/CoinBalance';
 import { CTAButton } from '@/components/cta';
 import { ThemedText } from '@/components/themed-text';
 import {
   applyItem,
   buildAvatarUrl,
-  parseAvatarParams,
+  DISPLAY_CATEGORIES,
   prerequisiteHint,
   previewItemUrl,
-  PROBABILITY_COMPANION,
+  PROBABILITY_PARAM,
 } from '@/lib/avatar';
 import { useAuth } from '@/lib/auth-context';
 import { useTheme } from '@/hooks/use-theme';
 import { AvatarItem } from '@/types/user';
 
-const CATEGORY_LABELS: Record<string, string> = {
-  accessories: 'Accessories',
-  accessoriesColor: 'Accessory Colors',
-  clothing: 'Clothing',
-  clothesColor: 'Clothing Colors',
-  clothingGraphic: 'Clothing Graphics',
-  eyebrows: 'Eyebrows',
-  eyes: 'Eyes',
-  facialHair: 'Facial Hair',
-  facialHairColor: 'Facial Hair Colors',
-  mouth: 'Mouths',
-  top: 'Hair & Hats',
-  hairColor: 'Hair Colors',
-  hatColor: 'Hat Colors',
-  skinColor: 'Skin Colors',
+// Categories that support an explicit "None" tile to fully unequip, mapped to
+// the dependent colour that should also be cleared when None is selected.
+const NONE_CATEGORIES: Record<string, string> = {
+  accessories: 'accessoriesColor',
+  facialHair: 'facialHairColor',
 };
 
-function chunk<T>(arr: T[], size: number): T[][] {
-  const rows: T[][] = [];
-  for (let i = 0; i < arr.length; i += size) rows.push(arr.slice(i, i + size));
-  return rows;
+const NONE_PREFIX = 'none:';
+const isNoneItem = (item: AvatarItem) => item.id.startsWith(NONE_PREFIX);
+
+// A synthetic, non-DB tile that clears its category when selected.
+const noneItem = (key: string): AvatarItem => ({
+  id: `${NONE_PREFIX}${key}`,
+  name: 'None',
+  param_key: key,
+  param_value: '',
+  price: 0,
+  is_unlocked: true,
+  is_equipped: false,
+});
+
+// Removes a category (its value, probability gate, and dependent colour) from params.
+function stripCategory(params: Record<string, string>, key: string): Record<string, string> {
+  const next = { ...params };
+  delete next[key];
+  const probKey = PROBABILITY_PARAM[key];
+  if (probKey) delete next[probKey];
+  const colorKey = NONE_CATEGORIES[key];
+  if (colorKey) delete next[colorKey];
+  return next;
 }
 
-type EditorItem = { item: AvatarItem; hint: string | null; uri: string; active: boolean };
-
-type EditorRow =
-  | { type: 'header'; key: string; title: string }
-  | { type: 'items'; key: string; items: EditorItem[] };
+// Restores each key to its saved value, or deletes it if it had none.
+function revertKeys(
+  params: Record<string, string>,
+  original: Record<string, string>,
+  keys: string[]
+): Record<string, string> {
+  const next = { ...params };
+  for (const k of keys) {
+    if (original[k] !== undefined) next[k] = original[k];
+    else delete next[k];
+  }
+  return next;
+}
 
 export default function AvatarEditorScreen() {
   const router = useRouter();
@@ -62,116 +78,68 @@ export default function AvatarEditorScreen() {
   const { mutateAsync: equip } = useEquipAvatarItem();
   const { mutateAsync: unequip } = useUnequipAvatarItem();
 
-  // Parsed once from avatar_url and never changes — used as the fallback
-  // when an item is deselected, so the avatar reverts to its original look.
-  const originalParams = useRef(parseAvatarParams(user?.profile?.avatar_url ?? ''));
+  // The saved avatar (equipped items), captured once — base for previews and the
+  // fallback when an item is deselected.
+  const baseParams = useRef(user?.profile?.avatar ?? {}).current;
 
-  const [params, setParams] = useState<Record<string, string>>(
-    () => originalParams.current
-  );
+  const [params, setParams] = useState<Record<string, string>>(() => baseParams);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const unlockedItems = useMemo(() => items.filter((i) => i.is_unlocked), [items]);
 
-  const allSections = useMemo(
+  const sections = useMemo<GridSection[]>(
     () =>
-      Object.entries(CATEGORY_LABELS)
-        .map(([key, title]) => ({
-          key,
-          title,
-          items: unlockedItems.filter((i) => i.param_key === key),
-        }))
-        .filter((s) => s.items.length > 0),
-    [unlockedItems]
-  );
-
-  const baseUrl = user?.profile?.avatar_url;
-
-  const rows = useMemo<EditorRow[]>(() => {
-    const sections = selectedCategory
-      ? allSections.filter((s) => s.key === selectedCategory)
-      : allSections;
-    const result: EditorRow[] = [];
-    for (const section of sections) {
-      result.push({ type: 'header', key: `h:${section.key}`, title: section.title });
-      chunk(section.items, 2).forEach((rowItems, i) => {
-        const itemsWithMetadata: EditorItem[] = rowItems.map((item) => {
+      DISPLAY_CATEGORIES.map((cat) => {
+        const real = unlockedItems.filter(cat.match);
+        // Offer a "None" tile (first) for clearable categories that have items.
+        const catItems =
+          cat.id in NONE_CATEGORIES && real.length > 0 ? [noneItem(cat.id), ...real] : real;
+        const cards: GridCard[] = catItems.map((item) => {
+          if (isNoneItem(item)) {
+            // None is active when the category is off; preview the avatar without it.
+            const active = params[item.param_key] === undefined;
+            return {
+              item,
+              uri: buildAvatarUrl(stripCategory(baseParams, item.param_key), { png: true, size: 128 }),
+              hint: null,
+              variant: active ? 'equipped' : 'unequipped',
+              disabled: false,
+            };
+          }
           const active = params[item.param_key] === item.param_value;
+          const hint = prerequisiteHint(item.param_key, params);
           return {
             item,
-            hint: prerequisiteHint(item.param_key, params),
-            uri: previewItemUrl(baseUrl, item, { png: true, size: 128 }),
-            active,
+            uri: previewItemUrl(baseParams, item, { png: true, size: 128 }),
+            hint: active ? null : hint,
+            variant: active ? 'equipped' : 'unequipped',
+            disabled: !active && !!hint,
           };
         });
-        result.push({ type: 'items', key: `r:${section.key}:${i}`, items: itemsWithMetadata });
-      });
-    }
-    return result;
-  }, [allSections, selectedCategory, params, baseUrl]);
+        return { key: cat.id, title: cat.title, cards };
+      }).filter((s) => s.cards.length > 0),
+    [unlockedItems, params, baseParams]
+  );
 
   const toggle = useCallback(
     (item: AvatarItem) => {
+      if (isNoneItem(item)) {
+        setParams((prev) => stripCategory(prev, item.param_key));
+        return;
+      }
       setParams((prev) => {
-        const probKey = PROBABILITY_COMPANION[item.param_key];
-
         if (prev[item.param_key] === item.param_value) {
-          const next = { ...prev };
-          const fallback = originalParams.current[item.param_key];
-          if (fallback !== undefined) {
-            next[item.param_key] = fallback;
-            if (probKey) {
-              const origProb = originalParams.current[probKey];
-              if (origProb !== undefined) {
-                next[probKey] = origProb;
-              } else {
-                delete next[probKey];
-              }
-            }
-          } else {
-            delete next[item.param_key];
-            if (probKey) delete next[probKey];
-          }
-          return next;
+          // Deselect: revert this key (and its probability gate) to the saved look.
+          const probKey = PROBABILITY_PARAM[item.param_key];
+          return revertKeys(prev, baseParams, [item.param_key, probKey].filter(Boolean) as string[]);
         }
-
-        // Select: set value and force probability to 100 so DiceBear always renders it
+        // Select: set value and force probability to 100 so DiceBear always renders it.
         return applyItem(prev, item);
       });
     },
-    []
-  );
-
-  const renderRow = useCallback(
-    ({ item: row }: { item: EditorRow }) => {
-      if (row.type === 'header') {
-        return (
-          <ThemedText type="h3" className="px-4 mt-6 mb-2">
-            {row.title.toUpperCase()}
-          </ThemedText>
-        );
-      }
-      return (
-        <View className="flex-row w-full">
-          {row.items.map(({ item, hint, uri, active }) => (
-            <AvatarItemCard
-              key={item.id}
-              item={item}
-              uri={uri}
-              variant={active ? 'equipped' : 'unequipped'}
-              hint={active ? null : hint}
-              disabled={!active && !!hint}
-              baseUrl={baseUrl}
-              onPress={toggle}
-            />
-          ))}
-          {row.items.length === 1 && <View className="w-1/2" />}
-        </View>
-      );
-    },
-    [toggle, baseUrl]
+    [baseParams]
   );
 
   async function handleSave() {
@@ -192,8 +160,9 @@ export default function AvatarEditorScreen() {
           .map((item) => equip(item.id))
       );
 
-      const updatedUser = await patchAvatarUrlApi(buildAvatarUrl(params));
-      updateUser(updatedUser);
+      // Equipped items are the source of truth now — refresh the profile so the
+      // derived avatar (home screen etc.) reflects the change.
+      updateUser(await getProfileApi());
       router.back();
     } catch {
       setSaveError('Failed to save. Please try again.');
@@ -220,26 +189,15 @@ export default function AvatarEditorScreen() {
             No items unlocked yet. Visit the shop!
           </ThemedText>
         ) : (
-          <>
-            <CategorySelect
-              categories={allSections.map((s) => ({ id: s.key, label: s.title }))}
-              selectedId={selectedCategory}
-              onSelect={(id) => setSelectedCategory(id === selectedCategory ? null : id)}
-            />
-
-            <FlatList
-              style={{ flex: 1 }}
-              data={rows}
-              keyExtractor={(row) => row.key}
-              renderItem={renderRow}
-              contentContainerStyle={{ paddingBottom: 32 }}
-              refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
-              removeClippedSubviews
-              initialNumToRender={6}
-              maxToRenderPerBatch={6}
-              windowSize={7}
-            />
-          </>
+          <AvatarItemGrid
+            sections={sections}
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+            onPressItem={toggle}
+            baseParams={baseParams}
+            refreshing={isRefetching}
+            onRefresh={refetch}
+          />
         )}
       </View>
 

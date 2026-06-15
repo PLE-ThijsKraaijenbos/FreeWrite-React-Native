@@ -3,14 +3,14 @@ import { Alert, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAvatarItems, useEquipAvatarItem, useUnlockAvatarItem } from '@/api/avatar-items';
-import { patchAvatarUrlApi } from '@/api/auth';
+import { getProfileApi } from '@/api/auth';
 import { AvatarDisplay } from '@/components/AvatarDisplay';
 import { BackButton } from '@/components/BackButton';
 import CoinIcon from '@/assets/icons/coin.svg';
 import { DoubleCTA } from '@/components/cta';
 import { Divider } from '@/components/Divider';
 import { ThemedText } from '@/components/themed-text';
-import { applyItem, buildAvatarUrl, parseAvatarParams, previewItemUrl } from '@/lib/avatar';
+import { previewItemUrl } from '@/lib/avatar';
 import { useTheme } from '@/hooks/use-theme';
 import { useAuth } from '@/lib/auth-context';
 
@@ -25,7 +25,7 @@ export default function UnlockItemScreen() {
   const { mutateAsync: equip } = useEquipAvatarItem();
 
   const item = items.find((i) => i.id === itemId);
-  const baseUrl = user?.profile?.avatar_url;
+  const baseParams = user?.profile?.avatar ?? {};
 
   if (!item) return null;
 
@@ -33,8 +33,7 @@ export default function UnlockItemScreen() {
     try {
       await unlock(item!.id);
       await equip(item!.id);
-      const params = applyItem(parseAvatarParams(baseUrl ?? ''), item!);
-      updateUser(await patchAvatarUrlApi(buildAvatarUrl(params)));
+      updateUser(await getProfileApi());
       router.back();
     } catch {
       Alert.alert('Purchase failed', "You don't have enough coins.");
@@ -43,7 +42,7 @@ export default function UnlockItemScreen() {
 
   return (
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
-      <AvatarDisplay uri={previewItemUrl(baseUrl, item)} size="large" />
+      <AvatarDisplay uri={previewItemUrl(baseParams, item)} size="large" />
 
       <View className="absolute left-4 z-10" style={{ top: top + 4 }}>
         <BackButton onPress={() => router.back()} />

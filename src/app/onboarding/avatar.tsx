@@ -9,23 +9,28 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CTAButton } from '@/components/cta';
 import { TextInput } from '@/components/TextInput';
 import { AvatarSelect } from '@/components/onboarding/AvatarSelect';
+import { buildAvatarUrl } from '@/lib/avatar';
 import { OnboardingFormData } from '@/types/onboarding';
 
-const BASE = 'https://api.dicebear.com/9.x/avataaars/svg';
-const SHARED_PARAMS =
-  'hairColor[]=4a312c&clothing[]=shirtCrewNeck&clothesColor[]=262e33&eyes[]=default&eyebrows[]=default&mouth[]=default&skinColor[]=f8d25c&accessoriesColor[]=262e33';
+//shared dicebear params between male & female default options.
+const SHARED: Record<string, string> = {
+  hairColor: '4a312c',
+  clothing: 'shirtCrewNeck',
+  clothesColor: '262e33',
+  eyes: 'default',
+  eyebrows: 'default',
+  mouth: 'default',
+  skinColor: 'f8d25c',
+};
+
+const PARAMS: Record<'MALE' | 'FEMALE', Record<string, string>> = {
+  MALE: { ...SHARED, top: 'shortRound' },
+  FEMALE: { ...SHARED, top: 'straight01' },
+};
 
 const OPTIONS = [
-  {
-    label: 'Male',
-    value: 'MALE' as const,
-    uri: `${BASE}?top[]=shortRound&${SHARED_PARAMS}`,
-  },
-  {
-    label: 'Female',
-    value: 'FEMALE' as const,
-    uri: `${BASE}?top[]=straight01&${SHARED_PARAMS}`,
-  },
+  { label: 'Male', value: 'MALE' as const, uri: buildAvatarUrl(PARAMS.MALE) },
+  { label: 'Female', value: 'FEMALE' as const, uri: buildAvatarUrl(PARAMS.FEMALE) },
 ];
 
 export default function AvatarScreen() {
@@ -37,7 +42,7 @@ export default function AvatarScreen() {
 
   const handleSelect = (opt: (typeof OPTIONS)[number]) => {
     setSelected(opt.value);
-    setValue('avatar_url', opt.uri);
+    setValue('avatar', PARAMS[opt.value]);
   };
 
   const handleNext = async () => {
