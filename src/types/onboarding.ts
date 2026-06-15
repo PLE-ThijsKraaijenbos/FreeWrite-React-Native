@@ -9,7 +9,7 @@ export const onboardingSchema = z.object({
   trigger: z.enum(['AT_A_PARTY', 'WHEN_BORED', 'WHEN_STRESSED', 'WHEN_DOWN']),
   frequency: z.enum(['RARELY', 'MONTHLY', 'WEEKLY', 'DAILY']),
   previousAttempts: z.enum(['WENT_WELL', 'ONCE_HARD', 'MULTIPLE_RELAPSED', 'THOUGHT_ABOUT_IT', 'NEVER']),
-  name: z.string().min(1),
+  name: z.string().trim().min(1, 'Please enter a name.'),
   avatar_url: z.string().optional(),
 });
 

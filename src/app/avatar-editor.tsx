@@ -56,7 +56,7 @@ type EditorRow =
 export default function AvatarEditorScreen() {
   const router = useRouter();
   const theme = useTheme();
-  const { top } = useSafeAreaInsets();
+  const { top, bottom } = useSafeAreaInsets();
   const { user, updateUser } = useAuth();
   const { data: items = [], isLoading, refetch, isRefetching } = useAvatarItems();
   const { mutateAsync: equip } = useEquipAvatarItem();
@@ -243,7 +243,7 @@ export default function AvatarEditorScreen() {
         )}
       </View>
 
-      <View className="px-4 pt-2 pb-4">
+      <View className="px-4 pt-2" style={{ paddingBottom: bottom + 16 }}>
         {saveError && (
           <ThemedText className="text-center pb-2" themeColor="textSecondary">
             {saveError}
