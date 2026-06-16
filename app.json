@@ -39,6 +39,13 @@
             "imageWidth": 76
           }
         }
+      ],
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow FreeWrite to access your photos to add images to your posts."
+        }
       ]
     ],
     "experiments": {
