@@ -15,7 +15,7 @@ import { useCreatePost, useTags } from '@/hooks/use-community';
 import { useTheme } from '@/hooks/use-theme';
 import { addPostSchema, AddPostFormData } from '@/types/community';
 
-export function AddPostScreen() {
+export default function AddPostScreen() {
   const router = useRouter();
   const theme = useTheme();
   const { top, bottom } = useSafeAreaInsets();
