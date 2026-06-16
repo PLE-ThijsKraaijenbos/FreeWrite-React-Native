@@ -226,7 +226,7 @@ export default function AvatarEditorScreen() {
         )}
       </View>
 
-      <View className="px-4 pt-2" style={{ paddingBottom: bottom + 16 }}>
+      <View className="px-4 pt-2 bg-neutral-100 border-t-2 border-neutral-200" style={{ paddingBottom: bottom + 16 }}>
         {saveError && (
           <ThemedText className="text-center pb-2" themeColor="textSecondary">
             {saveError}
