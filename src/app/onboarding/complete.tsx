@@ -2,12 +2,12 @@ import { isAxiosError } from 'axios';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 
 import { CTAButton } from '@/components/cta';
-import { Divider } from '@/components/Divider';
+import { DividerScrollArea } from '@/components/DividerScrollArea';
 import { OnboardingImageLayout } from '@/components/onboarding/OnboardingImageLayout';
 import { useCompleteProfile } from '@/api/onboarding';
 import { useAuth } from '@/lib/auth-context';
@@ -38,8 +38,7 @@ export default function CompleteScreen() {
       aspectRatio={402 / 364}
       gap="gap-6"
     >
-      <Divider />
-      <ScrollView className="flex-1">
+      <DividerScrollArea>
         <View className="gap-3">
           <ThemedText type="h2" className="text-center">{"You're all set!"}</ThemedText>
           <ThemedText type="body" className="text-center">
@@ -47,8 +46,7 @@ export default function CompleteScreen() {
             rewriting it at your own pace, on your own terms.
           </ThemedText>
         </View>
-      </ScrollView>
-      <Divider />
+      </DividerScrollArea>
       <View className="gap-3">
         {formError && (
           <ThemedText type="body-sm" className="text-secondary-500 text-center">{formError}</ThemedText>

@@ -1,10 +1,10 @@
 import { useRouter } from 'expo-router';
-import { Linking, ScrollView, View } from 'react-native';
+import { Linking, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 
 import { CTAButton } from '@/components/cta';
-import { Divider } from '@/components/Divider';
+import { DividerScrollArea } from '@/components/DividerScrollArea';
 import { OnboardingImageLayout } from '@/components/onboarding/OnboardingImageLayout';
 
 export default function ProfessionalHelpScreen() {
@@ -17,8 +17,7 @@ export default function ProfessionalHelpScreen() {
       onBack={() => router.back()}
       gap="gap-6"
     >
-      <Divider />
-      <ScrollView className="flex-1">
+      <DividerScrollArea>
         <View className="gap-3">
           <ThemedText type="h2" className="text-center">Let's make sure you're supported.</ThemedText>
           <ThemedText type="body" className="text-center">
@@ -28,8 +27,7 @@ export default function ProfessionalHelpScreen() {
             begin. We just want to make sure you have everything you need.
           </ThemedText>
         </View>
-      </ScrollView>
-      <Divider />
+      </DividerScrollArea>
       <View className="gap-4">
         <CTAButton label="Find help" variant="secondary" onPress={() => Linking.openURL('https://findahelpline.com/')} />
         <CTAButton label="Continue" onPress={() => router.push('/onboarding/avatar')} />

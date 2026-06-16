@@ -1,11 +1,11 @@
 import { useRouter } from 'expo-router';
 import { Controller, useFormContext } from 'react-hook-form';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 
 import { CTAButton } from '@/components/cta';
-import { Divider } from '@/components/Divider';
+import { DividerScrollArea } from '@/components/DividerScrollArea';
 import { OnboardingFormLayout } from '@/components/onboarding/OnboardingFormLayout';
 import { SelectOption } from '@/components/SelectOption';
 import { DurationValue, OnboardingFormData } from '@/types/onboarding';
@@ -38,9 +38,7 @@ export default function DurationScreen() {
         <ThemedText type="h2" className="text-center">When did it start to feel like a problem?</ThemedText>
         <ThemedText type="body" className="text-center">This helps us personalise your journey.</ThemedText>
       </View>
-      <Divider />
-      <ScrollView
-        className="flex-1"
+      <DividerScrollArea
         style={{ marginHorizontal: -8 }}
         contentContainerStyle={{ paddingHorizontal: 8, paddingTop: 8, paddingBottom: 16 }}
         persistentScrollbar
@@ -61,8 +59,7 @@ export default function DurationScreen() {
             </View>
           )}
         />
-      </ScrollView>
-      <Divider />
+      </DividerScrollArea>
     </OnboardingFormLayout>
   );
 }

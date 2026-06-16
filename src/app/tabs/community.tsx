@@ -29,20 +29,22 @@ export default function CommunityScreen() {
 
   return (
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
-      <View className="flex-1 gap-6">
-        <View>
-          <PageHeader subtitle="A supportive" title="Community" />
+      <View className="flex-1">
+        <View className="gap-6">
+          <View>
+            <PageHeader subtitle="A supportive" title="Community" />
 
-          <CategorySelect
-            categories={categories}
-            selectedId={selectedTagId}
-            onSelect={setSelectedTagId}
-          />
+            <CategorySelect
+              categories={categories}
+              selectedId={selectedTagId}
+              onSelect={setSelectedTagId}
+            />
+          </View>
+
+          <Divider />
         </View>
 
-        <Divider />
-
-        <View className="flex-1 overflow-hidden">
+        <View className="flex-1 overflow-hidden pt-2">
           {isLoading ? (
             <ThemedText className="text-center mt-12" themeColor="textSecondary">
               Loading...
@@ -58,7 +60,7 @@ export default function CommunityScreen() {
           ) : (
             <ScrollView
               className="flex-1"
-              contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 16, gap: 16 }}
+              contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 32, paddingBottom: 16, gap: 16 }}
               refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}>
               {filteredPosts.map((post) => (
                 <CommunityPost key={post.id} post={post} />

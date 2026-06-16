@@ -1,11 +1,11 @@
 import { useRouter } from 'expo-router';
 import { Controller, useFormContext } from 'react-hook-form';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 
 import { CTAButton } from '@/components/cta';
-import { Divider } from '@/components/Divider';
+import { DividerScrollArea } from '@/components/DividerScrollArea';
 import { OnboardingFormLayout } from '@/components/onboarding/OnboardingFormLayout';
 import { SelectOption } from '@/components/SelectOption';
 import { OnboardingFormData, TriggerValue } from '@/types/onboarding';
@@ -37,9 +37,7 @@ export default function TriggerScreen() {
         <ThemedText type="h2" className="text-center">When do you usually use?</ThemedText>
         <ThemedText type="body" className="text-center">This helps us personalise your journey.</ThemedText>
       </View>
-      <Divider />
-      <ScrollView
-        className="flex-1"
+      <DividerScrollArea
         style={{ marginHorizontal: -8 }}
         contentContainerStyle={{ paddingHorizontal: 8, paddingTop: 8, paddingBottom: 16 }}
         persistentScrollbar
@@ -61,8 +59,7 @@ export default function TriggerScreen() {
             </View>
           )}
         />
-      </ScrollView>
-      <Divider />
+      </DividerScrollArea>
     </OnboardingFormLayout>
   );
 }

@@ -1,11 +1,11 @@
 import { useRouter } from 'expo-router';
 import { Controller, useFormContext } from 'react-hook-form';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 
 import { CTAButton } from '@/components/cta';
-import { Divider } from '@/components/Divider';
+import { DividerScrollArea } from '@/components/DividerScrollArea';
 import { OnboardingFormLayout } from '@/components/onboarding/OnboardingFormLayout';
 import { SelectOption } from '@/components/SelectOption';
 import { GoalValue, OnboardingFormData } from '@/types/onboarding';
@@ -36,9 +36,7 @@ export default function GoalScreen() {
         <ThemedText type="h2" className="text-center">What is your goal for this journey?</ThemedText>
         <ThemedText type="body" className="text-center">This helps us personalise your journey.</ThemedText>
       </View>
-      <Divider />
-      <ScrollView
-        className="flex-1"
+      <DividerScrollArea
         style={{ marginHorizontal: -8 }}
         contentContainerStyle={{ paddingHorizontal: 8, paddingTop: 8, paddingBottom: 16 }}
         persistentScrollbar
@@ -59,8 +57,7 @@ export default function GoalScreen() {
             </View>
           )}
         />
-      </ScrollView>
-      <Divider />
+      </DividerScrollArea>
     </OnboardingFormLayout>
   );
 }
