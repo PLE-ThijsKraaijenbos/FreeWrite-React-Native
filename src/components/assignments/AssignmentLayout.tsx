@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { ReactNode } from 'react';
-import { ScrollView, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BackButton } from '@/components/BackButton';
@@ -36,14 +36,18 @@ export function AssignmentLayout({ title, children, scroll = false }: Props) {
   if (scroll) {
     return (
       <View className="flex-1" style={{ backgroundColor: theme.background, paddingTop: top + 16 }}>
-        <ScrollView
-          className="flex-1"
-          contentContainerClassName="gap-6 px-4"
-          contentContainerStyle={{ paddingBottom: bottom + 24 }}
-          keyboardShouldPersistTaps="handled">
-          {header}
-          {children}
-        </ScrollView>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <ScrollView
+            className="flex-1"
+            contentContainerClassName="gap-6 px-4"
+            contentContainerStyle={{ paddingBottom: bottom + 24 }}
+            keyboardShouldPersistTaps="handled">
+            {header}
+            {children}
+          </ScrollView>
+        </KeyboardAvoidingView>
       </View>
     );
   }
