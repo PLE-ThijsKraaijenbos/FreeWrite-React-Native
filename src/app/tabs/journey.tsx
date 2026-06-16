@@ -21,7 +21,7 @@ const NODE_HEIGHT = (NODE_SIZE * 80) / 75;
 const COLUMNS = 2;
 const ROW_STEP = 200;
 const TOP_PADDING = 65;
-const BOTTOM_PADDING = 160;
+const BOTTOM_PADDING = 280;
 const FOCUS_HEIGHT = 0.35;
 
 const MARKER_WIDTH = NODE_SIZE * 0.65;
@@ -107,8 +107,12 @@ const JourneyTile = React.memo(({
     return { x: markerTarget.x, y: markerTarget.y - tileTop };
   }, [markerTarget, tileTop]);
 
+  // The last tile is clipped to the real content height so the scroll view
+  // doesn't extend a full empty tile past the last node.
+  const tileHeight = Math.min(TILE_HEIGHT, Math.max(0, contentHeight - tileTop));
+
   return (
-    <View style={{ height: TILE_HEIGHT, width: '100%', overflow: 'hidden' }}>
+    <View style={{ height: tileHeight, width: '100%', overflow: 'hidden' }}>
       <Pressable
         onPress={() => onSelect(null)}
         style={StyleSheet.absoluteFill}
@@ -269,11 +273,14 @@ export default function JourneyScreen() {
           data={tileIndices}
           keyExtractor={(i) => i.toString()}
           renderItem={renderTile}
-          getItemLayout={(_, index) => ({
-            length: TILE_HEIGHT,
-            offset: TILE_HEIGHT * index,
-            index,
-          })}
+          getItemLayout={(_, index) => {
+            const offset = TILE_HEIGHT * index;
+            return {
+              length: Math.min(TILE_HEIGHT, Math.max(0, contentHeight - offset)),
+              offset,
+              index,
+            };
+          }}
           onLayout={(e) => {
             setViewportHeight(e.nativeEvent.layout.height);
             setWidth(e.nativeEvent.layout.width);
