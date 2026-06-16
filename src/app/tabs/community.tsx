@@ -5,6 +5,7 @@ import { RefreshControl, ScrollView, View } from 'react-native';
 import { CategorySelect } from '@/components/CategorySelect';
 import { CommunityPost } from '@/components/CommunityPost';
 import { CTAButton } from '@/components/cta';
+import { Divider } from '@/components/Divider';
 import { PageHeader } from '@/components/PageHeader';
 import { ThemedText } from '@/components/themed-text';
 import { usePosts, useTags } from '@/hooks/use-community';
@@ -28,41 +29,47 @@ export default function CommunityScreen() {
 
   return (
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
-      <PageHeader subtitle="A supportive" title="Community" />
+      <View className="flex-1 gap-6">
+        <View>
+          <PageHeader subtitle="A supportive" title="Community" />
 
-      <CategorySelect
-        categories={categories}
-        selectedId={selectedTagId}
-        onSelect={setSelectedTagId}
-      />
+          <CategorySelect
+            categories={categories}
+            selectedId={selectedTagId}
+            onSelect={setSelectedTagId}
+          />
+        </View>
 
-      <View className="flex-1 overflow-hidden">
-        {isLoading ? (
-          <ThemedText className="text-center mt-12" themeColor="textSecondary">
-            Loading...
-          </ThemedText>
-        ) : isError ? (
-          <ThemedText className="text-center mt-12" themeColor="textSecondary">
-            Failed to load posts. Please try again.
-          </ThemedText>
-        ) : filteredPosts.length === 0 ? (
-          <ThemedText className="text-center mt-12" themeColor="textSecondary">
-            {selectedTagId ? 'No posts with this tag yet.' : 'No posts yet.'}
-          </ThemedText>
-        ) : (
-          <ScrollView
-            className="flex-1"
-            contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 16, gap: 16 }}
-            refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}>
-            {filteredPosts.map((post) => (
-              <CommunityPost key={post.id} post={post} />
-            ))}
-          </ScrollView>
-        )}
+        <Divider />
+
+        <View className="flex-1 overflow-hidden">
+          {isLoading ? (
+            <ThemedText className="text-center mt-12" themeColor="textSecondary">
+              Loading...
+            </ThemedText>
+          ) : isError ? (
+            <ThemedText className="text-center mt-12" themeColor="textSecondary">
+              Failed to load posts. Please try again.
+            </ThemedText>
+          ) : filteredPosts.length === 0 ? (
+            <ThemedText className="text-center mt-12" themeColor="textSecondary">
+              {selectedTagId ? 'No posts with this tag yet.' : 'No posts yet.'}
+            </ThemedText>
+          ) : (
+            <ScrollView
+              className="flex-1"
+              contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 16, gap: 16 }}
+              refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}>
+              {filteredPosts.map((post) => (
+                <CommunityPost key={post.id} post={post} />
+              ))}
+            </ScrollView>
+          )}
+        </View>
       </View>
 
-      <View className="px-4 pt-3 pb-4">
-        <CTAButton label="New post" onPress={() => router.push('/add-post')} />
+      <View className="px-4 pt-2 pb-4 bg-neutral-100 border-t-2 border-neutral-200">
+        <CTAButton label="Add post" onPress={() => router.push('/add-post')} />
       </View>
     </View>
   );
