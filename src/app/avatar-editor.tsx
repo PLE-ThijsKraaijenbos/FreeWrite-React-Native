@@ -5,11 +5,14 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { useAvatarItems, useEquipAvatarItem, useUnequipAvatarItem } from '@/api/avatar-items';
 import { getProfileApi } from '@/api/auth';
+import { useUpdateProfile } from '@/api/user';
 import { AvatarDisplay } from '@/components/AvatarDisplay';
 import { AvatarItemGrid, GridCard, GridSection } from '@/components/AvatarItemGrid';
 import { BackButton } from '@/components/BackButton';
 import { CoinBalance } from '@/components/CoinBalance';
 import { CTAButton } from '@/components/cta';
+import { Divider } from '@/components/Divider';
+import { TextInput } from '@/components/TextInput';
 import { ThemedText } from '@/components/themed-text';
 import {
   applyItem,
@@ -77,12 +80,14 @@ export default function AvatarEditorScreen() {
   const { data: items = [], isLoading, refetch, isRefetching } = useAvatarItems();
   const { mutateAsync: equip } = useEquipAvatarItem();
   const { mutateAsync: unequip } = useUnequipAvatarItem();
+  const { mutateAsync: updateProfile } = useUpdateProfile();
 
   // The saved avatar (equipped items), captured once — base for previews and the
   // fallback when an item is deselected.
   const baseParams = useRef(user?.profile?.avatar ?? {}).current;
 
   const [params, setParams] = useState<Record<string, string>>(() => baseParams);
+  const [name, setName] = useState(user?.profile?.name ?? '');
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -160,6 +165,11 @@ export default function AvatarEditorScreen() {
           .map((item) => equip(item.id))
       );
 
+      const trimmedName = name.trim();
+      if (trimmedName && trimmedName !== (user?.profile?.name ?? '')) {
+        await updateProfile(trimmedName);
+      }
+
       // Equipped items are the source of truth now — refresh the profile so the
       // derived avatar (home screen etc.) reflects the change.
       updateUser(await getProfileApi());
@@ -197,11 +207,26 @@ export default function AvatarEditorScreen() {
             baseParams={baseParams}
             refreshing={isRefetching}
             onRefresh={refetch}
+            header={
+              <>
+                <View className="px-4">
+                  <TextInput
+                    label="Name"
+                    placeholder="Your name"
+                    value={name}
+                    onChangeText={setName}
+                  />
+                </View>
+                <View className="px-4">
+                  <Divider />
+                </View>
+              </>
+            }
           />
         )}
       </View>
 
-      <View className="px-4 pt-2" style={{ paddingBottom: bottom + 16 }}>
+      <View className="px-4 pt-2 bg-neutral-100 border-t-2 border-neutral-200" style={{ paddingBottom: bottom + 16 }}>
         {saveError && (
           <ThemedText className="text-center pb-2" themeColor="textSecondary">
             {saveError}

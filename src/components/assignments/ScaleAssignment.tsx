@@ -1,13 +1,10 @@
-import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BackButton } from '@/components/BackButton';
+import { AssignmentLayout } from '@/components/assignments/AssignmentLayout';
 import { CTAButton } from '@/components/cta';
+import { Divider } from '@/components/Divider';
 import { SliderInput } from '@/components/SliderInput';
 import { ThemedText } from '@/components/themed-text';
-import { useTheme } from '@/hooks/use-theme';
 import { ScaleContent } from '@/types/journey';
 
 type Props = {
@@ -17,9 +14,6 @@ type Props = {
 };
 
 export function ScaleAssignment({ content, responseData, onComplete }: Props) {
-  const router = useRouter();
-  const theme = useTheme();
-  const { top, bottom } = useSafeAreaInsets();
   const [value, setValue] = useState<number>(5);
 
   const saved = responseData as { value?: number } | undefined;
@@ -28,33 +22,26 @@ export function ScaleAssignment({ content, responseData, onComplete }: Props) {
   const isReadOnly = savedValue != null;
 
   return (
-    <View className="flex-1" style={{ backgroundColor: theme.background }}>
-      <View className="px-4 pb-3" style={{ paddingTop: top + 16 }}>
-        <BackButton onPress={() => router.back()} />
-      </View>
+    <AssignmentLayout title={content.title_text}>
+      <ThemedText type="body">Move the slider to the point that feels most true for you.</ThemedText>
 
-      <View className="flex-1 justify-center px-6">
-        <ThemedText type="h2" className="mb-12">
-          {content.title_text}
-        </ThemedText>
-
-        <SliderInput
-          value={displayValue}
-          minimumValue={1}
-          maximumValue={10}
-          step={1}
-          disabled={isReadOnly}
-          onValueChange={setValue}
-          leftLabel={content.left_label}
-          rightLabel={content.right_label}
-        />
-      </View>
+      <SliderInput
+        value={displayValue}
+        minimumValue={1}
+        maximumValue={10}
+        step={1}
+        disabled={isReadOnly}
+        onValueChange={setValue}
+        leftLabel={content.left_label}
+        rightLabel={content.right_label}
+      />
 
       {!isReadOnly && (
-        <View className="px-4" style={{ paddingBottom: bottom + 24 }}>
-          <CTAButton label="Submit" onPress={() => onComplete({ value })} />
-        </View>
+        <>
+          <Divider />
+          <CTAButton label="Save" onPress={() => onComplete({ value })} />
+        </>
       )}
-    </View>
+    </AssignmentLayout>
   );
 }

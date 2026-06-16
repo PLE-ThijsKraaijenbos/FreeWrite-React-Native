@@ -3,12 +3,11 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CTAButton } from '@/components/cta';
-
+import { DividerScrollArea } from '@/components/DividerScrollArea';
+import { OnboardingFormLayout } from '@/components/onboarding/OnboardingFormLayout';
 import { SelectOption } from '@/components/SelectOption';
-import { OnboardingHeader } from '@/components/onboarding/OnboardingHeader';
 import { GoalValue, OnboardingFormData } from '@/types/onboarding';
 
 const OPTIONS: { label: string; value: GoalValue }[] = [
@@ -20,7 +19,6 @@ const OPTIONS: { label: string; value: GoalValue }[] = [
 export default function GoalScreen() {
   const router = useRouter();
   const { control, trigger } = useFormContext<OnboardingFormData>();
-  const { bottom } = useSafeAreaInsets();
 
   const handleNext = async () => {
     const valid = await trigger('goal');
@@ -28,18 +26,26 @@ export default function GoalScreen() {
   };
 
   return (
-    <View className="flex-1 p-6" style={{ paddingBottom: bottom + 24 }}>
-      <OnboardingHeader filled={3} length={6} />
-      <View className="flex-1 gap-6 justify-center">
-        <View className="gap-2">
-          <ThemedText type="h2" className="text-center">What is your goal for this journey?</ThemedText>
-          <ThemedText type="body" className="text-center">This helps us personalise your journey.</ThemedText>
-        </View>
+    <OnboardingFormLayout
+      onBack={() => router.back()}
+      progress={{ filled: 3, length: 6 }}
+      gap="gap-6"
+      footer={<CTAButton label="Continue" onPress={handleNext} />}
+    >
+      <View className="gap-2">
+        <ThemedText type="h2" className="text-center">What is your goal for this journey?</ThemedText>
+        <ThemedText type="body" className="text-center">This helps us personalise your journey.</ThemedText>
+      </View>
+      <DividerScrollArea
+        style={{ marginHorizontal: -8 }}
+        contentContainerStyle={{ paddingHorizontal: 8, paddingTop: 8, paddingBottom: 16 }}
+        persistentScrollbar
+      >
         <Controller
           control={control}
           name="goal"
           render={({ field: { onChange, value } }) => (
-            <View className="gap-2">
+            <View className="gap-4">
               {OPTIONS.map((opt) => (
                 <SelectOption
                   key={opt.value}
@@ -51,8 +57,7 @@ export default function GoalScreen() {
             </View>
           )}
         />
-      </View>
-      <CTAButton label="Continue" onPress={handleNext} />
-    </View>
+      </DividerScrollArea>
+    </OnboardingFormLayout>
   );
 }

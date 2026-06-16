@@ -1,3 +1,4 @@
+import React from 'react';
 import { Pressable } from 'react-native';
 
 import { AssignmentNode } from '@/components/AssignmentNode';
@@ -12,7 +13,7 @@ type JourneyNodesProps = {
   size: number;
 };
 
-export function JourneyNodes({ positions, steps, selectedId, onSelect, size }: JourneyNodesProps) {
+export const JourneyNodes = React.memo(({ positions, steps, selectedId, onSelect, size }: JourneyNodesProps) => {
   return (
     <>
       {positions.map((pos, i) => {
@@ -34,4 +35,4 @@ export function JourneyNodes({ positions, steps, selectedId, onSelect, size }: J
       })}
     </>
   );
-}
+});

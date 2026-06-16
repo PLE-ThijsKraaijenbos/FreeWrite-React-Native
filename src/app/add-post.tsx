@@ -3,11 +3,13 @@ import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { BackButton } from '@/components/BackButton';
 import { CommunityForm } from '@/components/CommunityForm';
 import { CTAButton } from '@/components/cta';
+import { Divider } from '@/components/Divider';
 import { ThemedText } from '@/components/themed-text';
 import { useCreatePost, useTags } from '@/hooks/use-community';
 import { useTheme } from '@/hooks/use-theme';
@@ -48,36 +50,46 @@ export default function AddPostScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
-      <View style={{ paddingTop: top + 16 }} className="px-4">
-        <View className="flex-row items-center justify-between">
-          <ThemedText type="h2">New post</ThemedText>
-          <Pressable onPress={() => router.back()} hitSlop={8}>
-            <ThemedText themeColor="textSecondary">Cancel</ThemedText>
-          </Pressable>
-        </View>
-      </View>
-
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScrollView
           keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ padding: 16, gap: 24 }}>
-          <CommunityForm
-            control={control}
-            imageUri={image?.uri}
-            onPickImage={pickImage}
-            tags={tags}
-          />
+          contentContainerStyle={{
+            paddingTop: top + 64,
+            paddingBottom: bottom + 16,
+            gap: 32,
+          }}>
+          <ThemedText type="h1" className="px-4">Create new post</ThemedText>
+
+          <Divider />
+
+          <View className="px-4">
+            <CommunityForm
+              control={control}
+              imageUri={image?.uri}
+              onPickImage={pickImage}
+              tags={tags}
+            />
+          </View>
+
+          <Divider />
+
+          <View className="px-4">
+            <CTAButton
+              label={isPending ? 'Saving...' : 'Save'}
+              onPress={handleSubmit(onSubmit)}
+              disabled={isPending}
+            />
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
 
-      <View className="px-4 pt-2" style={{ paddingBottom: bottom + 16 }}>
-        <CTAButton
-          label={isPending ? 'Posting...' : 'Post'}
-          onPress={handleSubmit(onSubmit)}
-          disabled={isPending}
-        />
+      {/* Fixed back button overlay */}
+      <View
+        className="absolute top-0 left-0 right-0 z-10 px-4 pb-3"
+        style={{ paddingTop: top + 8, backgroundColor: theme.background }}>
+        <BackButton onPress={() => router.back()} />
       </View>
     </View>
   );

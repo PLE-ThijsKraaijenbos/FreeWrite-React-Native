@@ -68,16 +68,19 @@ export default function CommunityPostScreen() {
     <KeyboardAvoidingView
       className="flex-1 bg-neutral-100"
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <View style={{ paddingTop: top + 16 }} className="px-4 pb-3">
-        <BackButton onPress={() => router.back()} />
-      </View>
-
-      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingBottom: 24 }}>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{
+          gap: 24,
+          paddingTop: post.image_url ? 0 : top + 64,
+          paddingBottom: 24,
+        }}>
         {post.image_url && (
           <Image source={{ uri: post.image_url }} style={{ width: '100%', aspectRatio: 3 / 2 }} contentFit="cover" />
         )}
 
-        <View className="px-4 pt-4 gap-3">
+        {/* Title + description */}
+        <View className="px-4 gap-4">
           <ThemedText type="h2">{post.title}</ThemedText>
           <ThemedText type="body-sm" className="text-neutral-500">{post.body}</ThemedText>
 
@@ -96,45 +99,52 @@ export default function CommunityPostScreen() {
               ))}
             </View>
           )}
+        </View>
 
-          <View className="flex-row items-center gap-4">
-            <Pressable
-              className="flex-row items-center gap-0.5"
-              onPress={() => toggleLike({ postId: post.id, liked: post.is_liked_by_user })}
-              disabled={isPending}
-              hitSlop={8}>
-              {post.is_liked_by_user ? (
-                <HeartIcon width={24} height={24} color="#F47D4E" />
-              ) : (
-                <HeartOutlineIcon width={24} height={24} color="#2A2924" />
-              )}
-              <ThemedText type="body-sm" className="text-neutral-600">{post.likes_count}</ThemedText>
-            </Pressable>
-            <View className="flex-row items-center gap-0.5">
-              <ChatBubbleIcon width={24} height={24} color="#2A2924" />
-              <ThemedText type="body-sm" className="text-neutral-600">{DUMMY_COMMENTS.length}</ThemedText>
-            </View>
+        <Divider />
+
+        {/* Like + comment counts */}
+        <View className="px-4 flex-row items-center gap-4">
+          <Pressable
+            className="flex-row items-center gap-0.5"
+            onPress={() => toggleLike({ postId: post.id, liked: post.is_liked_by_user })}
+            disabled={isPending}
+            hitSlop={8}>
+            {post.is_liked_by_user ? (
+              <HeartIcon width={24} height={24} color="#F47D4E" />
+            ) : (
+              <HeartOutlineIcon width={24} height={24} color="#2A2924" />
+            )}
+            <ThemedText type="body-sm" className="text-neutral-600">{post.likes_count}</ThemedText>
+          </Pressable>
+          <View className="flex-row items-center gap-0.5">
+            <ChatBubbleIcon width={24} height={24} color="#2A2924" />
+            <ThemedText type="body-sm" className="text-neutral-600">{DUMMY_COMMENTS.length}</ThemedText>
           </View>
+        </View>
 
-          <Divider />
+        <Divider />
 
-          <View className="gap-2">
-            <TextInput
-              label="Post a comment"
-              placeholder="Share your thoughts"
-              value={comment}
-              onChangeText={setComment}
-            />
-            <CTAButton
-              variant="default"
-              label="Save comment"
-              disabled={!comment.trim()}
-              onPress={() => setComment('')}
-            />
-          </View>
+        {/* Add a comment */}
+        <View className="px-4 gap-3">
+          <TextInput
+            label="Post a comment"
+            placeholder="Share your thoughts"
+            value={comment}
+            onChangeText={setComment}
+          />
+          <CTAButton
+            variant="default"
+            label="Save comment"
+            disabled={!comment.trim()}
+            onPress={() => setComment('')}
+          />
+        </View>
 
-          <Divider />
+        <Divider />
 
+        {/* Comments */}
+        <View className="px-4 gap-3">
           <ThemedText type="h2">Comments</ThemedText>
           <View className="gap-3">
             {DUMMY_COMMENTS.map((c) => (
@@ -143,6 +153,11 @@ export default function CommunityPostScreen() {
           </View>
         </View>
       </ScrollView>
+
+      {/* Back button overlay */}
+      <View className="absolute left-4 z-10" style={{ top: top + 8 }}>
+        <BackButton onPress={() => router.back()} />
+      </View>
     </KeyboardAvoidingView>
   );
 }

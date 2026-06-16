@@ -99,6 +99,8 @@ export function CTALarge({ label, gradient, icon, onPress }: CTALargeProps) {
 }
 
 type DoubleCTAProps = {
+  // 'default' — neutral grey left + green right (e.g. Cancel / Confirm).
+  // 'secondary' — orange left + green right (two distinct choices).
   variant?: 'default' | 'secondary';
   leftLabel: string;
   rightLabel: string;
@@ -110,7 +112,7 @@ export function DoubleCTA({ variant = 'default', leftLabel, rightLabel, onPressL
   const secondary = variant === 'secondary';
 
   return (
-    <View className="w-full flex-row items-center gap-4">
+    <View className="w-full flex-row items-center gap-8">
       <Pressable onPress={onPressLeft} className="flex-1">
         <LinearGradient
           colors={secondary ? ['#FCAA88', '#F47D4E'] : ['#FAFAF8', '#EBEBE6']}

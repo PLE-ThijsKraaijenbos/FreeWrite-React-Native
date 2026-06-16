@@ -31,7 +31,7 @@ export default function AssignmentScreen() {
   function handleComplete(responseData: unknown) {
     completeStep(
       { progressId, responseData },
-      { onSuccess: () => router.push('/tabs/journey') },
+      { onSuccess: () => router.replace('/journey/complete') },
     );
   }
 

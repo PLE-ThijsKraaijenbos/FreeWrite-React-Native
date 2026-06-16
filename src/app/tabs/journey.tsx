@@ -1,13 +1,13 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FlatList, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
 import Animated, { Easing, SlideInDown, SlideOutDown } from 'react-native-reanimated';
 
 import { CTASmall } from '@/components/cta';
 import { JourneyBackground } from '@/components/JourneyBackground';
 import { JourneyMarker } from '@/components/JourneyMarker';
 import { JourneyNodes } from '@/components/JourneyNodes';
-import { JourneyPath } from '@/components/JourneyPath';
+import { JourneyPathTile, TILE_HEIGHT, Point } from '@/components/JourneyPath';
 import { PageHeader } from '@/components/PageHeader';
 import { ThemedText } from '@/components/themed-text';
 import { shadows } from '@/constants/shadows';
@@ -43,6 +43,84 @@ function sortProgresses(progresses: JourneyStepProgress[]): JourneyStepProgress[
     return a.step.order - b.step.order;
   });
 }
+
+type JourneyTileProps = {
+  tileIndex: number;
+  width: number;
+  sorted: JourneyStepProgress[];
+  positions: Point[];
+  pathPoints: Point[];
+  contentHeight: number;
+  selectedId: string | null;
+  onSelect: (id: string | null) => void;
+  markerTarget: Point | null;
+};
+
+const JourneyTile = React.memo(({
+  tileIndex: i,
+  width,
+  sorted,
+  positions,
+  pathPoints,
+  contentHeight,
+  selectedId,
+  onSelect,
+  markerTarget,
+}: JourneyTileProps) => {
+  const tileTop = i * TILE_HEIGHT;
+  const tileBottom = tileTop + TILE_HEIGHT;
+
+  const { tileSteps, tilePositions } = useMemo(() => {
+    const steps: JourneyStepProgress[] = [];
+    const posList: Point[] = [];
+
+    for (let j = 0; j < sorted.length; j++) {
+      const pos = positions[j];
+      if (!pos) continue;
+      if (pos.y + NODE_HEIGHT >= tileTop && pos.y < tileBottom) {
+        steps.push(sorted[j]);
+        posList.push({ ...pos, y: pos.y - tileTop });
+      } else if (pos.y >= tileBottom) {
+        break;
+      }
+    }
+    return { tileSteps: steps, tilePositions: posList };
+  }, [sorted, positions, tileTop, tileBottom]);
+
+  // Adjust marker target to be local to this tile
+  const localMarkerTarget = useMemo(() => {
+    if (!markerTarget) return null;
+    return { x: markerTarget.x, y: markerTarget.y - tileTop };
+  }, [markerTarget, tileTop]);
+
+  return (
+    <View style={{ height: TILE_HEIGHT, width: '100%', overflow: 'hidden' }}>
+      <Pressable
+        onPress={() => onSelect(null)}
+        style={StyleSheet.absoluteFill}
+      />
+      <JourneyPathTile
+        points={pathPoints}
+        width={width}
+        tileIndex={i}
+        totalHeight={contentHeight}
+      />
+      <JourneyNodes
+        positions={tilePositions}
+        steps={tileSteps}
+        selectedId={selectedId}
+        onSelect={onSelect as (id: string) => void}
+        size={NODE_SIZE}
+      />
+      <JourneyMarker
+        target={localMarkerTarget}
+        width={MARKER_WIDTH}
+        height={MARKER_HEIGHT}
+        bob={MARKER_BOB}
+      />
+    </View>
+  );
+});
 
 export default function JourneyScreen() {
   const router = useRouter();
@@ -95,8 +173,6 @@ export default function JourneyScreen() {
       ? TOP_PADDING + (sorted.length - 1) * ROW_STEP + NODE_HEIGHT + BOTTOM_PADDING
       : 0;
 
-  // Nodes the dashed connector links: from the first node through the current
-  // available/in-progress node, stopping before the first locked node.
   const pathPoints = useMemo(() => {
     if (!width || positions.length < 2) return [];
     const firstLocked = sorted.findIndex((p) => p.status === 'UNAVAILABLE');
@@ -108,7 +184,6 @@ export default function JourneyScreen() {
     }));
   }, [positions, sorted, width]);
 
-  // Marker target (top-left) for the selected node, or null when none selected.
   const markerTarget = useMemo(() => {
     if (!selectedId) return null;
     const index = sorted.findIndex((p) => p.id === selectedId);
@@ -116,8 +191,7 @@ export default function JourneyScreen() {
     return pos ? markerTargetFor(pos) : null;
   }, [selectedId, positions, sorted]);
 
-  // Shift the view to centre the selected node whenever the selection changes.
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<FlatList>(null);
   const [viewportHeight, setViewportHeight] = useState(0);
 
   useEffect(() => {
@@ -127,10 +201,9 @@ export default function JourneyScreen() {
     if (!pos) return;
     const nodeCenter = pos.y + NODE_SIZE / 2;
     const y = Math.max(0, nodeCenter - viewportHeight * FOCUS_HEIGHT);
-    scrollRef.current?.scrollTo({ y, animated: true });
+    scrollRef.current?.scrollToOffset({ offset: y, animated: true });
   }, [selectedId, positions, sorted, viewportHeight]);
 
-  // "Pick up where you left off" homescreen button button auto selecting the available node
   const params = useLocalSearchParams<{ focus?: string }>();
   useEffect(() => {
     if (params.focus !== 'available' || positions.length === 0) return;
@@ -140,6 +213,33 @@ export default function JourneyScreen() {
       router.setParams({ focus: undefined });
     }
   }, [params.focus, positions, sorted, router]);
+
+  const numTiles = Math.ceil(contentHeight / TILE_HEIGHT);
+  const tileIndices = useMemo(() => Array.from({ length: numTiles }, (_, i) => i), [numTiles]);
+
+  const handleSelect = useCallback((id: string | null) => {
+    setSelectedId(id);
+  }, []);
+
+  const renderTile = useCallback(({ item: i }: { item: number }) => {
+    const tileTop = i * TILE_HEIGHT;
+    const tileBottom = tileTop + TILE_HEIGHT;
+    const isMarkerInTile = markerTarget && markerTarget.y >= tileTop && markerTarget.y < tileBottom;
+
+    return (
+      <JourneyTile
+        tileIndex={i}
+        width={width}
+        sorted={sorted}
+        positions={positions}
+        pathPoints={pathPoints}
+        contentHeight={contentHeight}
+        selectedId={selectedId}
+        onSelect={handleSelect}
+        markerTarget={isMarkerInTile ? markerTarget : null}
+      />
+    );
+  }, [width, sorted, positions, pathPoints, contentHeight, selectedId, handleSelect, markerTarget]);
 
   return (
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
@@ -158,35 +258,25 @@ export default function JourneyScreen() {
           Failed to load journey. Please try again.
         </ThemedText>
       ) : (
-        <ScrollView
+        <FlatList
           ref={scrollRef}
-          onLayout={(e) => setViewportHeight(e.nativeEvent.layout.height)}
-          contentContainerStyle={{ flexGrow: 1 }}
-          refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}>
-          {/* Tapping empty space dismisses the selection; node presses still win the
-              responder (one-tap select/switch) and dragging still scrolls the list. */}
-          <Pressable
-            onPress={() => setSelectedId(null)}
-            onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
-            style={{ flexGrow: 1, minHeight: contentHeight }}>
-            <JourneyPath points={pathPoints} width={width} height={contentHeight} />
-
-            <JourneyNodes
-              positions={positions}
-              steps={sorted}
-              selectedId={selectedId}
-              onSelect={setSelectedId}
-              size={NODE_SIZE}
-            />
-
-            <JourneyMarker
-              target={markerTarget}
-              width={MARKER_WIDTH}
-              height={MARKER_HEIGHT}
-              bob={MARKER_BOB}
-            />
-          </Pressable>
-        </ScrollView>
+          data={tileIndices}
+          keyExtractor={(i) => i.toString()}
+          renderItem={renderTile}
+          getItemLayout={(_, index) => ({
+            length: TILE_HEIGHT,
+            offset: TILE_HEIGHT * index,
+            index,
+          })}
+          onLayout={(e) => {
+            setViewportHeight(e.nativeEvent.layout.height);
+            setWidth(e.nativeEvent.layout.width);
+          }}
+          contentContainerStyle={{ flexGrow: 1, minHeight: contentHeight }}
+          refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
+          removeClippedSubviews={true}
+          windowSize={3}
+        />
       )}
 
       {selected && (

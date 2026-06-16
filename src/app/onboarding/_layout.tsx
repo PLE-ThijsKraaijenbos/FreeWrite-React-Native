@@ -21,14 +21,7 @@ export default function OnboardingLayout() {
     <FormProvider {...form}>
       <Stack
         screenOptions={{
-          headerShown: true,
-          headerTitle: () => null,
-          headerShadowVisible: false,
-          headerStyle: { backgroundColor: 'white' },
-          headerLeft: ({ canGoBack }) =>
-            canGoBack ? (
-              <BackButton variant="onboarding" onPress={() => router.back()} />
-            ) : null,
+          headerShown: false,
           contentStyle: { backgroundColor: 'white' },
         }}
       />

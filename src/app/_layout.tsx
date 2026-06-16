@@ -52,6 +52,10 @@ export default function RootLayout() {
               <Stack.Screen name="unlock-item" options={{ presentation: 'modal' }} />
               <Stack.Screen name="journey/assignment" options={{ presentation: 'modal' }} />
               <Stack.Screen name="journey/[progressId]" options={{ presentation: 'modal' }} />
+              <Stack.Screen
+                name="journey/complete"
+                options={{ presentation: 'modal', gestureEnabled: false }}
+              />
               <Stack.Screen name="community/[id]" options={{ presentation: 'modal' }} />
             </Stack>
           </AuthProvider>

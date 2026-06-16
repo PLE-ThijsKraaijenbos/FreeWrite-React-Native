@@ -11,8 +11,7 @@ interface AuthSelectionProps {
 
 export function AuthSelection({ selected, onSelectRegister, onSelectLogin }: AuthSelectionProps) {
   return (
-    <View className="mb-6">
-      <View style={shadows.drop} className="w-full rounded-lg bg-neutral-200 flex-row overflow-hidden">
+    <View style={shadows.drop} className="w-full rounded-lg bg-neutral-200 flex-row overflow-hidden">
         <Pressable
           onPress={onSelectRegister}
           className={`flex-1 items-center justify-center py-4 ${selected === 'register' ? 'bg-secondary-400' : ''}`}
@@ -33,6 +32,5 @@ export function AuthSelection({ selected, onSelectRegister, onSelectLogin }: Aut
           </ThemedText>
         </Pressable>
       </View>
-    </View>
   );
 }
