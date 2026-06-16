@@ -8,6 +8,7 @@ import { AvatarDisplay } from '@/components/AvatarDisplay';
 import { CoinBalance } from '@/components/CoinBalance';
 import { CTALarge } from '@/components/cta';
 import { PageHeader } from '@/components/PageHeader';
+import { useJourney } from '@/hooks/use-journey';
 import { useTheme } from '@/hooks/use-theme';
 import { buildAvatarUrl } from '@/lib/avatar';
 import { useAuth } from '@/lib/auth-context';
@@ -23,6 +24,11 @@ export default function HomeScreen() {
   const router = useRouter();
   const { user } = useAuth();
   const theme = useTheme();
+  const { data: journey } = useJourney();
+
+  const hasCompletedAssignment = journey?.step_progresses.some(
+    (p) => p.status === 'COMPLETED',
+  );
 
   return (
     <View className="flex-1" style={{ backgroundColor: theme.background }}>
@@ -30,7 +36,7 @@ export default function HomeScreen() {
       <CoinBalance coins={user?.profile?.coins ?? 0} onPress={() => router.push('/shop')} />
       <AvatarDisplay uri={buildAvatarUrl(user?.profile?.avatar ?? {})} />
       <View className="px-4 mt-6 gap-6">
-        <CTALarge label="Pick up where you left off" gradient={1} icon={<QuillIcon color="#FAFAF8" width="100%" height="100%" />} onPress={() => router.push('/tabs/journey?focus=available')} />
+        <CTALarge label={hasCompletedAssignment ? 'Pick up where you left off' : 'Begin your journey'} gradient={1} icon={<QuillIcon color="#FAFAF8" width="100%" height="100%" />} onPress={() => router.push('/tabs/journey?focus=available')} />
         <CTALarge label="Item shop" gradient={2} icon={<ShopIcon color="#FAFAF8" width="100%" height="100%" />} onPress={() => router.push('/shop')} />
         <CTALarge label="Edit avatar" gradient={3} icon={<UserEditIcon color="#FAFAF8" width="100%" height="100%" />} onPress={() => router.push('/avatar-editor')} />
       </View>

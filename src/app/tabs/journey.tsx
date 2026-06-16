@@ -13,6 +13,7 @@ import { ThemedText } from '@/components/themed-text';
 import { shadows } from '@/constants/shadows';
 import { useTheme } from '@/hooks/use-theme';
 import { useJourney } from '@/hooks/use-journey';
+import { useAuth } from '@/lib/auth-context';
 import { JourneyStepProgress } from '@/types/journey';
 
 const NODE_SIZE = 65;
@@ -20,7 +21,7 @@ const NODE_HEIGHT = (NODE_SIZE * 80) / 75;
 const COLUMNS = 2;
 const ROW_STEP = 200;
 const TOP_PADDING = 65;
-const BOTTOM_PADDING = 160;
+const BOTTOM_PADDING = 280;
 const FOCUS_HEIGHT = 0.35;
 
 const MARKER_WIDTH = NODE_SIZE * 0.65;
@@ -29,6 +30,19 @@ const MARKER_BOB = NODE_SIZE * 0.15;
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
+
+// A UUID is hex, so its letters parse fine as a base-16 number. Using the
+// user id as the seed keeps their journey layout the same across app restarts.
+const seedFromUuid = (uuid: string) => parseInt(uuid.replace(/-/g, '').slice(0, 12), 16) || 0;
+
+// Deterministic jitter in [-1, 1] for both axes from a numeric seed.
+const seededOffset = (seed: number) => {
+  const rand = (k: number) => {
+    const v = Math.sin(seed + k) * 10000;
+    return (v - Math.floor(v)) * 2 - 1;
+  };
+  return { x: rand(0), y: rand(0.5) };
+};
 
 const markerTargetFor = (pos: { x: number; y: number }) => ({
   x: pos.x + NODE_SIZE / 2 - MARKER_WIDTH / 2,
@@ -93,8 +107,12 @@ const JourneyTile = React.memo(({
     return { x: markerTarget.x, y: markerTarget.y - tileTop };
   }, [markerTarget, tileTop]);
 
+  // The last tile is clipped to the real content height so the scroll view
+  // doesn't extend a full empty tile past the last node.
+  const tileHeight = Math.min(TILE_HEIGHT, Math.max(0, contentHeight - tileTop));
+
   return (
-    <View style={{ height: TILE_HEIGHT, width: '100%', overflow: 'hidden' }}>
+    <View style={{ height: tileHeight, width: '100%', overflow: 'hidden' }}>
       <Pressable
         onPress={() => onSelect(null)}
         style={StyleSheet.absoluteFill}
@@ -131,16 +149,8 @@ export default function JourneyScreen() {
   const [width, setWidth] = useState(0);
   const [headerHeight, setHeaderHeight] = useState(0);
 
-  const offsetsRef = useRef(new Map<string, { x: number; y: number }>());
-  const getOffset = (id: string) => {
-    const map = offsetsRef.current;
-    let offset = map.get(id);
-    if (!offset) {
-      offset = { x: Math.random() * 2 - 1, y: Math.random() * 2 - 1 };
-      map.set(id, offset);
-    }
-    return offset;
-  };
+  const { user } = useAuth();
+  const userSeed = user ? seedFromUuid(user.id) : 0;
 
   const sorted = useMemo(
     () => (data ? sortProgresses(data.step_progresses) : []),
@@ -160,13 +170,13 @@ export default function JourneyScreen() {
       const col = i % COLUMNS;
       const baseX = (width * (col + 0.5)) / COLUMNS - NODE_SIZE / 2;
       const baseY = TOP_PADDING + i * ROW_STEP;
-      const offset = getOffset(progress.id);
+      const offset = seededOffset(userSeed + i);
       return {
         x: clamp(baseX + offset.x * jitterX, 0, width - NODE_SIZE),
         y: baseY + offset.y * jitterY,
       };
     });
-  }, [sorted, width]);
+  }, [sorted, width, userSeed]);
 
   const contentHeight =
     sorted.length > 0
@@ -263,11 +273,14 @@ export default function JourneyScreen() {
           data={tileIndices}
           keyExtractor={(i) => i.toString()}
           renderItem={renderTile}
-          getItemLayout={(_, index) => ({
-            length: TILE_HEIGHT,
-            offset: TILE_HEIGHT * index,
-            index,
-          })}
+          getItemLayout={(_, index) => {
+            const offset = TILE_HEIGHT * index;
+            return {
+              length: Math.min(TILE_HEIGHT, Math.max(0, contentHeight - offset)),
+              offset,
+              index,
+            };
+          }}
           onLayout={(e) => {
             setViewportHeight(e.nativeEvent.layout.height);
             setWidth(e.nativeEvent.layout.width);

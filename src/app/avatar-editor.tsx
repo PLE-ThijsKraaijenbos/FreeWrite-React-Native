@@ -91,6 +91,8 @@ export default function AvatarEditorScreen() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [attemptedSave, setAttemptedSave] = useState(false);
+  const [nameTouched, setNameTouched] = useState(false);
 
   const unlockedItems = useMemo(() => items.filter((i) => i.is_unlocked), [items]);
 
@@ -148,6 +150,10 @@ export default function AvatarEditorScreen() {
   );
 
   async function handleSave() {
+    setAttemptedSave(true);
+    const trimmedName = name.trim();
+    if (!trimmedName) return;
+
     setSaving(true);
     setSaveError(null);
     try {
@@ -215,7 +221,13 @@ export default function AvatarEditorScreen() {
                     placeholder="Your name"
                     value={name}
                     onChangeText={setName}
+                    onBlur={() => setNameTouched(true)}
                   />
+                  {!name.trim() && (nameTouched || attemptedSave) && (
+                    <ThemedText type="body-sm" className="text-secondary-500 pt-1">
+                      Please enter a name.
+                    </ThemedText>
+                  )}
                 </View>
                 <View className="px-4">
                   <Divider />
