@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { Pressable } from 'react-native';
 
 import ChevronLeftIcon from '@/assets/icons/chevron-left.svg';
@@ -11,6 +12,12 @@ type Props = {
 };
 
 export function BackButton({ onPress, variant = 'default' }: Props) {
+  const router = useRouter();
+
+  if (!router.canGoBack()) {
+    return null;
+  }
+
   if (variant === 'onboarding') {
     return (
       <Pressable onPress={onPress} hitSlop={8} className="p-2 -ml-2">
