@@ -31,7 +31,9 @@
       "Bash(docker exec *)",
       "PowerShell(npx tsc --noEmit -p C:\\\\FreeWrite-React-Native\\\\tsconfig.json 2>&1 | Select-Object -First 30)",
       "Bash(git checkout *)",
-      "Bash(xxd)"
+      "Bash(xxd)",
+      "Bash(eas env:create --environment production --name EXPO_PUBLIC_FREEWRITE_API_URL --value \"https://freewrite-django-production.up.railway.app\" --visibility plaintext --non-interactive)",
+      "Bash(eas env:list --environment production)"
     ],
     "additionalDirectories": [
       "C:\\FreeWrite-Django"
