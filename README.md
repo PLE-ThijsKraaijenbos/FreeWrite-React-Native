@@ -1,56 +1,134 @@
-# Welcome to your Expo app 👋
+# FreeWrite (Mobile App)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+The React Native (Expo) app for FreeWrite, a mobile self-help app built around
+narrative therapy. It talks to the [Django API](../FreeWrite-Django).
 
-## Get started
+## Description
 
-1. Install dependencies
+The app has three bottom tabs (Home, Journey, Community), plus the onboarding
+flow and the avatar editor screens:
+
+| Area | What it does |
+| --- | --- |
+| **Onboarding** | Creating an account (register/login), a multi-step questionnaire that shapes the experience, avatar setup, and a step that can point you to professional help. |
+| **Home / Avatar** | Your avatar and coin balance. Coins you earn in minigames get spent in the avatar editor to unlock and equip items. |
+| **Journey** | The main part. The phases shown as a progress map of steps that unlock one after another. Each step is a minigame (journal, letter, choice story, speech bubble, bubble pop, scale). Finishing one saves progress and pays out coins. |
+| **Community** | A shared feed to post, read, tag and like writing. Posts can have an image. |
+
+### The avatar
+
+Avatars are rendered with the DiceBear Avataaars API. The avatar editor items
+are DiceBear customisation params (hair, clothing, accessories, colours, and so
+on) that you unlock with coins and equip. The app builds the DiceBear URL from
+whatever's currently equipped.
+
+## Tech stack
+
+- Expo / React Native / React
+- Expo Router for file-based routing (typed routes)
+- NativeWind (Tailwind for RN) for styling
+- React Hook Form + Zod for the multi-step forms and validation
+- TanStack Query for server state, Context API for auth state
+- Axios for the API client, expo-secure-store for storing JWTs
+- DiceBear Avataaars for the avatars
+- expo-dev-client for local dev, EAS Build for distribution
+
+## Installation
+
+The app uses native modules (like `expo-secure-store`) that aren't in the stock
+Expo Go app, so it runs in a development build instead. That's basically your own
+version of Expo Go with those native modules baked in. The MVP targets Android.
+
+1. Install dependencies:
 
    ```bash
    npm install
    ```
 
-2. Start the app
+2. Set up your env file and point the app at a running backend (the
+   [backend README](../FreeWrite-Django) covers starting one):
+
+   ```bash
+   cp .env.example .env.local
+   ```
+
+   ```env
+   # local backend exposed via ngrok, so a real phone can reach it
+   EXPO_PUBLIC_FREEWRITE_API_URL=https://your-subdomain.ngrok-free.app
+   ```
+
+3. Get a development build onto your device or emulator. The first time, build
+   one with EAS (or just install an existing build if someone already shared the
+   APK):
+
+   ```bash
+   eas build --profile development --platform android
+   ```
+
+4. From then on, you don't rebuild. Just start the bundler and open the
+   development build:
 
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+### When you need a new build
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+A development build only needs rebuilding when the native side of the app
+changes, for example:
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- adding, removing, or upgrading a package that ships native code
+- changing native config in `app.json` (plugins, permissions, icons, scheme)
 
-## Get a fresh project
+Plain JS/TS changes don't need a rebuild. `npx expo start` picks those up live,
+so most day-to-day work never touches EAS.
 
-When you're ready, run:
+## How auth works
+
+Auth is JWT. When you log in or register, the API hands back an `access` and a
+`refresh` token, both stored with expo-secure-store. The Axios client adds
+`Authorization: Bearer <access>` to requests. Access tokens only live 5 minutes,
+so when one runs out the refresh token is used to quietly grab a new one instead
+of kicking the user back to the login screen.
+
+## Environment variables
+
+| Variable | What it's for |
+| --- | --- |
+| `EXPO_PUBLIC_FREEWRITE_API_URL` | Base URL of the FreeWrite API. |
+
+`.env.local` holds this for local dev (the ngrok URL pointing at your local
+backend).
+
+## Builds (EAS)
+
+Builds go through EAS Build (`eas.json`):
+
+| Profile | When you'd use it |
+| --- | --- |
+| `development` | Internal dev client build. |
+| `preview` | Internal Android APK. |
 
 ```bash
-npm run reset-project
+eas build --profile preview --platform android
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Design system
 
-### Other setup steps
+NativeWind for styling, with the design tokens (fonts, colours, spacing) in
+`src/constants/tokens.js` and wired through `tailwind.config.js`. Fonts are
+Unbounded for headings and Inter for body.
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+## Project structure
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```
+src/
+├── app/          # Screens & routes (expo-router): tabs (home, journey, community),
+│                 #   onboarding, journey, community, shop, avatar-editor, add/edit-post...
+├── api/          # API calls (auth, user, journey, community, onboarding, avatar-items)
+├── components/   # Reusable UI components
+├── hooks/        # Custom hooks (journey, community, theme)
+├── lib/          # Auth context/storage, avatar (DiceBear) logic
+├── types/        # Shared TypeScript types
+└── constants/    # Theme tokens, shadows
+```
