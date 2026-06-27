@@ -1,4 +1,4 @@
-import { CreatePostInput, Post, Tag, UpdatePostInput } from '@/types/community';
+import { AddCommentInput, Comment, CreatePostInput, Post, Tag, UpdatePostInput } from '@/types/community';
 import client from './client';
 
 export async function getPosts(): Promise<Post[]> {
@@ -17,6 +17,24 @@ export async function likePost(postId: number): Promise<void> {
 
 export async function unlikePost(postId: number): Promise<void> {
   await client.delete(`/api/community/posts/${postId}/like/`);
+}
+
+export async function getComments(postId: number): Promise<Comment[]> {
+  const res = await client.get<{ results: Comment[] }>(`/api/community/posts/${postId}/comments/`);
+  return res.data.results;
+}
+
+export async function createComment({ postId, body }: AddCommentInput): Promise<Comment> {
+  const res = await client.post<Comment>(`/api/community/posts/${postId}/comments/`, { body });
+  return res.data;
+}
+
+export async function likeComment(postId: number, commentId: number): Promise<void> {
+  await client.post(`/api/community/posts/${postId}/comments/${commentId}/like/`);
+}
+
+export async function unlikeComment(postId: number, commentId: number): Promise<void> {
+  await client.delete(`/api/community/posts/${postId}/comments/${commentId}/like/`);
 }
 
 export async function deletePost(postId: number): Promise<void> {

@@ -28,6 +28,18 @@ export type Post = {
   tags: Tag[];
 };
 
+export type Comment = {
+  id: number;
+  body: string;
+  likes_count: number;
+  is_liked_by_user: boolean;
+};
+
+export type AddCommentInput = {
+  postId: number;
+  body: string;
+};
+
 type PostInputFields = {
   title: string;
   body: string;

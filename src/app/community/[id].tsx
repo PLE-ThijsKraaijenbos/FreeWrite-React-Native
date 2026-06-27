@@ -15,15 +15,13 @@ import { Divider } from '@/components/Divider';
 import { TextInput } from '@/components/TextInput';
 import { ThemedText } from '@/components/themed-text';
 import { shadows } from '@/constants/shadows';
-import { useLikePost, usePost } from '@/hooks/use-community';
+import { useComments, useCreateComment, useLikeComment, useLikePost, usePost } from '@/hooks/use-community';
+import { Comment } from '@/types/community';
 
 cssInterop(LinearGradient, { className: 'style' });
 
-// Comments have no backend yet — hardcoded sample so the section has shape.
-type Comment = { id: number; body: string; likes_count: number };
-const DUMMY_COMMENTS: Comment[] = [{ id: 1, body: 'Thanks for sharing your story!', likes_count: 2 }];
-
-function CommentCard({ comment }: { comment: Comment }) {
+function CommentCard({ comment, postId }: { comment: Comment; postId: number }) {
+  const { mutate: toggleLike, isPending } = useLikeComment(postId);
   return (
     <LinearGradient
       colors={['#FAFAF8', '#EBEBE6']}
@@ -32,10 +30,18 @@ function CommentCard({ comment }: { comment: Comment }) {
       style={shadows.drop}
       className="rounded-lg px-4 py-3 gap-1">
       <ThemedText type="body-sm" className="text-neutral-500">{comment.body}</ThemedText>
-      <View className="flex-row items-center gap-0.5">
-        <HeartOutlineIcon width={24} height={24} color="#2A2924" />
+      <Pressable
+        className="flex-row items-center gap-0.5"
+        onPress={() => toggleLike({ commentId: comment.id, liked: comment.is_liked_by_user })}
+        disabled={isPending}
+        hitSlop={8}>
+        {comment.is_liked_by_user ? (
+          <HeartIcon width={24} height={24} color="#F47D4E" />
+        ) : (
+          <HeartOutlineIcon width={24} height={24} color="#2A2924" />
+        )}
         <ThemedText type="body-sm" className="text-neutral-600">{comment.likes_count}</ThemedText>
-      </View>
+      </Pressable>
     </LinearGradient>
   );
 }
@@ -45,8 +51,16 @@ export default function CommunityPostScreen() {
   const { top } = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data: post, isLoading } = usePost(Number(id));
+  const { data: comments = [] } = useComments(Number(id));
   const { mutate: toggleLike, isPending } = useLikePost();
+  const { mutate: addComment, isPending: isAddingComment } = useCreateComment();
   const [comment, setComment] = useState('');
+
+  const handleAddComment = () => {
+    const body = comment.trim();
+    if (!body) return;
+    addComment({ postId: Number(id), body }, { onSuccess: () => setComment('') });
+  };
 
   if (isLoading) {
     return (
@@ -119,7 +133,7 @@ export default function CommunityPostScreen() {
           </Pressable>
           <View className="flex-row items-center gap-0.5">
             <ChatBubbleIcon width={24} height={24} color="#2A2924" />
-            <ThemedText type="body-sm" className="text-neutral-600">{DUMMY_COMMENTS.length}</ThemedText>
+            <ThemedText type="body-sm" className="text-neutral-600">{comments.length}</ThemedText>
           </View>
         </View>
 
@@ -136,8 +150,8 @@ export default function CommunityPostScreen() {
           <CTAButton
             variant="default"
             label="Save comment"
-            disabled={!comment.trim()}
-            onPress={() => setComment('')}
+            disabled={!comment.trim() || isAddingComment}
+            onPress={handleAddComment}
           />
         </View>
 
@@ -146,11 +160,17 @@ export default function CommunityPostScreen() {
         {/* Comments */}
         <View className="px-4 gap-3">
           <ThemedText type="h2">Comments</ThemedText>
-          <View className="gap-3">
-            {DUMMY_COMMENTS.map((c) => (
-              <CommentCard key={c.id} comment={c} />
-            ))}
-          </View>
+          {comments.length === 0 ? (
+            <ThemedText type="body-sm" className="text-neutral-400">
+              No comments yet. Be the first to share your thoughts.
+            </ThemedText>
+          ) : (
+            <View className="gap-3">
+              {comments.map((c) => (
+                <CommentCard key={c.id} comment={c} postId={post.id} />
+              ))}
+            </View>
+          )}
         </View>
       </ScrollView>
 
