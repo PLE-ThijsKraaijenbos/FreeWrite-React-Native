@@ -1,7 +1,19 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { createPost, deletePost, getPosts, getTags, likePost, unlikePost, updatePost } from '@/api/community';
-import { Post } from '@/types/community';
+import {
+  createComment,
+  createPost,
+  deletePost,
+  getComments,
+  getPosts,
+  getTags,
+  likeComment,
+  likePost,
+  unlikeComment,
+  unlikePost,
+  updatePost,
+} from '@/api/community';
+import { Comment, Post } from '@/types/community';
 
 export function usePosts() {
   return useQuery({ queryKey: ['community', 'posts'], queryFn: getPosts });
@@ -16,6 +28,48 @@ export function usePost(id: number) {
     queryKey: ['community', 'posts'],
     queryFn: getPosts,
     select: (posts) => posts.find((p) => p.id === id),
+  });
+}
+
+export function useComments(postId: number) {
+  return useQuery({
+    queryKey: ['community', 'comments', postId],
+    queryFn: () => getComments(postId),
+  });
+}
+
+export function useCreateComment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createComment,
+    onSuccess: (_data, { postId }) =>
+      queryClient.invalidateQueries({ queryKey: ['community', 'comments', postId] }),
+  });
+}
+
+export function useLikeComment(postId: number) {
+  const queryClient = useQueryClient();
+  const queryKey = ['community', 'comments', postId];
+  return useMutation({
+    mutationFn: ({ commentId, liked }: { commentId: number; liked: boolean }) =>
+      liked ? unlikeComment(postId, commentId) : likeComment(postId, commentId),
+    onMutate: async ({ commentId, liked }) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData<Comment[]>(queryKey);
+      queryClient.setQueryData<Comment[]>(queryKey, (old) =>
+        old?.map((c) =>
+          c.id === commentId
+            ? { ...c, is_liked_by_user: !liked, likes_count: c.likes_count + (liked ? -1 : 1) }
+            : c
+        )
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(queryKey, context.previous);
+      }
+    },
   });
 }
 
