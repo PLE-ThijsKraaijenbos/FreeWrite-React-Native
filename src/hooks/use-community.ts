@@ -42,8 +42,10 @@ export function useCreateComment() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createComment,
-    onSuccess: (_data, { postId }) =>
-      queryClient.invalidateQueries({ queryKey: ['community', 'comments', postId] }),
+    onSuccess: (_data, { postId }) => {
+      queryClient.invalidateQueries({ queryKey: ['community', 'comments', postId] });
+      queryClient.invalidateQueries({ queryKey: ['community', 'posts'] });
+    },
   });
 }
 

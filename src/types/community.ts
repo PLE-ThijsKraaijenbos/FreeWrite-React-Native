@@ -21,6 +21,7 @@ export type Post = {
   body: string;
   image_url: string | null;
   likes_count: number;
+  comments_count: number;
   is_liked_by_user: boolean;
   is_own_post: boolean;
   author_name: string;

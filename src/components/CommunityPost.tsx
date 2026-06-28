@@ -99,7 +99,7 @@ export function CommunityPost({ post }: Props) {
           </Pressable>
           <View className="flex-row items-center gap-0.5">
             <ChatBubbleIcon width={24} height={24} color="#2A2924" />
-            <ThemedText type="body-sm" className="text-neutral-600">0</ThemedText>
+            <ThemedText type="body-sm" className="text-neutral-600">{post.comments_count}</ThemedText>
           </View>
         </View>
       </LinearGradient>
