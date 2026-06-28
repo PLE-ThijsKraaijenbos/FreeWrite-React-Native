@@ -7,6 +7,12 @@
     "icon": "./assets/images/icon.png",
     "scheme": "freewritereactnative",
     "userInterfaceStyle": "automatic",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/90a17d28-3308-4d3c-959b-72029679b475"
+    },
     "ios": {
       "bundleIdentifier": "com.thijskraaij06.FreeWriteReactNative",
       "infoPlist": {
