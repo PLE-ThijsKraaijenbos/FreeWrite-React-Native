@@ -8,13 +8,14 @@ import { shadows } from '@/constants/shadows';
 type Props = TextInputProps & {
   variant?: 'default' | 'letter' | 'journal';
   label?: string;
+  greeting?: string;
 };
 
 const LETTER_LINE_HEIGHT = 26;
 const JOURNAL_LINE_HEIGHT = 22;
 const JOURNAL_MARGIN = 32;
 
-export function TextInput({ variant = 'default', label, placeholder, value, onChangeText, multiline, ...rest }: Props) {
+export function TextInput({ variant = 'default', label, greeting, placeholder, value, onChangeText, multiline, ...rest }: Props) {
   const minLines = variant === 'journal' ? 5 : 4;
   const lineHeight = variant === 'journal' ? JOURNAL_LINE_HEIGHT : LETTER_LINE_HEIGHT;
   const [numLines, setNumLines] = useState(minLines);
@@ -28,7 +29,7 @@ export function TextInput({ variant = 'default', label, placeholder, value, onCh
     return (
       <View style={shadows.drop} className="rounded-lg bg-secondary-100 border-4 border-secondary-300 p-4">
         <View className="flex-row justify-between items-start pb-2">
-          <ThemedText type="body" className="text-neutral-600">Dear me,</ThemedText>
+          <ThemedText type="body" className="text-neutral-600">{greeting}</ThemedText>
           <PostageStampIcon width={24} height={24} />
         </View>
         <View style={{ position: 'relative', minHeight: minLines * LETTER_LINE_HEIGHT }}>

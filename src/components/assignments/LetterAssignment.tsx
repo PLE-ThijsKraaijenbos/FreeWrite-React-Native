@@ -25,6 +25,7 @@ export function LetterAssignment({ content, responseData, onComplete }: Props) {
       <AssignmentLayout title={content.title_text} scroll>
         <TextInput
           variant="letter"
+          greeting={content.greeting_placeholder}
           value={saved.text}
           editable={false}
         />
@@ -39,6 +40,7 @@ export function LetterAssignment({ content, responseData, onComplete }: Props) {
       </ThemedText>
       <TextInput
         variant="letter"
+        greeting={content.greeting_placeholder}
         placeholder="Write your letter here..."
         value={text}
         onChangeText={setText}

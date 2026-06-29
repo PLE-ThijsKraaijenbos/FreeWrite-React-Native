@@ -39,7 +39,7 @@ export function JournalAssignment({ content, responseData, onComplete }: Props) 
       </ThemedText>
       <TextInput
         variant="journal"
-        placeholder="Reflect on your thoughts, feelings and experiences..."
+        placeholder={content.input_field_placeholder}
         value={text}
         onChangeText={setText}
       />
