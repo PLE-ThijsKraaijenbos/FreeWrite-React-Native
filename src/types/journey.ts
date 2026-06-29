@@ -8,12 +8,14 @@ export type JournalContent = {
   id: string;
   assignment_type: 'journal';
   title_text: string;
+  input_field_placeholder: string;
 };
 
 export type LetterContent = {
   id: string;
   assignment_type: 'letter';
   title_text: string;
+  greeting_placeholder: string;
 };
 
 export type ScaleContent = {
